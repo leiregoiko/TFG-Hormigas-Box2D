@@ -1,0 +1,33 @@
+---
+title: "From Local Forces to Collective Cognition"
+author: "jhjdk"
+format: html
+execute:
+  echo: false
+  warning: false
+---
+
+## 1. Introducción y Modelo Físico
+
+Este trabajo se basa en el estudio de Dreyer et al. (2025) sobre la resolución colectiva de puzles geométricos. Modelamos el sistema como un problema de **materia activa** donde $N$ agentes transportan una carga rígida.
+
+### A. Dinámica de la Carga (Overdamped Dynamics)
+El movimiento de la carga se rige por una dinámica sobreamortiguada, donde la inercia es despreciable frente a la fricción. La velocidad del centro de masas $\vec{v}(t)$ viene dada por el equilibrio entre las fuerzas activas de las hormigas y las fuerzas de reacción de las paredes:
+
+$$\vec{v}(t) = \mu \left( \sum_{i=1}^{N} \vec{F}_{i}(t) + \vec{F}_{paredes}(t) \right)$$
+
+Donde:
+* $\mu$: Coeficiente de movilidad (inverso de la fricción).
+* $\vec{F}_{i}(t)$: Fuerza aplicada por la hormiga $i$.
+* $\vec{F}_{paredes}$: Fuerzas normales repulsivas que impiden que la carga atraviese obstáculos.
+
+### B. Reglas de los Agentes (Hormigas)
+Cada agente $i$ sigue un modelo estocástico con dos estados, basado en el modelo de *Gelblum et al. (2015)*:
+
+1.  **Líder Informada:** Conoce la dirección al nido ($\hat{n}$) y aplica fuerza constante en esa dirección.
+    $$\vec{F}_i = f_0 \cdot \hat{n}$$
+2.  **Seguidora No Informada (Conformista):** No conoce el objetivo. Se alinea con el movimiento actual de la carga (feedback positivo), lo que genera persistencia y memoria colectiva.
+    $$\vec{F}_i = f_0 \cdot \frac{\vec{v}(t)}{|\vec{v}(t)|}$$
+
+### C. Fenómeno Emergente: "Wall-Sliding"
+La combinación de estas fuerzas permite que, cuando el grupo choca contra un obstáculo, no se detenga, sino que se deslice a lo largo de la pared (*wall-sliding*). Esto actúa como una **memoria a corto plazo** que permite al grupo "escanear" el perímetro hasta encontrar la salida.

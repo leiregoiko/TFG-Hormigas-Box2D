@@ -1,0 +1,17 @@
+name: tfg-transport
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - numba
+  - pandas
+  - matplotlib
+  - networkx
+  - mesa
+  - quarto
+  - black
+  - ruff
+  - pytest
+  - nbval

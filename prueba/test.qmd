@@ -1,0 +1,40 @@
+---
+title: "Prueba TFG - Entorno"
+format: html
+jupyter: tfg-transport
+---
+
+## 1. Prueba de Gráficos
+
+Si ves una onda aquí abajo, `matplotlib` funciona:
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(6,4))
+plt.plot(x, y, color='blue')
+plt.title("¡El sistema funciona!")
+plt.grid(True)
+plt.show()
+```
+
+## 2. Prueba de Librerías del TFG
+
+Vamos a ver si tienes instaladas las herramientas para las hormigas (`mesa`, `networkx`, `numba`).
+Si este bloque no da error, estás lista para empezar.
+
+```{python}
+import mesa
+import networkx as nx
+import numba
+import scipy
+
+print(f"Mesa version: {mesa.__version__}")
+print(f"NetworkX version: {nx.__version__}")
+print(f"Numba version: {numba.__version__}")
+print("¡Todo instalado correctamente!")
+```

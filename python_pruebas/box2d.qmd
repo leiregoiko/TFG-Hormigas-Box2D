@@ -1,0 +1,1491 @@
+---
+title: "Pruebas de Box2D - Transporte Cooperativo"
+jupyter: python3
+format: 
+  html:
+    code-fold: true
+    toc: true
+    theme: cosmo
+---
+
+
+# Pruebas con Box2D
+
+## Dibujar objetos cayendo
+En este documento probaré cómo crear un mundo en **Box2D** y aplicar fuerzas.
+
+```{python}
+import Box2D
+from Box2D.b2 import world, polygonShape
+import matplotlib.pyplot as plt
+
+# --- IMAGEN 1: CREACIÓN DEL MUNDO ---
+# Gravedad hacia abajo (0, -10)
+mundo = world(gravity=(0, -10))
+
+# --- IMAGEN 3: EL SUELO (ESTÁTICO) ---
+# Se crea el cuerpo y se le asigna una forma de caja (50x10)
+suelo = mundo.CreateStaticBody(position=(0, -10))
+suelo.CreatePolygonFixture(box=(50, 10))
+
+# --- IMAGEN 2: EL OBJETO DINÁMICO ---
+# Se crea un cuerpo dinámico en la posición (0, 4)
+cuerpo = mundo.CreateDynamicBody(position=(0, 4))
+# Se le da forma de caja pequeña (1x1) con densidad para que tenga peso
+cuerpo.CreatePolygonFixture(box=(1, 1), density=1.0, friction=0.3)
+
+# --- IMAGEN 4 Y 5: CONFIGURACIÓN Y BUCLE DE SIMULACIÓN ---
+time_step = 1.0 / 60.0
+# En Python (v2.3), se usan iteraciones de velocidad y posición en lugar de sub-steps
+vel_iters, pos_iters = 6, 2 
+datos_y = []
+pasos = []
+print("Simulando 1.5 segundos...")
+for i in range(90):
+    # Avanza la física un paso
+    mundo.Step(time_step, vel_iters, pos_iters)
+    
+    # Obtiene posición y ángulo para imprimir
+    pos = cuerpo.position
+    angulo = cuerpo.angle
+
+    datos_y.append(cuerpo.position.y)
+    pasos.append(i)
+
+    print(f"Paso {i}: x={pos.x:4.2f} y={pos.y:4.2f} ang={angulo:4.2f}")
+
+# --- PARTE DE DIBUJO (MATPLOTLIB) ---
+plt.figure(figsize=(10, 5))
+plt.plot(pasos, datos_y, label='Altura de la carga (y)') # Dibuja la línea
+plt.axhline(y=1.0, color='r', linestyle='--', label='Nivel del suelo') # Línea del suelo
+
+# Etiquetas para que se entienda la gráfica
+plt.title('Representación de la caída de la carga')
+plt.xlabel('Paso de tiempo (frames)')
+plt.ylabel('Posición Y (metros)')
+plt.legend()
+plt.grid(True) # Cuadrícula de fondo
+
+# Mostrar la gráfica
+print("Cerrando la simulación y abriendo gráfico...")
+plt.show()
+```
+
+copia talcual 
+
+
+```{python}
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2Vec2
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Escala: 20 píxeles = 1 metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
+TARGET_FPS = 60
+
+# --- 1. MUNDO Y ESCENARIO ---
+mundo = b2World(gravity=(0, -10)) # Gravedad para ver que cae
+
+# Suelo
+suelo = mundo.CreateStaticBody(position=(16, 1))
+suelo.CreatePolygonFixture(box=(50, 1))
+
+# --- 2. CREAR LA CARGA EN T ---
+carga = mundo.CreateDynamicBody(position=(16, 15), angle=0.5)
+
+# Fixture 1: El palo vertical (abajo)
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0, friction=0.3)
+
+# Fixture 2: El palo horizontal (tejado) - CORREGIDO
+forma_tejado = b2PolygonShape()
+# SetAsBox pide: (ancho/2, alto/2, centro_relativo, angulo)
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0) 
+
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0, friction=0.3)
+
+
+
+# --- 3. PYGAME ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+    pantalla.fill((30, 30, 30)) # Fondo gris oscuro
+
+    # Dibujar Suelo (Verde)
+    vertices_suelo = [to_pygame(suelo.transform * v) for v in suelo.fixtures[0].shape.vertices]
+    pygame.draw.polygon(pantalla, (46, 204, 113), vertices_suelo)
+
+    # Dibujar Carga T (Azul)
+    for fixture in carga.fixtures:
+        vertices_t = [to_pygame(carga.transform * v) for v in fixture.shape.vertices]
+        pygame.draw.polygon(pantalla, (52, 152, 219), vertices_t)
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+ahora lo hago yo intentando cambiar cosas
+
+
+```{python}
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2Vec2, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Escala: 20 píxeles = 1 metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
+TARGET_FPS = 60
+
+# --- 1. MUNDO Y ESCENARIO ---
+mundo = b2World(gravity=(0, -5)) # Gravedad para ver que cae
+
+# Suelo
+suelo = mundo.CreateStaticBody(position=(16, 1))
+suelo.CreatePolygonFixture(box=(50, 1))
+
+# --- 2. CREAR LA CARGA EN T ---
+carga = mundo.CreateDynamicBody(position=(16, 15), angle=0.5)
+
+# Fixture 1: El palo vertical (abajo)
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0, friction=0.3)
+
+carga2 = mundo.CreateDynamicBody(position=(22, 9), angle=1.57)
+carga2.CreatePolygonFixture(vertices=[(0,0), (2,0), (2,1)], density=1.0)
+
+circulin= b2CircleShape()
+circulin.radius=0.2
+circulin.pos=(2,1)
+
+carga2.CreateCircleFixture(shape=circulin, density=1.0)
+# Fixture 2: El palo horizontal (tejado) - CORREGIDO
+forma_tejado = b2PolygonShape()
+# SetAsBox pide: (ancho/2, alto/2, centro_relativo, angulo)
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0) 
+
+
+# Hecho por mi, le pones un palo abajo
+forma_bajo = b2PolygonShape()
+forma_bajo.SetAsBox(2, 0.5, (0, -2), 0)
+
+
+
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0, friction=0.3)
+carga.CreatePolygonFixture(shape=forma_bajo, density=1.0, friction=0.3)
+
+
+
+# --- 3. PYGAME ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+    pantalla.fill((30, 30, 30)) # Fondo gris oscuro
+
+    # Dibujar Suelo (Verde)
+    vertices_suelo = [to_pygame(suelo.transform * v) for v in suelo.fixtures[0].shape.vertices]
+    pygame.draw.polygon(pantalla, (46, 204, 113), vertices_suelo)
+
+    # Dibujar Carga T (Azul)
+    for fixture in carga.fixtures:
+        vertices_t = [to_pygame(carga.transform * v) for v in fixture.shape.vertices]
+        pygame.draw.polygon(pantalla, (52, 152, 219), vertices_t)
+
+  # Dibujar Carga 2 (Triángulo + Círculo)
+    for fixture in carga2.fixtures:
+        forma = fixture.shape
+        
+        # SI ES UN POLÍGONO (Triángulo)
+        if isinstance(forma, b2PolygonShape):
+            vertices = [to_pygame(carga2.transform * v) for v in forma.vertices]
+            pygame.draw.polygon(pantalla, (255, 100, 100), vertices) # Color rojizo
+            
+        # SI ES UN CÍRCULO (La "nariz")
+        elif isinstance(forma, b2CircleShape):
+            # Calculamos la posición real del círculo en la pantalla
+            centro_real = carga2.transform * forma.pos
+            centro_pygame = to_pygame(centro_real)
+            radio_pygame = int(forma.radius * PPM)
+            pygame.draw.circle(pantalla, (255, 255, 255), centro_pygame, radio_pygame)
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+
+
+## Preparar el laberinto g=0.0
+
+Esto lo ha hecho gemini, se supone que es el laberinto luego lo intento entender y hago otro codigo pa aplicar las fuerzas y ir probando.
+```{python}
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0)) # Techo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+# Muro de arriba
+paredes.CreatePolygonFixture(box=(0.5, 10, (20, 25), 0))
+# Muro de abajo
+paredes.CreatePolygonFixture(box=(0.5, 10, (20, 5), 0))
+# El hueco queda entre y=15 y y=20 (5 metros de ancho)
+
+# 3. LA CARGA EN T (El "Piano")
+carga = mundo.CreateDynamicBody(position=(10, 15), angle=0)
+# Palo vertical
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0)
+# Tejado de la T
+forma_tejado = b2PolygonShape()
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0)
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+Laberinto nuevo hecho por mi: 
+
+- ZABALERA: 40 m
+- ALTUERA: 24 m
+- MUGETAKO PARETEN ZABALERA: 2 m
+- ZIRRIKITUEN ZABALERAK: 4.7 m
+- ZIRRIKITUEN PARETEN LODIERAK: 1.2 m 
+- LEHENENGO ZIRRIKITUAREN KOKAPENA: 16.15 m
+- BIGARREN ZIRRIKITUAREN KOKAPENA: 23.95 m 
+
+Hauek gutxigorabehera artikuluaren neurriak dira, x10 eta m-tan. 
+
+```{python}
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+mundo = b2World(gravity=(0, 0))
+
+paredes=mundo.CreateStaticBody(position=(0,0))
+
+paredes.CreatePolygonFixture(box=(1, 12, (1, 12), 0)) # Techo
+paredes.CreatePolygonFixture(box=(1, 12, (39, 12), 0))
+paredes.CreatePolygonFixture(box=(20, 1, (20, 1), 0))
+paredes.CreatePolygonFixture(box=(20, 1, (20, 23), 0))
+
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (16.15, 4.825), 0))
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (16.15, 19.05), 0))
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (23.95, 19.05), 0))
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (23.95, 4.825), 0))
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+
+## Aplicarle la fuerza a la T
+
+
+Aplicar una fuerza hacia la derecha (X=100, Y=0) en el centro de la carga
+    carga.ApplyForce(force=(100, 0), point=carga.worldCenter, wake=True)
+
+hau da indarraren lerroa. Zati bakoitza: 
+- force=(100, 0): X eta Y ardatzetan zenbat indar aplikatzen den. 
+- point=carga.worldCenter: NON aplikatzen den karga. Nola aldatu?
+    ERDIAN APLIKATZEKO: 
+    
+    ```python
+
+    # Esta función aplica la fuerza directamente en el centro de gravedad
+
+    carga.ApplyForceToCenter(force=(100, 0), wake=True)
+    ```
+    
+    BESTE PUNTU BATEAN APLIKATZEKO: 
+
+    ```python
+
+    # Si quieres aplicar fuerza en un punto relativo al centro de la T:
+    punto_local = (0, 2) # Esto es "2 metros arriba del centro de la T"
+    punto_mundo = carga.GetWorldPoint(punto_local) # Box2D traduce ese "arriba" a la posición real en el mapa
+
+    carga.ApplyForce(force=(100, 0), point=punto_mundo, wake=True)
+    ```
+    
+    BI PUNTU:
+
+    ```python
+
+    # Una hormiga empuja arriba y otra abajo
+    fuerza = (50, 0)
+    carga.ApplyForce(fuerza, carga.GetWorldPoint((0, 2)), True)  # Arriba
+    carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
+    ```
+
+
+- wake=True: Mugitzeko, false bada, ez da mugituko. 
+
+GARRANTZITSUA: 
+Indarra goian bezala irudikatzen badugu, haizea izango balitz bezala dabil indarra, ez puntuarekin biratzen. Puntuarekin biratzeko, inurri baten eragina irudikatzeko, hau egin behar dugu: 
+
+```{python}
+#| eval: false
+#| echo: true
+# 1. Definimos la fuerza que queremos (en relación a la T)
+fuerza_local = (-100, 0) 
+
+# 2. TRADUCIMOS la dirección de la fuerza para que rote con la T
+# Usamos GetWorldVector para que si la T gira, la fuerza gire con ella
+fuerza_mundo = carga.GetWorldVector(fuerza_local)
+
+# 3. Aplicamos la fuerza en el punto que ya tenías
+punto_mundo = carga.GetWorldPoint((0, 2))
+carga.ApplyForce(force=fuerza_mundo, point=punto_mundo, wake=True)
+
+# El empuje al centro lo dejamos igual para que avance
+carga.ApplyForceToCenter(force=(110, 0), wake=True)
+```
+
+"GetWorldVector" sartzerakoan, indarra gorputzari itsasten zaio. 
+```{python}
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0)) # Techo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+# Muro de arriba
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 25), 0))
+# Muro de abajo
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 8), 0))
+# El hueco queda entre y=15 y y=20 (5 metros de ancho)
+
+# 3. LA CARGA EN T (El "Piano")
+carga = mundo.CreateDynamicBody(position=(10, 15), angle=0)
+# Palo vertical
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0)
+# Tejado de la T
+forma_tejado = b2PolygonShape()
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0)
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+ejecutando = True
+while ejecutando:
+    # Si quieres aplicar fuerza en un punto relativo al centro de la T:
+    punto_local = (0, 2) # Esto es "2 metros arriba del centro de la T y dos a la derecha, la esquina de arriba"
+    punto_mundo = carga.GetWorldPoint(punto_local) # Box2D traduce ese "arriba" a la posición real en el mapa
+    fuerza=(-100, 0)
+    fuerza_pegada= carga.GetWorldVector(fuerza)
+    carga.ApplyForce(force=fuerza_pegada, point=punto_mundo, wake=True)
+    carga.ApplyForceToCenter(force=(110, 0), wake=True)
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+Orain inurriak agertuko dira. Horretarako zerrenda bat erabiliko dugu. Hau da zati berri bat: 
+
+baita "import random" sartu behar dugu. 
+
+
+```{python}
+#| eval: false
+#| echo: true
+# --- CREAR EL ENJAMBRE DE HORMIGAS ---
+hormigas = []  # Nuestra lista vacía
+
+for i in range(15):  # Vamos a crear 15 hormigas para empezar
+    # 1. Posición aleatoria en la Cámara 1 (x entre 2 y 18, y entre 5 y 25)
+    x_azar = random.uniform(2, 18)
+    y_azar = random.uniform(5, 25)
+    
+    # 2. Crear el cuerpo (pequeños círculos)
+    hormiga = mundo.CreateDynamicBody(position=(x_azar, y_azar), angle=0)
+    
+    # 3. Darle forma de círculo (radio de 0.2 metros)
+    forma_circulo = b2CircleShape(radius=0.2)
+    hormiga.CreatePolygonFixture(shape=forma_circulo, density=0.5, friction=0.3)
+    
+    # 4. ¡Al autobús! La guardamos en la lista
+    hormigas.append(hormiga)
+```
+
+Honekin 15 inurri sortzen ditugu toki aleatoriotan eta borobil txikiekin agertzen dira. Gainera pygame-n gorputzak sartzen dituen zatian, zirkuluak ere marraztea eskatuko diogu: 
+
+```{python}
+#| eval: false
+#| echo: true
+# Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            
+            # Si es un polígono (T o paredes)
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+            
+            # --- NUEVO: Si es un círculo (Hormigas) ---
+            elif isinstance(shape, b2CircleShape):
+                pos_mundo = body.transform * shape.pos # Posición real del círculo
+                centro_px = to_pygame(pos_mundo)       # Pasar a píxeles
+                radio_px = int(shape.radius * PPM)     # Radio en píxeles
+                pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) # Rojo hormiga
+```
+
+Orain dena aurreko kodean: 
+
+
+```{python}
+import random
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0)) # Techo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+# Muro de arriba
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 25), 0))
+# Muro de abajo
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 8), 0))
+# El hueco queda entre y=15 y y=20 (5 metros de ancho)
+
+# 3. LA CARGA EN T (El "Piano")
+carga = mundo.CreateDynamicBody(position=(10, 15), angle=0)
+# Palo vertical
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0)
+# Tejado de la T
+forma_tejado = b2PolygonShape()
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0)
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+#SORTU INURRIAK
+
+hormigas=[]
+for i in range(15):  # Vamos a crear 15 hormigas para empezar
+    # 1. Posición aleatoria en la Cámara 1 (x entre 2 y 18, y entre 5 y 25)
+    x_azar = random.uniform(2, 18)
+    y_azar = random.uniform(5, 25)
+    
+    # 2. Crear el cuerpo (pequeños círculos)
+    hormiga = mundo.CreateDynamicBody(position=(x_azar, y_azar), angle=0)
+    
+    # 3. Darle forma de círculo (radio de 0.2 metros)
+    forma_circulo = b2CircleShape(radius=0.2)
+    hormiga.CreatePolygonFixture(shape=forma_circulo, density=0.5, friction=0.3)
+    
+    # 4. ¡Al autobús! La guardamos en la lista
+    hormigas.append(hormiga)
+
+ejecutando = True
+while ejecutando:
+    # Si quieres aplicar fuerza en un punto relativo al centro de la T:
+    punto_local = (0, 2) # Esto es "2 metros arriba del centro de la T y dos a la derecha, la esquina de arriba"
+    punto_mundo = carga.GetWorldPoint(punto_local) # Box2D traduce ese "arriba" a la posición real en el mapa
+    fuerza=(-100, 0)
+    fuerza_pegada= carga.GetWorldVector(fuerza)
+    carga.ApplyForce(force=fuerza_pegada, point=punto_mundo, wake=True)
+    carga.ApplyForceToCenter(force=(110, 0), wake=True)
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+            elif isinstance(shape, b2CircleShape):
+                pos_mundo = body.transform * shape.pos # Posición real del círculo
+                centro_px = to_pygame(pos_mundo)       # Pasar a píxeles
+                radio_px = int(shape.radius * PPM)     # Radio en píxeles
+                pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) # Rojo hormiga
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+Hemen ez dira mugitzen, baina mugitzea egingo dugu, bloke berri honekin:
+
+```{python}
+#| eval: false
+#| echo: true
+for h en hormigas:
+        # Cada hormiga aplica una fuerza aleatoria pequeña para "vibrar"
+        f_x = random.uniform(-10, 10)
+        f_y = random.uniform(-10, 10)
+        h.ApplyForceToCenter(force=(f_x, f_y), wake=True)
+```
+
+Mugitzeko indarrak aplikatu behar dizkiegu: 
+Indarra T-rantz bideratzeko, posizioa eta T-ren arteko bektorearen norabidea izango du. 
+Gainera, h.linearDamping = 2.0-rekin marruskadura gehitu dugu. 
+Horrez gain, gehituko diogu bektore horri irteerantz doan beste indar bat, inurriak ateratzeko asmoa izan dezaten. 
+
+```{python}
+import random
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0)) # Techo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+# Muro de arriba
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 25), 0))
+# Muro de abajo
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 8), 0))
+# El hueco queda entre y=15 y y=20 (5 metros de ancho)
+
+# 3. LA CARGA EN T (El "Piano")
+carga = mundo.CreateDynamicBody(position=(10, 15), angle=0)
+# Palo vertical
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0)
+# Tejado de la T
+forma_tejado = b2PolygonShape()
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0)
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0)
+
+forma_suelo= b2PolygonShape()
+forma_suelo.SetAsBox(2.5, 0.5, (0,-2), 0)
+carga.CreatePolygonFixture(shape=forma_suelo, density=1.0)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+#SORTU INURRIAK
+
+hormigas=[]
+for i in range(15):  # Vamos a crear 15 hormigas para empezar
+    # 1. Posición aleatoria en la Cámara 1 (x entre 2 y 18, y entre 5 y 25)
+    x_azar = random.uniform(2, 18)
+    y_azar = random.uniform(5, 25)
+    
+    # 2. Crear el cuerpo (pequeños círculos)
+    hormiga = mundo.CreateDynamicBody(position=(x_azar, y_azar), angle=0)
+    
+    # 3. Darle forma de círculo (radio de 0.2 metros)
+    forma_circulo = b2CircleShape(radius=0.2)
+    hormiga.CreatePolygonFixture(shape=forma_circulo, density=0.5, friction=0.3)
+    
+    # 4. ¡Al autobús! La guardamos en la lista
+    hormigas.append(hormiga)
+
+ejecutando = True
+while ejecutando:
+    # Si quieres aplicar fuerza en un punto relativo al centro de la T:
+    punto_local = (0, 2) # Esto es "2 metros arriba del centro de la T y dos a la derecha, la esquina de arriba"
+    punto_mundo = carga.GetWorldPoint(punto_local) # Box2D traduce ese "arriba" a la posición real en el mapa
+    #fuerza=(-100, 0)
+    #fuerza_pegada= carga.GetWorldVector(fuerza)
+    #carga.ApplyForce(force=fuerza_pegada, point=punto_mundo, wake=True)
+    #carga.ApplyForceToCenter(force=(110, 0), wake=True)
+    for h in hormigas:
+        # Cada hormiga aplica una fuerza aleatoria pequeña para "vibrar"
+        #f_x = random.uniform(-10, 10)
+        #f_y = random.uniform(-10, 10)
+        pos_h=h.position
+        pos_t=carga.position
+        salida=Box2D.b2Vec2(1,0)
+
+        f_c=pos_t-pos_h + 3*salida
+        h.ApplyForceToCenter(force=f_c, wake=True)
+        h.linearDamping = 2.0
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+            elif isinstance(shape, b2CircleShape):
+                pos_mundo = body.transform * shape.pos # Posición real del círculo
+                centro_px = to_pygame(pos_mundo)       # Pasar a píxeles
+                radio_px = int(shape.radius * PPM)     # Radio en píxeles
+                pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) # Rojo hormiga
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+Esto se llama modelo de partículas atraídas
+Gertatzen dena, da inurriak beti bultzatzen ari direla karga, nahiz eta ukitzen ez egon. Orain aplikatuko ditugu baldintza batzuk inurria karga bultzatzeko kontaktuan badago eta bakarrik karga bilatzen badu urrun dagoenean. Gainera, egingo dugu kolorez aldatzea kontaktuan dagoenean. Horretarako está_tocando = len(h.contacts) > 0 
+baldintza erabiliko dugu, no h.contacts zerrenda bat den, beteztzen dena kontaktuan dagoenean. Hala ere, hau betetzen da edozein kontakturako, bai inurrien artean edo objektuarekin. Orduan jarriko dugu bloke hau zehazteko soilik kargarekin kontaktuan dagoenean kolorez aldatzeko. 
+
+Code honekin ikus dezakegu ea karga ukitzen ari den:
+
+```{python}
+#| eval: false
+#| echo: true
+esta_tocando_carga = False
+        for contacto in h.contacts: # Miramos todos los choques de la hormiga
+            if contacto.contact.touching and contacto.other == carga:
+                esta_tocando_carga = True
+                break # Si ya sabemos que toca, no hace falta mirar más
+```
+
+
+Gainera, inurriak kontaktuan daudenean, marruskadura handituko dugu, itsatsita gelditzeko. Horretarako, h.linearDamping = 2.0 handituko dugu kontaktuaren baldintzan. 
+ 
+```{python}
+import random
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0)) # Techo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+# Muro de arriba
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 25), 0))
+# Muro de abajo
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 8), 0))
+# El hueco queda entre y=15 y y=20 (5 metros de ancho)
+
+# 3. LA CARGA EN T (El "Piano")
+carga = mundo.CreateDynamicBody(position=(10, 15), angle=0)
+# Palo vertical
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0)
+# Tejado de la T
+forma_tejado = b2PolygonShape()
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0)
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0)
+
+forma_suelo= b2PolygonShape()
+forma_suelo.SetAsBox(2.5, 0.5, (0,-2), 0)
+carga.CreatePolygonFixture(shape=forma_suelo, density=1.0)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+#SORTU INURRIAK
+
+hormigas=[]
+for i in range(15):  # Vamos a crear 15 hormigas para empezar
+    # 1. Posición aleatoria en la Cámara 1 (x entre 2 y 18, y entre 5 y 25)
+    x_azar = random.uniform(2, 18)
+    y_azar = random.uniform(5, 25)
+    
+    # 2. Crear el cuerpo (pequeños círculos)
+    hormiga = mundo.CreateDynamicBody(position=(x_azar, y_azar), angle=0)
+    
+    # 3. Darle forma de círculo (radio de 0.2 metros)
+    forma_circulo = b2CircleShape(radius=0.2)
+    hormiga.CreatePolygonFixture(shape=forma_circulo, density=0.5, friction=0.3)
+    
+    # 4. ¡Al autobús! La guardamos en la lista
+    hormigas.append(hormiga)
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+
+    # Si quieres aplicar fuerza en un punto relativo al centro de la T:
+    punto_local = (0, 2) 
+    punto_mundo = carga.GetWorldPoint(punto_local) 
+
+    for h in hormigas:
+        
+        pos_h=h.position
+        pos_t=carga.position
+        #Voy a intentar que la fuerza apunte al centro de la salida 
+        salida=Box2D.b2Vec2(1,0)
+        
+
+        f_c=pos_t-pos_h 
+        f_total= 3*salida
+      
+        
+
+        
+        
+
+        #ESTO ERA UN POCO CHAPUCERO, SOLO FUNCIONABA SI ESTABA DENTRO DE UN CIRCULO DE R=2.2
+        #modulo= (f_c.x**2 + f_c.y**2)**(1/2)
+        #if modulo<2.2:
+        #    h.ApplyForceToCenter(force=f_total, wake=True)
+        #else:
+        #    h.ApplyForceToCenter(force=f_c, wake=True)
+
+        #AHORA VAMOS A HACER QUE FUNCIONE SOLO POR CONTACTO
+
+        esta_tocando_carga = False
+        for contacto in h.contacts: # Miramos todos los choques de la hormiga
+            if contacto.contact.touching and contacto.other == carga:
+                esta_tocando_carga = True
+                break # Si ya sabemos que toca, no hace falta mirar más
+
+        if esta_tocando_carga:
+            h.ApplyForceToCenter(force=f_total, wake=True)
+            h.linearDamping = 10.0
+        else:
+            h.ApplyForceToCenter(force=f_c, wake=True)
+            h.linearDamping = 2.0
+
+   
+    
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+            elif isinstance(shape, b2CircleShape):
+                pos_mundo = body.transform * shape.pos # Posición real del círculo
+                centro_px = to_pygame(pos_mundo)       # Pasar a píxeles
+                radio_px = int(shape.radius * PPM)     # Radio en píxeles
+                pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) # Rojo hormiga
+                # Dentro del bucle donde dibujas las hormigas:
+                distancia = (body.position - carga.position).length
+
+                esta_tocando_carga = False
+                for contacto in body.contacts: # Miramos todos los choques de la hormiga
+                    if contacto.contact.touching and contacto.other == carga:
+                        esta_tocando_carga = True
+                        break # Si ya sabemos que toca, no hace falta mirar más
+
+
+                #ESTAS LINEAS SON PA Q CAMBIEN DE COLOR SI TOCAN PERO NO VA DEMASIADO BIEN
+                if esta_tocando_carga: # Ajusta según el tamaño de tu T
+                    color = (46, 204, 113)  # VERDE: Estoy empujando
+                else:
+                    color = (231, 76, 60)   # ROJO: Estoy buscando
+    
+                pygame.draw.circle(pantalla, color, centro_px, radio_px)
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+
+```
+
+Orain, ikusteko ea eragina duen edo ez, saiatuko naiz kontaktuan dagoenean, indarraren norabidea zirrikituaren zentrorantz bideratzen, ez bakarrik aurrera: 
+
+
+```{python}
+
+import random
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0)) # Techo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+# Muro de arriba
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 25), 0))
+# Muro de abajo
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 8), 0))
+# El hueco queda entre y=15 y y=20 (5 metros de ancho) CENTRO x=20 y=17.5
+
+# 3. LA CARGA EN T (El "Piano")
+carga = mundo.CreateDynamicBody(position=(10, 15), angle=0)
+# Palo vertical
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0)
+# Tejado de la T
+forma_tejado = b2PolygonShape()
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0)
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0)
+
+forma_suelo= b2PolygonShape()
+forma_suelo.SetAsBox(2.5, 0.5, (0,-2), 0)
+carga.CreatePolygonFixture(shape=forma_suelo, density=1.0)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+#SORTU INURRIAK
+
+hormigas=[]
+for i in range(15):  # Vamos a crear 15 hormigas para empezar
+    # 1. Posición aleatoria en la Cámara 1 (x entre 2 y 18, y entre 5 y 25)
+    x_azar = random.uniform(2, 18)
+    y_azar = random.uniform(5, 25)
+    
+    # 2. Crear el cuerpo (pequeños círculos)
+    hormiga = mundo.CreateDynamicBody(position=(x_azar, y_azar), angle=0)
+    
+    # 3. Darle forma de círculo (radio de 0.2 metros)
+    forma_circulo = b2CircleShape(radius=0.2)
+    hormiga.CreatePolygonFixture(shape=forma_circulo, density=0.5, friction=0.3)
+    
+    # 4. ¡Al autobús! La guardamos en la lista
+    hormigas.append(hormiga)
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+
+    # Si quieres aplicar fuerza en un punto relativo al centro de la T:
+    punto_local = (0, 2) 
+    punto_mundo = carga.GetWorldPoint(punto_local) 
+
+    for h in hormigas:
+        
+        pos_h=h.position
+        pos_t=carga.position
+        #Voy a intentar que la fuerza apunte al centro de la salida 
+        salida=Box2D.b2Vec2(20, 19)
+        derecha= Box2D.b2Vec2(1, 0)
+        
+
+        f_c=pos_t-pos_h 
+        f_total= salida-pos_h + 5*derecha
+    
+
+        esta_tocando_carga = False
+        for contacto in h.contacts: # Miramos todos los choques de la hormiga
+            if contacto.contact.touching and contacto.other == carga:
+                esta_tocando_carga = True
+                break # Si ya sabemos que toca, no hace falta mirar más
+
+        if esta_tocando_carga:
+            h.ApplyForceToCenter(force=f_total, wake=True)
+            h.linearDamping = 10.0
+        else:
+            h.ApplyForceToCenter(force=f_c, wake=True)
+            h.linearDamping = 2.0
+
+   
+    
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+            elif isinstance(shape, b2CircleShape):
+                pos_mundo = body.transform * shape.pos # Posición real del círculo
+                centro_px = to_pygame(pos_mundo)       # Pasar a píxeles
+                radio_px = int(shape.radius * PPM)     # Radio en píxeles
+                pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) # Rojo hormiga
+                # Dentro del bucle donde dibujas las hormigas:
+                distancia = (body.position - carga.position).length
+
+                esta_tocando_carga = False
+                for contacto in body.contacts: # Miramos todos los choques de la hormiga
+                    if contacto.contact.touching and contacto.other == carga:
+                        esta_tocando_carga = True
+                        break # Si ya sabemos que toca, no hace falta mirar más
+
+
+                #ESTAS LINEAS SON PA Q CAMBIEN DE COLOR SI TOCAN PERO NO VA DEMASIADO BIEN
+                if esta_tocando_carga: # Ajusta según el tamaño de tu T
+                    color = (46, 204, 113)  # VERDE: Estoy empujando
+                else:
+                    color = (231, 76, 60)   # ROJO: Estoy buscando
+    
+                pygame.draw.circle(pantalla, color, centro_px, radio_px)
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+Aldaketa honekin askoz azkarrago doa zentrorantz, baina zirrikituaren erdian geratzen da, erdian badago, oso indar gutxi izango duelako. Orain gehitukodiot indar konstante bat aurrerantz, derecha deituko dena. Gero eta faktore handiagoarekin biderkatu indar hau, orduan eta azkarrago ateratzen da; zentzuzkoa dena. Modu honetan beti ateratzen da. 
+
+Azkenik, aurrekoa kontuan izanda, uste dut beti ateratzeko egin behar dena nahasketa bat dela. Altuera konpentsatzeko posizioarekiko kenketa egingo dut y ardatzean, horrela beti erdirantz joango da. Atzera ez egiteko (hau gertatzen da behin beste aldera pasa dela, erdia ezkerrean dagoelako) x norabidean beti indar horizontala aplikatuko da. 
+
+```{python}
+
+import random
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0)) # Techo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+# Muro de arriba
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 25), 0))
+# Muro de abajo
+paredes.CreatePolygonFixture(box=(0.5, 5, (20, 8), 0))
+# El hueco queda entre y=15 y y=20 (5 metros de ancho) CENTRO x=20 y=17.5
+
+# 3. LA CARGA EN T (El "Piano")
+carga = mundo.CreateDynamicBody(position=(10, 15), angle=0)
+# Palo vertical
+carga.CreatePolygonFixture(box=(0.5, 2), density=1.0)
+# Tejado de la T
+forma_tejado = b2PolygonShape()
+forma_tejado.SetAsBox(2, 0.5, (0, 2), 0)
+carga.CreatePolygonFixture(shape=forma_tejado, density=1.0)
+
+forma_suelo= b2PolygonShape()
+forma_suelo.SetAsBox(2.5, 0.5, (0,-2), 0)
+carga.CreatePolygonFixture(shape=forma_suelo, density=1.0)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+hormigas=[]
+for i in range(15):  # Vamos a crear 15 hormigas para empezar
+    # 1. Posición aleatoria en la Cámara 1 (x entre 2 y 18, y entre 5 y 25)
+    x_azar = random.uniform(2, 18)
+    y_azar = random.uniform(5, 25)
+    
+    # 2. Crear el cuerpo (pequeños círculos)
+    hormiga = mundo.CreateDynamicBody(position=(x_azar, y_azar), angle=0)
+    
+    # 3. Darle forma de círculo (radio de 0.2 metros)
+    forma_circulo = b2CircleShape(radius=0.2)
+    hormiga.CreatePolygonFixture(shape=forma_circulo, density=0.5, friction=0.3)
+    
+    # 4. ¡Al autobús! La guardamos en la lista
+    hormigas.append(hormiga)
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+
+    
+    punto_local = (0, 2) 
+    punto_mundo = carga.GetWorldPoint(punto_local) 
+
+    for h in hormigas:
+        
+        pos_h=h.position
+        pos_t=carga.position
+        #Voy a intentar que la fuerza apunte al centro de la salida 
+        salida=Box2D.b2Vec2(20, 19)
+        derecha= Box2D.b2Vec2(1, 0)
+        
+
+        f_c=pos_t-pos_h 
+        f_total= salida-pos_h 
+
+        fy= f_total.y
+        fx= 1.0
+
+        fuerza_ok=Box2D.b2Vec2(3*fx, fy)
+
+        esta_tocando_carga = False
+        for contacto in h.contacts: 
+            if contacto.contact.touching and contacto.other == carga:
+                esta_tocando_carga = True
+                break
+
+        if esta_tocando_carga:
+            h.ApplyForceToCenter(force=fuerza_ok, wake=True)
+            h.linearDamping = 10.0
+        else:
+            h.ApplyForceToCenter(force=f_c, wake=True)
+            h.linearDamping = 2.0
+
+    pantalla.fill((40, 40, 40))
+
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+
+            elif isinstance(shape, b2CircleShape):
+                pos_mundo = body.transform * shape.pos 
+                centro_px = to_pygame(pos_mundo)       
+                radio_px = int(shape.radius * PPM)     
+                pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) 
+            
+                distancia = (body.position - carga.position).length
+
+                esta_tocando_carga = False
+                for contacto in body.contacts:
+                    if contacto.contact.touching and contacto.other == carga:
+                        esta_tocando_carga = True
+                        break 
+
+                if esta_tocando_carga:
+                    color = (46, 204, 113)  
+                else:
+                    color = (231, 76, 60) 
+    
+                pygame.draw.circle(pantalla, color, centro_px, radio_px)
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+MODU HONETAN BETI BETI ATERATZEN DA, nahiz eta batzuetan buelta handiak eman. 
+
+Saiatuko naiz gauza bera egiten baina bi zirrikituekin, esperimentuaren dimentsioekin. 
+
+```{python}
+import random
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+TARGET_FPS = 60
+
+pygame.init()
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+#------------ PAREDES-----------------------
+paredes=mundo.CreateStaticBody(position=(0,0))
+
+paredes.CreatePolygonFixture(box=(1, 12, (1, 12), 0)) # Techo
+paredes.CreatePolygonFixture(box=(1, 12, (39, 12), 0))
+paredes.CreatePolygonFixture(box=(20, 1, (20, 1), 0))
+paredes.CreatePolygonFixture(box=(20, 1, (20, 23), 0))
+
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (16.15, 4.825), 0))
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (16.15, 19.05), 0))
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (23.95, 19.05), 0))
+paredes.CreatePolygonFixture(box=(0.6, 4.825, (23.95, 4.825), 0))
+
+#--------------- LA CARGA--------------------
+carga=mundo.CreateDynamicBody(position=(8,12))
+
+carga.CreatePolygonFixture(box=(0.4,1.5), density=1.0)
+carga.CreatePolygonFixture(box=(1.6, 0.4, (0,1.3), 0))
+carga.CreatePolygonFixture(box=(1.7, 0.4, (0,-1.3), 0))
+
+#--------- LAS HORMIGAS (de momento copiado)------
+
+hormigas=[]
+
+for i in range(20):
+    x_azar=random.uniform(3,11)
+    y_azar=random.uniform(5,19)
+
+    hormiga=mundo.CreateDynamicBody(position=(x_azar,y_azar))
+
+    forma_circulo=b2CircleShape(radius=0.2)
+
+    hormiga.CreatePolygonFixture(shape=forma_circulo, density=1.0, friction=0.3)
+
+    hormigas.append(hormiga)
+
+# --- BUCLE DE VISUALIZACIÓN ---
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+
+#--------- AHORA LAS FUERZAS -----------------------
+    for h in hormigas:  #un bucle para cada una 
+    
+        pos_h=h.position
+        pos_t=carga.position
+
+        centro1=Box2D.b2Vec2(16.15, 12)
+        centro2=Box2D.b2Vec2(23.95, 12)
+
+        hacia_c= pos_t - pos_h
+        hacia_yc= 12.0 - pos_h.y
+        hacia_x= Box2D.b2Vec2(1, 0)
+        fuerza_ok=Box2D.b2Vec2(7*hacia_x.x, hacia_yc)
+
+        esta_tocando_carga = False
+        for contacto in h.contacts: 
+            if contacto.contact.touching and contacto.other == carga:
+                esta_tocando_carga = True
+                break
+    
+        if esta_tocando_carga:
+            h.ApplyForceToCenter(force=fuerza_ok, wake=True)
+            h.linearDamping = 10.0
+        else:
+            h.ApplyForceToCenter(force=hacia_c, wake=True)
+            h.linearDamping = 3.0
+        
+    pantalla.fill((40, 40, 40))
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+
+   
+    # Dibujar todo lo que hay en el mundo
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                pygame.draw.polygon(pantalla, color, vertices)
+
+                
+            elif isinstance(shape, b2CircleShape):
+                pos_mundo = body.transform * shape.pos 
+                centro_px = to_pygame(pos_mundo)       
+                radio_px = int(shape.radius * PPM)     
+                pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) 
+            
+                distancia = (body.position - carga.position).length
+
+                esta_tocando_carga = False
+                for contacto in body.contacts:
+                    if contacto.contact.touching and contacto.other == carga:
+                        esta_tocando_carga = True
+                        break 
+
+                if esta_tocando_carga:
+                    color = (46, 204, 113)  
+                else:
+                    color = (231, 76, 60) 
+    
+                pygame.draw.circle(pantalla, color, centro_px, radio_px)
+
+
+    mundo.Step(1.0/TARGET_FPS, 6, 2)
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+hau ondo doa, gero probatuko dut zirrikituak altuera ezberdinetan jarriz. 
+
+::: {.callout-note}
+## PARA DIBUJAR CUALQUIER COSA
+    
+    ```{python}
+    #| eval: false
+    #| echo: true
+    # --- BUCLE DE VISUALIZACIÓN ---
+    ejecutando = True
+    while ejecutando:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT: ejecutando = False
+    #--------- AHORA LAS FUERZAS -----------------------
+        for h in hormigas:  #un bucle para cada una 
+            #HEMEN INDARREN NORABIDEAK SARTU
+            esta_tocando_carga = False
+            for contacto in h.contacts: 
+                if contacto.contact.touching and contacto.other == carga:
+                    esta_tocando_carga = True
+                    break
+    
+            if esta_tocando_carga:
+                h.ApplyForceToCenter(force=fuerza_ok, wake=True)
+                h.linearDamping = 10.0
+            else:
+                h.ApplyForceToCenter(force=hacia_c, wake=True)
+                h.linearDamping = 3.0
+        
+        pantalla.fill((40, 40, 40))
+
+        mundo.Step(1.0/TARGET_FPS, 6, 2)
+
+   
+        # Dibujar todo lo que hay en el mundo
+        for body in mundo.bodies:
+            for fixture in body.fixtures:
+                shape = fixture.shape
+                if isinstance(shape, b2PolygonShape):
+                    vertices = [to_pygame(body.transform * v) for v in shape.vertices]
+                    color = (46, 204, 113) if body.type == Box2D.b2_staticBody else (52, 152, 219)
+                    pygame.draw.polygon(pantalla, color, vertices)
+
+                
+                elif isinstance(shape, b2CircleShape):
+                    pos_mundo = body.transform * shape.pos 
+                    centro_px = to_pygame(pos_mundo)       
+                    radio_px = int(shape.radius * PPM)     
+                    pygame.draw.circle(pantalla, (231, 76, 60), centro_px, radio_px) 
+            
+                    distancia = (body.position - carga.position).length
+
+                    esta_tocando_carga = False
+                    for contacto in body.contacts:
+                        if contacto.contact.touching and contacto.other == carga:
+                            esta_tocando_carga = True
+                            break 
+
+                    if esta_tocando_carga:
+                        color = (46, 204, 113)  
+                    else:
+                        color = (231, 76, 60) 
+    
+                    pygame.draw.circle(pantalla, color, centro_px, radio_px)
+
+
+        mundo.Step(1.0/TARGET_FPS, 6, 2)
+        pygame.display.flip()
+        reloj.tick(TARGET_FPS)
+    ```
+:::
+
+Orain zirrikiutak altuera ezberdinetara egongo dira eta T-ren zentroaren posizioa aleatorioa izango da: 
+bueno hemendik aurrera beste dokumentu batean lan egingo dut honek gauza gehiegi dituelako. 
