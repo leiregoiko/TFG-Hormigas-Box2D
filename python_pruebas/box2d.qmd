@@ -12,7 +12,8 @@ format:
 # Pruebas con Box2D
 
 ## Dibujar objetos cayendo
-En este documento probaré cómo crear un mundo en **Box2D** y aplicar fuerzas.
+
+Hemen objektu bat erortzen agertzen da, grabitateagatik. Lehenengo datuak eta ibilbidea eta ondoren simulazioa. 
 
 ```{python}
 import Box2D
@@ -71,7 +72,7 @@ print("Cerrando la simulación y abriendo gráfico...")
 plt.show()
 ```
 
-copia talcual 
+
 
 
 ```{python}
@@ -137,8 +138,7 @@ while ejecutando:
 pygame.quit()
 ```
 
-ahora lo hago yo intentando cambiar cosas
-
+Hurrengoan ni saiatu naiz zerbait sortzen, forma ezberdinarekin.
 
 ```{python}
 import pygame
@@ -240,7 +240,7 @@ pygame.quit()
 
 ## Preparar el laberinto g=0.0
 
-Esto lo ha hecho gemini, se supone que es el laberinto luego lo intento entender y hago otro codigo pa aplicar las fuerzas y ir probando.
+Hau Geminik egindako ingurunea da, oraindik ez da ezer mugitzen. Kasu honetan g=0.0 suposatzen delako goitik begiratzen ari garela. 
 ```{python}
 import pygame
 import Box2D
@@ -319,7 +319,7 @@ Laberinto nuevo hecho por mi:
 - LEHENENGO ZIRRIKITUAREN KOKAPENA: 16.15 m
 - BIGARREN ZIRRIKITUAREN KOKAPENA: 23.95 m 
 
-Hauek gutxigorabehera artikuluaren neurriak dira, x10 eta m-tan. 
+Hauek gutxigorabehera artikuluaren neurriak dira, x10 eta m-tan. Pixelak ez ditut ondo jarri, aldatu behar dut. 
 
 ```{python}
 import pygame
@@ -801,7 +801,7 @@ pygame.quit()
 ```
 
 Esto se llama modelo de partículas atraídas
-Gertatzen dena, da inurriak beti bultzatzen ari direla karga, nahiz eta ukitzen ez egon. Orain aplikatuko ditugu baldintza batzuk inurria karga bultzatzeko kontaktuan badago eta bakarrik karga bilatzen badu urrun dagoenean. Gainera, egingo dugu kolorez aldatzea kontaktuan dagoenean. Horretarako está_tocando = len(h.contacts) > 0 
+Gertatzen dena da, inurriak beti bultzatzen ari direla karga, nahiz eta ukitzen ez egon. Orain aplikatuko ditugu baldintza batzuk inurria karga bultzatzeko kontaktuan badago eta bakarrik karga bilatuko du urrun dagoenean. Gainera, egingo dugu kolorez aldatzea kontaktuan dagoenean. Horretarako está_tocando = len(h.contacts) > 0 
 baldintza erabiliko dugu, no h.contacts zerrenda bat den, beteztzen dena kontaktuan dagoenean. Hala ere, hau betetzen da edozein kontakturako, bai inurrien artean edo objektuarekin. Orduan jarriko dugu bloke hau zehazteko soilik kargarekin kontaktuan dagoenean kolorez aldatzeko. 
 
 Code honekin ikus dezakegu ea karga ukitzen ari den:
@@ -1128,7 +1128,7 @@ while ejecutando:
 pygame.quit()
 ```
 
-Aldaketa honekin askoz azkarrago doa zentrorantz, baina zirrikituaren erdian geratzen da, erdian badago, oso indar gutxi izango duelako. Orain gehitukodiot indar konstante bat aurrerantz, derecha deituko dena. Gero eta faktore handiagoarekin biderkatu indar hau, orduan eta azkarrago ateratzen da; zentzuzkoa dena. Modu honetan beti ateratzen da. 
+Aldaketa honekin askoz azkarrago doa zentrorantz, baina zirrikituaren erdian geratzen da, erdian badago, oso indar gutxi izango duelako. Orain gehituko diot indar konstante bat aurrerantz, derecha deituko dena. Gero eta faktore handiagoarekin biderkatu indar hau, orduan eta azkarrago ateratzen da; zentzuzkoa dena. Modu honetan beti ateratzen da. 
 
 Azkenik, aurrekoa kontuan izanda, uste dut beti ateratzeko egin behar dena nahasketa bat dela. Altuera konpentsatzeko posizioarekiko kenketa egingo dut y ardatzean, horrela beti erdirantz joango da. Atzera ez egiteko (hau gertatzen da behin beste aldera pasa dela, erdia ezkerrean dagoelako) x norabidean beti indar horizontala aplikatuko da. 
 

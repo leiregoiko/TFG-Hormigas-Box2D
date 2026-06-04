@@ -4,5 +4,11 @@
   },
   "python_pruebas/box2d.qmd": {
     "box2d.html": "ad7dba75"
+  },
+  "AUDIT_REPORT.md": {
+    "AUDIT_REPORT.html": "d14034d4"
+  },
+  "python_pruebas/Artikulurantz.qmd": {
+    "Artikulurantz.html": "f8583d20"
   }
 }

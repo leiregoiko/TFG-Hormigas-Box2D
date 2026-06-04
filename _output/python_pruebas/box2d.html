@@ -115,8 +115,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Pruebas con Box2D</h1>
 <section id="dibujar-objetos-cayendo" class="level2">
 <h2 class="anchored" data-anchor-id="dibujar-objetos-cayendo">Dibujar objetos cayendo</h2>
-<p>En este documento probaré cómo crear un mundo en <strong>Box2D</strong> y aplicar fuerzas.</p>
-<div id="1a892ad6" class="cell" data-execution_count="1">
+<p>Hemen objektu bat erortzen agertzen da, grabitateagatik. Lehenengo datuak eta ibilbidea eta ondoren simulazioa.</p>
+<div id="417f64f0" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> Box2D</span>
@@ -276,8 +276,7 @@ Cerrando la simulación y abriendo gráfico...</code></pre>
 </div>
 </div>
 </div>
-<p>copia talcual</p>
-<div id="b7f39626" class="cell" data-execution_count="2">
+<div id="33a68bbc" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
@@ -350,8 +349,8 @@ Cerrando la simulación y abriendo gráfico...</code></pre>
 Hello from the pygame community. https://www.pygame.org/contribute.html</code></pre>
 </div>
 </div>
-<p>ahora lo hago yo intentando cambiar cosas</p>
-<div id="56e2befa" class="cell" data-execution_count="3">
+<p>Hurrengoan ni saiatu naiz zerbait sortzen, forma ezberdinarekin.</p>
+<div id="684bf9a3" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
@@ -451,8 +450,8 @@ Hello from the pygame community. https://www.pygame.org/contribute.html</code></
 </section>
 <section id="preparar-el-laberinto-g0.0" class="level2">
 <h2 class="anchored" data-anchor-id="preparar-el-laberinto-g0.0">Preparar el laberinto g=0.0</h2>
-<p>Esto lo ha hecho gemini, se supone que es el laberinto luego lo intento entender y hago otro codigo pa aplicar las fuerzas y ir probando.</p>
-<div id="ac1673fb" class="cell" data-execution_count="4">
+<p>Hau Geminik egindako ingurunea da, oraindik ez da ezer mugitzen. Kasu honetan g=0.0 suposatzen delako goitik begiratzen ari garela.</p>
+<div id="03a8b25d" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
@@ -532,8 +531,8 @@ Hello from the pygame community. https://www.pygame.org/contribute.html</code></
 <li>LEHENENGO ZIRRIKITUAREN KOKAPENA: 16.15 m</li>
 <li>BIGARREN ZIRRIKITUAREN KOKAPENA: 23.95 m</li>
 </ul>
-<p>Hauek gutxigorabehera artikuluaren neurriak dira, x10 eta m-tan.</p>
-<div id="4ab4e929" class="cell" data-execution_count="5">
+<p>Hauek gutxigorabehera artikuluaren neurriak dira, x10 eta m-tan. Pixelak ez ditut ondo jarri, aldatu behar dut.</p>
+<div id="ade40567" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
@@ -626,7 +625,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 <li>wake=True: Mugitzeko, false bada, ez da mugituko.</li>
 </ul>
 <p>GARRANTZITSUA: Indarra goian bezala irudikatzen badugu, haizea izango balitz bezala dabil indarra, ez puntuarekin biratzen. Puntuarekin biratzeko, inurri baten eragina irudikatzeko, hau egin behar dugu:</p>
-<div id="43fec3b9" class="cell" data-execution_count="6">
+<div id="9c04678d" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Definimos la fuerza que queremos (en relación a la T)</span></span>
@@ -645,7 +644,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </details>
 </div>
 <p>“GetWorldVector” sartzerakoan, indarra gorputzari itsasten zaio.</p>
-<div id="845826e9" class="cell" data-execution_count="7">
+<div id="853b19bf" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
@@ -724,7 +723,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </div>
 <p>Orain inurriak agertuko dira. Horretarako zerrenda bat erabiliko dugu. Hau da zati berri bat:</p>
 <p>baita “import random” sartu behar dugu.</p>
-<div id="5f8dca28" class="cell" data-execution_count="8">
+<div id="6e106c75" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- CREAR EL ENJAMBRE DE HORMIGAS ---</span></span>
@@ -747,7 +746,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </details>
 </div>
 <p>Honekin 15 inurri sortzen ditugu toki aleatoriotan eta borobil txikiekin agertzen dira. Gainera pygame-n gorputzak sartzen dituen zatian, zirkuluak ere marraztea eskatuko diogu:</p>
-<div id="e76c1b99" class="cell" data-execution_count="9">
+<div id="bc0a36bb" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dibujar todo lo que hay en el mundo</span></span>
@@ -770,7 +769,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </details>
 </div>
 <p>Orain dena aurreko kodean:</p>
-<div id="99f03168" class="cell" data-execution_count="10">
+<div id="58692e01" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -871,7 +870,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </details>
 </div>
 <p>Hemen ez dira mugitzen, baina mugitzea egingo dugu, bloke berri honekin:</p>
-<div id="f6352bf8" class="cell" data-execution_count="11">
+<div id="6ec73f29" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> h en hormigas:</span>
@@ -882,7 +881,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </details>
 </div>
 <p>Mugitzeko indarrak aplikatu behar dizkiegu: Indarra T-rantz bideratzeko, posizioa eta T-ren arteko bektorearen norabidea izango du. Gainera, h.linearDamping = 2.0-rekin marruskadura gehitu dugu. Horrez gain, gehituko diogu bektore horri irteerantz doan beste indar bat, inurriak ateratzeko asmoa izan dezaten.</p>
-<div id="555d2883" class="cell" data-execution_count="12">
+<div id="0b0f760e" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -997,9 +996,9 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 <span id="cb16-110"><a href="#cb16-110" aria-hidden="true" tabindex="-1"></a>pygame.quit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Esto se llama modelo de partículas atraídas Gertatzen dena, da inurriak beti bultzatzen ari direla karga, nahiz eta ukitzen ez egon. Orain aplikatuko ditugu baldintza batzuk inurria karga bultzatzeko kontaktuan badago eta bakarrik karga bilatzen badu urrun dagoenean. Gainera, egingo dugu kolorez aldatzea kontaktuan dagoenean. Horretarako está_tocando = len(h.contacts) &gt; 0 baldintza erabiliko dugu, no h.contacts zerrenda bat den, beteztzen dena kontaktuan dagoenean. Hala ere, hau betetzen da edozein kontakturako, bai inurrien artean edo objektuarekin. Orduan jarriko dugu bloke hau zehazteko soilik kargarekin kontaktuan dagoenean kolorez aldatzeko.</p>
+<p>Esto se llama modelo de partículas atraídas Gertatzen dena da, inurriak beti bultzatzen ari direla karga, nahiz eta ukitzen ez egon. Orain aplikatuko ditugu baldintza batzuk inurria karga bultzatzeko kontaktuan badago eta bakarrik karga bilatuko du urrun dagoenean. Gainera, egingo dugu kolorez aldatzea kontaktuan dagoenean. Horretarako está_tocando = len(h.contacts) &gt; 0 baldintza erabiliko dugu, no h.contacts zerrenda bat den, beteztzen dena kontaktuan dagoenean. Hala ere, hau betetzen da edozein kontakturako, bai inurrien artean edo objektuarekin. Orduan jarriko dugu bloke hau zehazteko soilik kargarekin kontaktuan dagoenean kolorez aldatzeko.</p>
 <p>Code honekin ikus dezakegu ea karga ukitzen ari den:</p>
-<div id="22a17313" class="cell" data-execution_count="13">
+<div id="50113dda" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>esta_tocando_carga <span class="op">=</span> <span class="va">False</span></span>
@@ -1010,7 +1009,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </details>
 </div>
 <p>Gainera, inurriak kontaktuan daudenean, marruskadura handituko dugu, itsatsita gelditzeko. Horretarako, h.linearDamping = 2.0 handituko dugu kontaktuaren baldintzan.</p>
-<div id="d78156c8" class="cell" data-execution_count="14">
+<div id="77f36ad9" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -1171,7 +1170,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </details>
 </div>
 <p>Orain, ikusteko ea eragina duen edo ez, saiatuko naiz kontaktuan dagoenean, indarraren norabidea zirrikituaren zentrorantz bideratzen, ez bakarrik aurrera:</p>
-<div id="09c5472f" class="cell" data-execution_count="15">
+<div id="c8a289cf" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -1319,9 +1318,9 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 <span id="cb19-143"><a href="#cb19-143" aria-hidden="true" tabindex="-1"></a>pygame.quit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Aldaketa honekin askoz azkarrago doa zentrorantz, baina zirrikituaren erdian geratzen da, erdian badago, oso indar gutxi izango duelako. Orain gehitukodiot indar konstante bat aurrerantz, derecha deituko dena. Gero eta faktore handiagoarekin biderkatu indar hau, orduan eta azkarrago ateratzen da; zentzuzkoa dena. Modu honetan beti ateratzen da.</p>
+<p>Aldaketa honekin askoz azkarrago doa zentrorantz, baina zirrikituaren erdian geratzen da, erdian badago, oso indar gutxi izango duelako. Orain gehituko diot indar konstante bat aurrerantz, derecha deituko dena. Gero eta faktore handiagoarekin biderkatu indar hau, orduan eta azkarrago ateratzen da; zentzuzkoa dena. Modu honetan beti ateratzen da.</p>
 <p>Azkenik, aurrekoa kontuan izanda, uste dut beti ateratzeko egin behar dena nahasketa bat dela. Altuera konpentsatzeko posizioarekiko kenketa egingo dut y ardatzean, horrela beti erdirantz joango da. Atzera ez egiteko (hau gertatzen da behin beste aldera pasa dela, erdia ezkerrean dagoelako) x norabidean beti indar horizontala aplikatuko da.</p>
-<div id="7a33f429" class="cell" data-execution_count="16">
+<div id="bbe7a273" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -1470,7 +1469,7 @@ carga.ApplyForce(fuerza, carga.GetWorldPoint((0, -2)), True) # Abajo
 </div>
 <p>MODU HONETAN BETI BETI ATERATZEN DA, nahiz eta batzuetan buelta handiak eman.</p>
 <p>Saiatuko naiz gauza bera egiten baina bi zirrikituekin, esperimentuaren dimentsioekin.</p>
-<div id="2301766c" class="cell" data-execution_count="17">
+<div id="55597ccd" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -1616,7 +1615,7 @@ PARA DIBUJAR CUALQUIER COSA
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<pre><code>::: {#c1950c84 .cell execution_count=18}
+<pre><code>::: {#13e386fb .cell execution_count=18}
 ``` {.python .cell-code}
 # --- BUCLE DE VISUALIZACIÓN ---
 ejecutando = True

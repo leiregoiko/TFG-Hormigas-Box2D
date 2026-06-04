@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>audit_report</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="AUDIT_REPORT_files/libs/clipboard/clipboard.min.js"></script>
+<script src="AUDIT_REPORT_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="AUDIT_REPORT_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="AUDIT_REPORT_files/libs/quarto-html/popper.min.js"></script>
+<script src="AUDIT_REPORT_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="AUDIT_REPORT_files/libs/quarto-html/anchor.min.js"></script>
+<link href="AUDIT_REPORT_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="AUDIT_REPORT_files/libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="AUDIT_REPORT_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="AUDIT_REPORT_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="AUDIT_REPORT_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="audit-report-antsleire_v0-simulation-project" class="level1">
+<h1>AUDIT REPORT — AntsLeire_v0 Simulation Project</h1>
+<blockquote class="blockquote">
+<p>Incremental report. Each section is timestamped. New findings are appended as the project evolves.</p>
+</blockquote>
+<hr>
+<section id="report-1-initial-audit-of-box2d.qmd-2026-03-02" class="level2">
+<h2 class="anchored" data-anchor-id="report-1-initial-audit-of-box2d.qmd-2026-03-02">Report 1: Initial Audit of <code>box2d.qmd</code> — 2026-03-02</h2>
+<section id="the-thread-what-this-file-is" class="level3">
+<h3 class="anchored" data-anchor-id="the-thread-what-this-file-is">1. THE THREAD — What This File Is</h3>
+<p>This is Leire Goikoetxea’s <strong>TFG (Bachelor’s Thesis) simulation notebook</strong> — a progressive, exploratory journal where she learns Box2D physics from scratch and builds toward a 2D simulation of <strong>ant cooperative transport through constrained environments</strong> (mazes with narrow slits).</p>
+<p>The file is a <strong>Quarto notebook</strong> (.qmd) with 17 executable Python code blocks, written in a mix of Spanish and Basque (Euskara), evolving from “hello world” gravity tests to a working swarm simulation.</p>
+<hr>
+</section>
+<section id="the-argument-line-the-story-in-sequence" class="level3">
+<h3 class="anchored" data-anchor-id="the-argument-line-the-story-in-sequence">2. THE ARGUMENT LINE — The Story in Sequence</h3>
+<section id="act-i-learning-the-physics-engine-blocks-13-lines-1236" class="level4">
+<h4 class="anchored" data-anchor-id="act-i-learning-the-physics-engine-blocks-13-lines-1236">Act I: Learning the Physics Engine (blocks 1–3, lines 1–236)</h4>
+<ul>
+<li><strong>Block 1</strong>: Pure Box2D + matplotlib. A box falls under gravity (g = -10). First contact with the engine: world creation, static body (ground), dynamic body, time-stepping loop. Plots y-position over time.</li>
+<li><strong>Block 2</strong>: Introduces Pygame for real-time visualization. Creates a T-shaped composite body (two polygon fixtures on one body) falling with gravity. Learns <code>b2PolygonShape.SetAsBox</code> with offsets.</li>
+<li><strong>Block 3</strong>: Student experimentation — adds triangles, circles (<code>b2CircleShape</code>), a second dynamic body. Learning fixture variety.</li>
+</ul>
+</section>
+<section id="act-ii-building-the-arena-blocks-45-lines-241377" class="level4">
+<h4 class="anchored" data-anchor-id="act-ii-building-the-arena-blocks-45-lines-241377">Act II: Building the Arena (blocks 4–5, lines 241–377)</h4>
+<ul>
+<li><strong>Block 4</strong>: <strong>Critical conceptual leap</strong> — switches to <code>gravity=(0,0)</code>. This is now a <strong>top-down view</strong> (“goitik begiratzen ari garela” — we’re looking from above). Creates a single-slit arena with a T-shaped cargo (“el Piano”). This is the first real prototype of the experimental setup.</li>
+<li><strong>Block 5</strong>: Custom maze built to match <strong>article dimensions</strong> (x10, in meters). Two slits at x=16.15 and x=23.95, slit width 4.7m, wall thickness 1.2m. Arena 40m × 24m. The student is replicating a real experiment’s geometry.</li>
+</ul>
+</section>
+<section id="act-iii-forces-and-control-blocks-67-lines-381518" class="level4">
+<h4 class="anchored" data-anchor-id="act-iii-forces-and-control-blocks-67-lines-381518">Act III: Forces and Control (blocks 6–7, lines 381–518)</h4>
+<ul>
+<li><strong>Block 6</strong>: Explanatory block. Discovers the difference between:
+<ul>
+<li><code>ApplyForce</code> (world-frame, like wind)</li>
+<li><code>GetWorldVector</code> + <code>ApplyForce</code> (body-frame, attached to the object — “like an ant pushing”)</li>
+<li><code>ApplyForceToCenter</code> (no torque) vs.&nbsp;<code>ApplyForce</code> at a point (generates torque)</li>
+</ul></li>
+<li><strong>Block 7</strong>: First test — applies a rotation-causing force at the T’s top plus a center-push. The T spins and translates. This is the foundation for ant-driven motion.</li>
+</ul>
+</section>
+<section id="act-iv-the-swarm-blocks-812-lines-521801" class="level4">
+<h4 class="anchored" data-anchor-id="act-iv-the-swarm-blocks-812-lines-521801">Act IV: The Swarm (blocks 8–12, lines 521–801)</h4>
+<ul>
+<li><strong>Block 8–9</strong>: Creates 15 ants as small circles (r=0.2m), randomly placed. Adds circle rendering to the draw loop.</li>
+<li><strong>Block 10</strong>: First complete simulation — ants feel an <strong>attractive force toward the T</strong> (<code>f_c = pos_t - pos_h</code>) plus a rightward exit bias (<code>salida</code>). This is the “attracted particle model.”</li>
+<li><strong>Block 11</strong>: Random vibration forces for Brownian-like exploration.</li>
+<li><strong>Block 12</strong>: Adds <code>linearDamping = 2.0</code> as a friction proxy. Combines attraction + exit force.</li>
+</ul>
+</section>
+<section id="act-v-contact-based-intelligence-blocks-1317-lines-8031416" class="level4">
+<h4 class="anchored" data-anchor-id="act-v-contact-based-intelligence-blocks-1317-lines-8031416">Act V: Contact-Based Intelligence (blocks 13–17, lines 803–1416)</h4>
+<ul>
+<li><strong>Block 13–14</strong>: <strong>Key breakthrough</strong> — switches from distance-based to <strong>contact-based</strong> behavior. Uses <code>h.contacts</code> list and <code>contacto.other == carga</code> to detect when an ant actually touches the cargo. Ants change color (red=searching, green=pushing). Two behavioral states emerge:
+<ul>
+<li><strong>Searching</strong>: attracted toward cargo (f_c)</li>
+<li><strong>Pushing</strong>: pushes toward exit (f_total)</li>
+</ul></li>
+<li><strong>Block 15</strong>: Refines push direction to aim at the <strong>slit center</strong> (x=20, y=17.5), not just rightward. But discovers the force vanishes near the center itself.</li>
+<li><strong>Block 16</strong>: <strong>Final force model</strong>: decomposes the push into <code>fuerza_ok = b2Vec2(3*fx, fy)</code> where fy corrects altitude toward slit center and fx is a constant rightward push. Reports: “MODU HONETAN BETI BETI ATERATZEN DA” — it always passes through.</li>
+<li><strong>Block 17</strong>: Scales up to the full <strong>two-slit maze</strong> with article dimensions, 20 ants, refined forces. The final working simulation before deciding to continue in a new file.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="package-audit" class="level3">
+<h3 class="anchored" data-anchor-id="package-audit">3. PACKAGE AUDIT</h3>
+<section id="box2d-pybox2d" class="level4">
+<h4 class="anchored" data-anchor-id="box2d-pybox2d">Box2D (pybox2d)</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature Used</th>
+<th>How</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>b2World(gravity=)</code></td>
+<td>World with g=0 (top-down)</td>
+<td>Correct</td>
+</tr>
+<tr class="even">
+<td><code>CreateStaticBody</code></td>
+<td>Walls, ground</td>
+<td>Correct</td>
+</tr>
+<tr class="odd">
+<td><code>CreateDynamicBody</code></td>
+<td>T-cargo, ants</td>
+<td>Correct</td>
+</tr>
+<tr class="even">
+<td><code>CreatePolygonFixture(box=)</code></td>
+<td>Rectangles with offsets</td>
+<td>Correct</td>
+</tr>
+<tr class="odd">
+<td><code>b2PolygonShape.SetAsBox</code></td>
+<td>Offset sub-shapes for T</td>
+<td>Correct</td>
+</tr>
+<tr class="even">
+<td><code>b2CircleShape(radius=)</code></td>
+<td>Ant bodies</td>
+<td>Correct</td>
+</tr>
+<tr class="odd">
+<td><code>CreatePolygonFixture(shape=circulo)</code></td>
+<td><strong>BUG</strong> — uses PolygonFixture for circles</td>
+<td>Should be <code>CreateCircleFixture</code> or <code>CreateFixture</code></td>
+</tr>
+<tr class="even">
+<td><code>ApplyForce / ApplyForceToCenter</code></td>
+<td>Ant forces</td>
+<td>Correct</td>
+</tr>
+<tr class="odd">
+<td><code>GetWorldPoint / GetWorldVector</code></td>
+<td>Local-to-world transforms</td>
+<td>Correct, well understood</td>
+</tr>
+<tr class="even">
+<td><code>b2Vec2</code></td>
+<td>Vector arithmetic</td>
+<td>Correct</td>
+</tr>
+<tr class="odd">
+<td><code>h.contacts</code> / <code>contacto.other</code></td>
+<td>Contact detection</td>
+<td>Correct</td>
+</tr>
+<tr class="even">
+<td><code>linearDamping</code></td>
+<td>Friction proxy</td>
+<td>Correct conceptually</td>
+</tr>
+<tr class="odd">
+<td><code>mundo.Step(dt, vel_iters, pos_iters)</code></td>
+<td>Time stepping</td>
+<td><strong>BUG</strong>: called TWICE per frame in block 17</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pygame" class="level4">
+<h4 class="anchored" data-anchor-id="pygame">Pygame</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Feature Used</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Window, event loop, clock</td>
+<td>Standard, correct</td>
+</tr>
+<tr class="even">
+<td>Polygon/circle drawing</td>
+<td>Correct</td>
+</tr>
+<tr class="odd">
+<td><code>to_pygame()</code> coordinate transform</td>
+<td>Correct (flips y-axis)</td>
+</tr>
+<tr class="even">
+<td>No <code>pygame.quit()</code> safety</td>
+<td>Minor — no try/finally</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="matplotlib" class="level4">
+<h4 class="anchored" data-anchor-id="matplotlib">Matplotlib</h4>
+<ul>
+<li>Used only in block 1 for static plotting. Standard and correct.</li>
+</ul>
+</section>
+<section id="random" class="level4">
+<h4 class="anchored" data-anchor-id="random">random</h4>
+<ul>
+<li><code>random.uniform()</code> for ant positions. Correct but <strong>no seed set</strong> — simulations are not reproducible.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="findings-gaps-and-issues" class="level3">
+<h3 class="anchored" data-anchor-id="findings-gaps-and-issues">4. FINDINGS — Gaps and Issues</h3>
+<section id="a.-technical-bugs" class="level4">
+<h4 class="anchored" data-anchor-id="a.-technical-bugs">A. Technical Bugs</h4>
+<ol type="1">
+<li><p><strong><code>CreatePolygonFixture</code> with <code>b2CircleShape</code></strong>: The code passes a <code>b2CircleShape</code> to <code>CreatePolygonFixture</code>. This works by accident in pybox2d (it auto-detects the shape type), but it is semantically wrong and confusing. Should use <code>CreateFixture</code> with a <code>fixtureDef</code> or <code>CreateCircleFixture</code>.</p></li>
+<li><p><strong>Double <code>mundo.Step()</code> per frame</strong> (block 17, lines 1376 and 1411): The physics is advanced twice per rendered frame, effectively doubling the simulation speed and altering the physics. This breaks the time-step consistency.</p></li>
+<li><p><strong>No random seed</strong>: Every run produces different ant positions. Makes results non-comparable. Should use <code>random.seed(42)</code> or similar for reproducibility.</p></li>
+<li><p><strong>Hard-coded magic numbers everywhere</strong>: PPM=20, force magnitudes (3, 7, 10), damping values (2.0, 3.0, 10.0), positions — none parametrized. Makes systematic study impossible.</p></li>
+</ol>
+</section>
+<section id="b.-physics-model-gaps" class="level4">
+<h4 class="anchored" data-anchor-id="b.-physics-model-gaps">B. Physics Model Gaps</h4>
+<ol start="5" type="1">
+<li><p><strong>Ants have global knowledge</strong>: Every ant knows the slit position (<code>salida = b2Vec2(20, 19)</code>) and pushes toward it when touching cargo. Real ants don’t have this information. This is the <strong>biggest conceptual gap</strong> — the simulation proves that if agents know the exit, collective transport works, but doesn’t explore <em>how</em> they discover it.</p></li>
+<li><p><strong>No information-sharing mechanism</strong>: There is no pheromone trail, no stigmergy, no chemical signaling, no antenna-contact communication. The swarm intelligence is entirely pre-programmed, not emergent.</p></li>
+<li><p><strong>No rotational strategy</strong>: Real ants rotate cargo to fit through gaps (this is a key finding in the literature — Feinerman et al.). The T-shape is designed to require rotation, but the force model doesn’t explicitly address it. Rotation happens accidentally from asymmetric force application.</p></li>
+<li><p><strong>No ant-ant interaction</strong>: Ants don’t repel, attract, or communicate with each other. They only interact with the cargo and walls. In reality, crowding, obstruction, and recruitment are critical.</p></li>
+<li><p><strong>No noise/stochasticity in pushing</strong>: Once touching, every ant pushes in the exact same computed direction. Real ants push somewhat randomly, and the collective averaging is what produces the “correct” direction. The <strong>fluctuation-driven exploration</strong> that makes real ant transport work is absent.</p></li>
+<li><p><strong><code>linearDamping</code> as friction proxy</strong>: This applies viscous drag proportional to velocity, simulating a low-Reynolds-number environment (appropriate for small creatures on a surface). However, the values are arbitrary and change abruptly between states. In a real model, this should be calibrated to actual ant-surface friction data.</p></li>
+</ol>
+</section>
+<section id="c.-structural-gaps" class="level4">
+<h4 class="anchored" data-anchor-id="c.-structural-gaps">C. Structural Gaps</h4>
+<ol start="11" type="1">
+<li><p><strong>No data collection</strong>: No position logging, no time-to-passage measurement, no angle tracking, no force statistics. The simulation runs visually but produces no quantitative output.</p></li>
+<li><p><strong>No parametric sweeps</strong>: Number of ants, slit width, cargo shape, force magnitudes — nothing is varied systematically. A single configuration is tested.</p></li>
+<li><p><strong>No termination condition</strong>: Simulations run until the user closes the window. There’s no detection of “cargo passed through slit” to stop and measure.</p></li>
+<li><p><strong>No separation of model and visualization</strong>: Physics and rendering are interleaved in the same loop. This makes it hard to run headless batch simulations for statistics.</p></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="the-achievement" class="level3">
+<h3 class="anchored" data-anchor-id="the-achievement">5. THE ACHIEVEMENT</h3>
+<p>Despite these gaps, the notebook achieves something significant: <strong>a working 2D cooperative transport simulation built from scratch</strong>, progressing from zero knowledge of Box2D to a multi-agent contact-based force model that successfully navigates a T-shaped cargo through a double-slit maze. The learning curve is visible and honestly documented. The student demonstrates:</p>
+<ul>
+<li>Understanding of rigid body physics (forces, torques, fixtures)</li>
+<li>Understanding of body-frame vs.&nbsp;world-frame transformations</li>
+<li>Contact detection for behavioral state switching</li>
+<li>Force decomposition (lateral correction + forward thrust)</li>
+<li>Progressive refinement through experimentation</li>
+</ul>
+<hr>
+</section>
+<section id="three-applications-to-physical-problems" class="level3">
+<h3 class="anchored" data-anchor-id="three-applications-to-physical-problems">6. THREE APPLICATIONS TO PHYSICAL PROBLEMS</h3>
+<section id="application-1-micro-drone-swarm-for-targeted-drug-delivery" class="level4">
+<h4 class="anchored" data-anchor-id="application-1-micro-drone-swarm-for-targeted-drug-delivery">Application 1: Micro-Drone Swarm for Targeted Drug Delivery</h4>
+<p>The contact-based force model (search → attach → push) maps directly to <strong>micro-scale robotic drug delivery</strong>. A swarm of micro-drones (10–100 μm) could collectively transport a therapeutic payload through blood vessels or tissue:</p>
+<ul>
+<li><strong>The slit = biological barrier</strong> (blood-brain barrier, tumor wall, arterial narrowing)</li>
+<li><strong>The T-cargo = drug payload</strong> too large for any single micro-drone to carry</li>
+<li><strong>Contact-based switching</strong> = drones only push when physically docked to the payload</li>
+<li><strong>Lateral correction + forward thrust</strong> = the exact force decomposition needed to navigate through constrained vasculature</li>
+<li><strong>Key insight from this simulation</strong>: you don’t need individual drones to know the full path — local contact sensing + a bias toward flow direction is sufficient. The stochastic attachment/detachment creates a self-correcting swarm that adjusts the payload orientation automatically.</li>
+<li><strong>What this simulation needs to prove it</strong>: add noise to the pushing direction, remove global exit knowledge, add a chemical gradient (blood flow direction) as the only directional cue.</li>
+</ul>
+</section>
+<section id="application-2-storm-tracking-drone-swarm-with-distributed-sensing" class="level4">
+<h4 class="anchored" data-anchor-id="application-2-storm-tracking-drone-swarm-with-distributed-sensing">Application 2: Storm-Tracking Drone Swarm with Distributed Sensing</h4>
+<p>The collective transport metaphor translates to <strong>information transport</strong>: instead of moving a physical object, the “cargo” is a <strong>shared information state</strong> (storm position estimate) and the “slits” are <strong>decision thresholds</strong>:</p>
+<ul>
+<li>Each drone measures local atmospheric conditions (pressure, wind, humidity)</li>
+<li>Drones in “contact” with the storm (inside the phenomenon) contribute measurements weighted by their confidence</li>
+<li>Drones outside “search” — explore to find the storm boundary</li>
+<li><strong>The force model becomes a consensus protocol</strong>: <code>f_total = (local_measurement - group_estimate) + bias_toward_storm_center</code></li>
+<li><strong>The dual damping</strong> (high when attached, low when searching) maps perfectly to <strong>exploration-exploitation trade-off</strong> in distributed sensing</li>
+<li><strong>This simulation’s finding that “BETI ATERATZEN DA” (it always passes through)</strong> suggests that a drone swarm using contact-based consensus + directional bias would reliably track a moving storm, even with limited individual sensing range</li>
+<li><strong>What this needs</strong>: replace physical forces with information-theoretic forces (gradient of uncertainty), the “slit” becomes the decision boundary where the swarm must collectively agree to shift tracking direction</li>
+</ul>
+</section>
+<section id="application-3-collective-manipulation-in-zero-g-space-debris-removal" class="level4">
+<h4 class="anchored" data-anchor-id="application-3-collective-manipulation-in-zero-g-space-debris-removal">Application 3: Collective Manipulation in Zero-G Space Debris Removal</h4>
+<p>This simulation is literally a <strong>zero-gravity multi-agent manipulation problem</strong> — exactly what space debris removal requires:</p>
+<ul>
+<li><strong>g = 0 arena = orbital environment</strong></li>
+<li><strong>T-shaped cargo = irregularly shaped debris</strong> (spent rocket stages, broken satellite panels)</li>
+<li><strong>Ants = small service satellites or robotic arms on a mothership</strong></li>
+<li><strong>Slits = safe corridors</strong> for deorbiting debris without creating collision cascades</li>
+<li>The contact-based two-state model (approach → dock → push) is the standard architecture for planned multi-spacecraft capture missions (ESA’s ClearSpace-1 concept), but this simulation shows it can work with <strong>simpler, swarm-based agents</strong></li>
+<li><strong>The force decomposition</strong> (constant deorbit thrust + lateral correction toward safe corridor center) directly translates to orbital maneuver design</li>
+<li><strong>Critical finding from this simulation</strong>: even with a naive force model, 15–20 agents reliably navigate an awkward shape through a narrow gap. This suggests small satellite swarms could handle debris removal without complex centralized planning</li>
+<li><strong>What this needs</strong>: add orbital mechanics (not just zero-g but Keplerian dynamics), communication delays, fuel constraints (finite force budget per agent)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="summary-table" class="level3">
+<h3 class="anchored" data-anchor-id="summary-table">7. SUMMARY TABLE</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>Status</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Box2D usage</td>
+<td>Functional, 2 bugs</td>
+<td>Fix double-step + fixture type</td>
+</tr>
+<tr class="even">
+<td>Force model</td>
+<td>Works but has global knowledge</td>
+<td>High — needs local-only information</td>
+</tr>
+<tr class="odd">
+<td>Data collection</td>
+<td>Absent</td>
+<td>Critical for thesis</td>
+</tr>
+<tr class="even">
+<td>Reproducibility</td>
+<td>No seed</td>
+<td>Quick fix</td>
+</tr>
+<tr class="odd">
+<td>Parametric study</td>
+<td>Absent</td>
+<td>Critical for thesis</td>
+</tr>
+<tr class="even">
+<td>Biological realism</td>
+<td>Low (no communication, no noise)</td>
+<td>Medium — depends on thesis scope</td>
+</tr>
+<tr class="odd">
+<td>Code structure</td>
+<td>Monolithic, magic numbers</td>
+<td>Refactor for batch runs</td>
+</tr>
+<tr class="even">
+<td>Visualization</td>
+<td>Good for debugging</td>
+<td>Add trajectory recording</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><em>End of Report 1</em></p>
+<hr>
+</section>
+</section>
+<section id="report-2-v0-consolidation-2026-03-02" class="level2">
+<h2 class="anchored" data-anchor-id="report-2-v0-consolidation-2026-03-02">Report 2: v0 Consolidation — 2026-03-02</h2>
+<section id="action-taken" class="level3">
+<h3 class="anchored" data-anchor-id="action-taken">Action Taken</h3>
+<p>The original <code>box2d.qmd</code> (1,492 lines, 17 code blocks) was preserved as <code>box2d_original.qmd</code> and replaced with a clean, perfected v0 (514 lines, 6 Quarto sections, 1 definitive simulation).</p>
+</section>
+<section id="files-after-this-step" class="level3">
+<h3 class="anchored" data-anchor-id="files-after-this-step">Files After This Step</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>box2d_original.qmd</code></td>
+<td>1,492</td>
+<td>Original exploration journal — preserved untouched as starting point</td>
+</tr>
+<tr class="even">
+<td><code>box2d.qmd</code></td>
+<td>514</td>
+<td>Perfected v0 — clean, documented, bug-free, ready for iteration</td>
+</tr>
+<tr class="odd">
+<td><code>AUDIT_REPORT.md</code></td>
+<td>—</td>
+<td>This incremental report</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="all-fixes-applied" class="level3">
+<h3 class="anchored" data-anchor-id="all-fixes-applied">All Fixes Applied</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Original Problem</th>
+<th>Fix Applied</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><code>CreatePolygonFixture</code> used for <code>b2CircleShape</code> objects</td>
+<td>Changed to <code>CreateFixture(shape=circle_shape, density=..., friction=...)</code> — semantically correct</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><code>mundo.Step()</code> called TWICE per frame (block 17, lines 1376 + 1411)</td>
+<td>Single <code>world.Step()</code> call per frame, placed after force application, before rendering</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>No random seed — results non-reproducible</td>
+<td><code>random.seed(42)</code> added; <code>RANDOM_SEED</code> as named constant</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>40+ hard-coded magic numbers scattered through code</td>
+<td>All extracted to named constants in a single configuration section with physical descriptions</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Contact detection logic duplicated (once in physics loop, once in render loop)</td>
+<td>Single <code>is_touching_cargo()</code> function, called by both <code>compute_ant_force()</code> and <code>draw_world()</code></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Rendering and physics interleaved in one monolithic loop</td>
+<td>Clean separation: <code>draw_world()</code> function handles all rendering; main loop is: events → forces → step → draw</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Mixed Spanish/Basque/informal comments, no consistency</td>
+<td>Consistent bilingual documentation (Euskara + English) in all section headers and notes</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>17 code blocks of incremental experiments, many obsolete</td>
+<td>1 definitive simulation across 6 well-named Quarto sections: Config → World → Walls → Cargo → Ants → Simulation</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>No docstrings on any function</td>
+<td>Full docstrings on <code>is_touching_cargo()</code>, <code>compute_ant_force()</code>, <code>to_screen()</code>, <code>draw_world()</code></td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>No output on simulation end</td>
+<td>Prints final cargo position, angle, and total frame count on exit</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>Slit geometry computed inline with raw numbers</td>
+<td>Derived values (<code>SLIT_WALL_HALF_HEIGHT</code>, <code>SLIT_WALL_BOTTOM_CENTER_Y</code>, etc.) computed from parameters</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>Variable names inconsistent (mix of Spanish/English)</td>
+<td>Consistent English variable names throughout (<code>world</code>, <code>cargo</code>, <code>ants</code>, <code>walls</code>)</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>No Quarto metadata beyond title</td>
+<td>Added subtitle, author, date, code-tools, toc-depth, number-sections</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>Known limitations undocumented</td>
+<td>Explicit “Known limitations” section listing all 6 major gaps for future work</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-was-not-changed-by-design" class="level3">
+<h3 class="anchored" data-anchor-id="what-was-not-changed-by-design">What Was NOT Changed (by design)</h3>
+<p>These are <strong>model-level gaps</strong> identified in Report 1 that require new features, not fixes. They define the roadmap for future versions:</p>
+<ol type="1">
+<li><strong>Global knowledge</strong> — ants still know the slit position. Replacing this with local-only information (pheromones, gradients) is a v1+ feature.</li>
+<li><strong>No stochasticity</strong> — push direction remains deterministic. Adding noise to the force model is a v1+ feature.</li>
+<li><strong>No data collection</strong> — no position/angle logging. Adding CSV/trajectory export is a v1+ feature.</li>
+<li><strong>No parametric sweeps</strong> — single configuration. Adding batch runs over ant count, slit width, etc. is a v1+ feature.</li>
+<li><strong>No ant-ant interaction</strong> — no repulsion, crowding, or recruitment. This is a v2+ feature.</li>
+<li><strong>No information-sharing mechanism</strong> — no pheromones, no stigmergy. This is a v2+ feature.</li>
+</ol>
+</section>
+<section id="architecture-of-the-v0" class="level3">
+<h3 class="anchored" data-anchor-id="architecture-of-the-v0">Architecture of the v0</h3>
+<pre><code>box2d.qmd (514 lines)
+│
+├── Section 1: Configuration (all parameters)
+│   └── Single cell: imports, constants, derived values
+│
+├── Section 2: World Creation
+│   └── b2World(gravity=(0,0))
+│
+├── Section 3: Walls and Slits
+│   └── 8 fixtures: 4 outer walls + 4 slit segments
+│
+├── Section 4: Cargo (T-shape)
+│   └── 3 fixtures: stem + top bar + bottom bar
+│
+├── Section 5: Force Model
+│   ├── is_touching_cargo(ant, cargo) → bool
+│   └── compute_ant_force(ant, cargo) → (force, is_pushing)
+│
+└── Section 6: Simulation Loop
+    ├── to_screen(point) → (px, py)
+    ├── draw_world(world, screen, cargo)
+    └── Main loop: events → forces → step → draw</code></pre>
+<hr>
+<p><em>End of Report 2</em></p>
+<hr>
+</section>
+</section>
+<section id="report-3-v1-design-pheromone-based-ant-colony-with-explorers-and-workers-2026-03-02" class="level2">
+<h2 class="anchored" data-anchor-id="report-3-v1-design-pheromone-based-ant-colony-with-explorers-and-workers-2026-03-02">Report 3: v1 Design — Pheromone-Based Ant Colony with Explorers and Workers — 2026-03-02</h2>
+<section id="sorted-ideas" class="level3">
+<h3 class="anchored" data-anchor-id="sorted-ideas">1. SORTED IDEAS</h3>
+<section id="two-ant-castes" class="level4">
+<h4 class="anchored" data-anchor-id="two-ant-castes">1.1 Two Ant Castes</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Caste</th>
+<th>Role</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Explorers</strong> (Esploratzaileak)</td>
+<td>Scout the surroundings, find food, lay pheromone trails</td>
+<td>Leave colony, explore randomly, mark paths, detect food, signal back</td>
+</tr>
+<tr class="even">
+<td><strong>Workers</strong> (Langileak)</td>
+<td>Transport food back to the colony</td>
+<td>Stay near colony until signaled, follow pheromone trails to food, carry food back</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-arena-now-a-foraging-landscape" class="level4">
+<h4 class="anchored" data-anchor-id="the-arena-now-a-foraging-landscape">1.2 The Arena — Now a Foraging Landscape</h4>
+<p>The v0 double-slit maze transforms into a <strong>foraging world</strong>:</p>
+<ul>
+<li><strong>Colony</strong> (Habia): a fixed zone on one side — the nest, origin of all ants</li>
+<li><strong>Food sources</strong>: one or more deposits placed far from the colony</li>
+<li><strong>Obstacles</strong>: static bodies that block direct paths — ants must navigate around them. The <strong>gaps between obstacles</strong> are the new “slits”</li>
+<li><strong>Open terrain</strong>: the rest of the arena, where pheromones are deposited and decay</li>
+</ul>
+</section>
+<section id="pheromone-system-two-types" class="level4">
+<h4 class="anchored" data-anchor-id="pheromone-system-two-types">1.3 Pheromone System — Two Types</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pheromone</th>
+<th>Emitted by</th>
+<th>Meaning</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Type A: “Exploration”</strong> (Esplorazio-feromona)</td>
+<td>Explorers while exploring</td>
+<td>“I have been here” — trail maintenance</td>
+<td>Continuously while searching, diminishing emission rate over time</td>
+</tr>
+<tr class="even">
+<td><strong>Type B: “Food found”</strong> (Janari-feromona)</td>
+<td>Explorers returning with food location</td>
+<td>“Follow me to food” — recruitment signal</td>
+<td>After finding food, on the return trip to colony</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pheromone-dynamics-three-time-parameters" class="level4">
+<h4 class="anchored" data-anchor-id="pheromone-dynamics-three-time-parameters">1.4 Pheromone Dynamics — Three Time Parameters</h4>
+<pre><code>EMISSION:
+  - Rate diminishes with time since last "refueling" at colony
+  - P_emission(t) = P_max * exp(-t / τ_emission)
+  - τ_emission = parametrized decay constant for emission capacity
+  - When P_emission drops below REFUEL_THRESHOLD, explorer returns to colony to refuel
+
+PERSISTENCE (on the ground):
+  - Deposited pheromone decays in place
+  - P_ground(t) = P_deposited * exp(-t / τ_persistence)
+  - τ_persistence = parametrized lifetime of pheromone on the ground
+  - Does NOT propagate (v1 simplification) — stays where deposited
+
+DETECTION:
+  - Ants detect pheromone within DETECTION_RADIUS
+  - Detection is binary at threshold: sensed if P_ground &gt; DETECTION_THRESHOLD
+  - Affects both explorers (avoid retracing) and workers (follow trails)</code></pre>
+</section>
+<section id="behavioral-state-machine" class="level4">
+<h4 class="anchored" data-anchor-id="behavioral-state-machine">1.5 Behavioral State Machine</h4>
+<p><strong>Explorer Ant States:</strong></p>
+<pre><code>EXPLORE_OUTBOUND
+  │  Leaves colony, moves randomly, deposits Type A pheromone
+  │  Emission rate decays with time
+  │
+  ├── IF emission capacity &lt; REFUEL_THRESHOLD
+  │   └── → EXPLORE_RETURN_REFUEL (go back to colony, refuel, restart)
+  │
+  ├── IF detects food
+  │   └── → FOOD_FOUND
+  │
+  └── IF detects fading Type A from others
+      └── Re-deposits (trail maintenance)
+
+FOOD_FOUND
+  │  Switches pheromone to Type B
+  │  Some explorers stay near food (FOOD_MARKER state)
+  │  Others begin return trip
+  │
+  ├── → FOOD_MARKER (stays at food, emits strong Type B beacon)
+  └── → EXPLORE_RETURN_FOOD (returns to colony, deposits Type B trail)
+
+EXPLORE_RETURN_FOOD
+  │  Heads back to colony depositing Type B pheromone
+  │  This creates the recruitment trail
+  │
+  └── IF reaches colony
+      └── → EXPLORE_OUTBOUND (cycle restarts, or switches role)
+
+EXPLORE_RETURN_REFUEL
+  │  Heads back to colony (no special pheromone, just going home)
+  │
+  └── IF reaches colony
+      └── → EXPLORE_OUTBOUND (emission capacity reset)</code></pre>
+<p><strong>Worker Ant States:</strong></p>
+<pre><code>WORKER_IDLE
+  │  Stays near colony / wanders locally
+  │
+  ├── IF detects Type B pheromone
+  │   └── → WORKER_TO_FOOD
+  │
+  └── IF detects returning explorer (physical contact or strong Type B)
+      └── → WORKER_TO_FOOD
+
+WORKER_TO_FOOD
+  │  Follows Type B pheromone gradient toward food
+  │  Navigates around obstacles using the reinforced trails
+  │
+  └── IF reaches food
+      └── → WORKER_CARRYING
+
+WORKER_CARRYING
+  │  Picks up food, heads back to colony
+  │  Deposits Type B pheromone (reinforcing the trail for others)
+  │  Must navigate obstacles — the "slits" from v0
+  │
+  └── IF reaches colony
+      └── → WORKER_IDLE (food delivered, cycle complete)</code></pre>
+</section>
+<section id="the-arena-layout" class="level4">
+<h4 class="anchored" data-anchor-id="the-arena-layout">1.6 The Arena Layout</h4>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   ┌─────┐                                                       │
+│   │     │          ┌───┐                                        │
+│   │ COL │          │OBS│         ┌───┐                          │
+│   │ ONY │          │ 1 │         │OBS│        ┌──────┐          │
+│   │     │          └───┘         │ 2 │        │ FOOD │          │
+│   │  H  │                        └───┘        │  ★   │          │
+│   │     │    ┌──────┐                         └──────┘          │
+│   │     │    │ OBS  │       ┌───┐                               │
+│   └─────┘    │  3   │       │OBS│                               │
+│              └──────┘       │ 4 │                               │
+│                             └───┘                               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+  Colony (left)  ──→  Obstacles create narrow passages  ──→  Food (right)
+                       (the "slits" emerge naturally)</code></pre>
+</section>
+<section id="pheromone-grid-implementation-approach" class="level4">
+<h4 class="anchored" data-anchor-id="pheromone-grid-implementation-approach">1.7 Pheromone Grid — Implementation Approach</h4>
+<p>The pheromone field lives on a <strong>discrete grid</strong> overlaid on the continuous Box2D world:</p>
+<pre><code>- Grid resolution: PHEROMONE_CELL_SIZE (e.g., 0.5m per cell)
+- Grid dimensions: (ARENA_WIDTH / CELL_SIZE) × (ARENA_HEIGHT / CELL_SIZE)
+- Two layers: grid_type_A[x][y] and grid_type_B[x][y]
+- Each cell stores: intensity (float), timestamp of last deposit
+- Per frame: all cells decay by factor exp(-dt / τ_persistence)
+- When ant deposits: cell intensity += emission_amount
+- When ant senses: read cells within DETECTION_RADIUS, follow gradient</code></pre>
+<hr>
+</section>
+</section>
+<section id="flow-execution-order-per-frame" class="level3">
+<h3 class="anchored" data-anchor-id="flow-execution-order-per-frame">2. FLOW — Execution Order per Frame</h3>
+<pre><code>FRAME START
+│
+├── 1. EVENT HANDLING
+│   └── Pygame events (quit, keyboard)
+│
+├── 2. PHEROMONE DECAY
+│   └── For all grid cells: intensity *= exp(-dt / τ_persistence)
+│   └── (Optimization: skip cells below EPSILON)
+│
+├── 3. ANT BEHAVIOR (for each ant)
+│   │
+│   ├── 3a. SENSE environment
+│   │   └── Read pheromone grid within DETECTION_RADIUS
+│   │   └── Check contacts (food? colony? obstacles? cargo?)
+│   │
+│   ├── 3b. DECIDE next action (state machine transition)
+│   │   └── Based on current state + sensed info → new state
+│   │
+│   ├── 3c. ACT
+│   │   └── Compute force vector based on state
+│   │   └── Apply force to ant body
+│   │   └── Deposit pheromone at current position
+│   │
+│   └── 3d. UPDATE internal variables
+│       └── Emission capacity decay
+│       └── Timer updates
+│
+├── 4. PHYSICS STEP
+│   └── world.Step(dt, vel_iters, pos_iters)
+│
+├── 5. RENDER
+│   ├── Draw pheromone heatmap (Type A = light blue, Type B = yellow)
+│   ├── Draw obstacles (green)
+│   ├── Draw colony (white/gold)
+│   ├── Draw food (bright star)
+│   ├── Draw ants (colored by state)
+│   └── Draw HUD (frame count, ants by state, food delivered)
+│
+└── FRAME END</code></pre>
+<hr>
+</section>
+<section id="pseudocode-complete-v1" class="level3">
+<h3 class="anchored" data-anchor-id="pseudocode-complete-v1">3. PSEUDOCODE — Complete v1</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># CONFIGURATION</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Arena ---</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ARENA_WIDTH <span class="op">=</span> <span class="fl">80.0</span>          <span class="co"># Bigger arena for foraging</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>ARENA_HEIGHT <span class="op">=</span> <span class="fl">50.0</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>WALL_THICKNESS <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Colony ---</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>COLONY_X, COLONY_Y <span class="op">=</span> <span class="fl">8.0</span>, <span class="fl">25.0</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>COLONY_RADIUS <span class="op">=</span> <span class="fl">3.0</span>          <span class="co"># Circular zone</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Food ---</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>FOOD_X, FOOD_Y <span class="op">=</span> <span class="fl">70.0</span>, <span class="fl">25.0</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>FOOD_RADIUS <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>FOOD_AMOUNT <span class="op">=</span> <span class="dv">100</span>            <span class="co"># Units of food available</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Obstacles (create the "natural slits") ---</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>OBSTACLES <span class="op">=</span> [</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x"</span>: <span class="dv">25</span>, <span class="st">"y"</span>: <span class="dv">15</span>, <span class="st">"w"</span>: <span class="dv">3</span>, <span class="st">"h"</span>: <span class="dv">8</span>},</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x"</span>: <span class="dv">25</span>, <span class="st">"y"</span>: <span class="dv">38</span>, <span class="st">"w"</span>: <span class="dv">3</span>, <span class="st">"h"</span>: <span class="dv">6</span>},</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x"</span>: <span class="dv">45</span>, <span class="st">"y"</span>: <span class="dv">22</span>, <span class="st">"w"</span>: <span class="dv">4</span>, <span class="st">"h"</span>: <span class="dv">10</span>},</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x"</span>: <span class="dv">45</span>, <span class="st">"y"</span>: <span class="dv">40</span>, <span class="st">"w"</span>: <span class="dv">3</span>, <span class="st">"h"</span>: <span class="dv">5</span>},</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x"</span>: <span class="dv">55</span>, <span class="st">"y"</span>: <span class="dv">10</span>, <span class="st">"w"</span>: <span class="dv">6</span>, <span class="st">"h"</span>: <span class="dv">3</span>},</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Ants ---</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>NUM_EXPLORERS <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>NUM_WORKERS <span class="op">=</span> <span class="dv">15</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>ANT_RADIUS <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>ANT_MAX_SPEED <span class="op">=</span> <span class="fl">5.0</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Pheromone emission ---</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>P_MAX_EMISSION <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>TAU_EMISSION <span class="op">=</span> <span class="fl">30.0</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>REFUEL_THRESHOLD <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>DEPOSIT_PER_STEP <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Pheromone persistence ---</span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>TAU_PERSISTENCE_A <span class="op">=</span> <span class="fl">60.0</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>TAU_PERSISTENCE_B <span class="op">=</span> <span class="fl">120.0</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>DETECTION_THRESHOLD <span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>DETECTION_RADIUS <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Pheromone grid ---</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>PHEROMONE_CELL_SIZE <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>GRID_W <span class="op">=</span> <span class="bu">int</span>(ARENA_WIDTH <span class="op">/</span> PHEROMONE_CELL_SIZE)</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>GRID_H <span class="op">=</span> <span class="bu">int</span>(ARENA_HEIGHT <span class="op">/</span> PHEROMONE_CELL_SIZE)</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Force model ---</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>EXPLORE_FORCE <span class="op">=</span> <span class="fl">8.0</span></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>FOLLOW_GRADIENT_FORCE <span class="op">=</span> <span class="fl">12.0</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>HOMING_FORCE <span class="op">=</span> <span class="fl">10.0</span></span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>FOOD_ATTRACTION <span class="op">=</span> <span class="fl">10.0</span></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>DAMPING_FREE <span class="op">=</span> <span class="fl">3.0</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>DAMPING_CARRYING <span class="op">=</span> <span class="fl">8.0</span></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Colors ---</span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>COLOR_EXPLORER_OUTBOUND <span class="op">=</span> (<span class="dv">52</span>, <span class="dv">152</span>, <span class="dv">219</span>)    <span class="co"># Blue</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>COLOR_EXPLORER_FOOD <span class="op">=</span> (<span class="dv">241</span>, <span class="dv">196</span>, <span class="dv">15</span>)        <span class="co"># Gold</span></span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>COLOR_EXPLORER_REFUEL <span class="op">=</span> (<span class="dv">149</span>, <span class="dv">165</span>, <span class="dv">166</span>)     <span class="co"># Gray</span></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>COLOR_FOOD_MARKER <span class="op">=</span> (<span class="dv">230</span>, <span class="dv">126</span>, <span class="dv">34</span>)          <span class="co"># Orange</span></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>COLOR_WORKER_IDLE <span class="op">=</span> (<span class="dv">189</span>, <span class="dv">195</span>, <span class="dv">199</span>)         <span class="co"># Light gray</span></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>COLOR_WORKER_GOING <span class="op">=</span> (<span class="dv">155</span>, <span class="dv">89</span>, <span class="dv">182</span>)         <span class="co"># Purple</span></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>COLOR_WORKER_CARRYING <span class="op">=</span> (<span class="dv">46</span>, <span class="dv">204</span>, <span class="dv">113</span>)      <span class="co"># Green</span></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>COLOR_PHEROMONE_A <span class="op">=</span> (<span class="dv">100</span>, <span class="dv">180</span>, <span class="dv">255</span>, <span class="dv">80</span>)     <span class="co"># Light blue</span></span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>COLOR_PHEROMONE_B <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">100</span>, <span class="dv">120</span>)    <span class="co"># Yellow</span></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>COLOR_COLONY <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>)              <span class="co"># White</span></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>COLOR_FOOD <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">215</span>, <span class="dv">0</span>)                  <span class="co"># Gold</span></span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a><span class="co"># DATA STRUCTURES</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> PheromoneGrid:</span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Discrete grid storing pheromone intensity for two types."""</span></span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, width, height, cell_size): ...</span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> deposit(<span class="va">self</span>, world_x, world_y, pheromone_type, amount): ...</span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> read(<span class="va">self</span>, world_x, world_y, radius, pheromone_type): ...</span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> decay(<span class="va">self</span>, dt): ...</span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> render(<span class="va">self</span>, screen, to_screen_fn): ...</span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Ant:</span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Individual ant with state machine, pheromone emission, force computation."""</span></span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, body, caste): ...</span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> sense(<span class="va">self</span>, pheromone_grid, colony_pos, food_pos): ...</span>
+<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> decide(<span class="va">self</span>, sensed_data): ...</span>
+<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> act(<span class="va">self</span>, pheromone_grid): ...</span>
+<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a><span class="co"># INITIALIZATION</span></span>
+<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-96"><a href="#cb8-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a>world <span class="op">=</span> b2World(gravity<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a>create_outer_walls(world)</span>
+<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> obs <span class="kw">in</span> OBSTACLES:</span>
+<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a>    create_obstacle(world, obs)</span>
+<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a>colony_sensor <span class="op">=</span> create_sensor(world, COLONY_X, COLONY_Y, COLONY_RADIUS)</span>
+<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a>food_sensor <span class="op">=</span> create_sensor(world, FOOD_X, FOOD_Y, FOOD_RADIUS)</span>
+<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a>pheromone <span class="op">=</span> PheromoneGrid(ARENA_WIDTH, ARENA_HEIGHT, PHEROMONE_CELL_SIZE)</span>
+<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a>ants <span class="op">=</span> []</span>
+<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(NUM_EXPLORERS):</span>
+<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a>    body <span class="op">=</span> spawn_ant_at(world, COLONY_X, COLONY_Y, ANT_RADIUS)</span>
+<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a>    ants.append(Ant(body, caste<span class="op">=</span><span class="st">'explorer'</span>))</span>
+<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(NUM_WORKERS):</span>
+<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a>    body <span class="op">=</span> spawn_ant_at(world, COLONY_X, COLONY_Y, ANT_RADIUS)</span>
+<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a>    ants.append(Ant(body, caste<span class="op">=</span><span class="st">'worker'</span>))</span>
+<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a><span class="co"># MAIN LOOP</span></span>
+<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a><span class="co"># ================================================================</span></span>
+<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a>food_delivered <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> running:</span>
+<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> TIME_STEP</span>
+<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a>    handle_events()</span>
+<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a>    pheromone.decay(dt)</span>
+<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ant <span class="kw">in</span> ants:</span>
+<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a>        sensed <span class="op">=</span> ant.sense(pheromone, colony_pos, food_pos)</span>
+<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a>        ant.decide(sensed)</span>
+<span id="cb8-128"><a href="#cb8-128" aria-hidden="true" tabindex="-1"></a>        ant.act(pheromone)</span>
+<span id="cb8-129"><a href="#cb8-129" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> ant.state <span class="op">==</span> <span class="st">'WORKER_IDLE'</span> <span class="kw">and</span> ant.just_delivered:</span>
+<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a>            food_delivered <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a>    world.Step(dt, VEL_ITERATIONS, POS_ITERATIONS)</span>
+<span id="cb8-133"><a href="#cb8-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-134"><a href="#cb8-134" aria-hidden="true" tabindex="-1"></a>    screen.fill(COLOR_BACKGROUND)</span>
+<span id="cb8-135"><a href="#cb8-135" aria-hidden="true" tabindex="-1"></a>    pheromone.render(screen, to_screen)</span>
+<span id="cb8-136"><a href="#cb8-136" aria-hidden="true" tabindex="-1"></a>    draw_world(world, screen)</span>
+<span id="cb8-137"><a href="#cb8-137" aria-hidden="true" tabindex="-1"></a>    draw_colony(screen, COLONY_X, COLONY_Y, COLONY_RADIUS)</span>
+<span id="cb8-138"><a href="#cb8-138" aria-hidden="true" tabindex="-1"></a>    draw_food(screen, FOOD_X, FOOD_Y, FOOD_RADIUS, FOOD_AMOUNT)</span>
+<span id="cb8-139"><a href="#cb8-139" aria-hidden="true" tabindex="-1"></a>    draw_ants(screen, ants)</span>
+<span id="cb8-140"><a href="#cb8-140" aria-hidden="true" tabindex="-1"></a>    draw_hud(screen, frame_count, food_delivered, ants)</span>
+<span id="cb8-141"><a href="#cb8-141" aria-hidden="true" tabindex="-1"></a>    pygame.display.flip()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="implementation-order" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-order">4. IMPLEMENTATION ORDER</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>What</th>
+<th>Why first</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>S1</strong></td>
+<td><code>PheromoneGrid</code> class (deposit, decay, read, render)</td>
+<td>Foundation — everything depends on it</td>
+</tr>
+<tr class="even">
+<td><strong>S2</strong></td>
+<td>New arena: bigger, with colony zone, food zone, obstacles</td>
+<td>The physical stage must exist before actors</td>
+</tr>
+<tr class="odd">
+<td><strong>S3</strong></td>
+<td><code>Ant</code> class with state machine (explorer states only)</td>
+<td>Explorers are the first actors; workers depend on explorer trails</td>
+</tr>
+<tr class="even">
+<td><strong>S4</strong></td>
+<td>Explorer behavior: OUTBOUND + REFUEL cycle</td>
+<td>Simplest loop — validates pheromone deposit + decay visually</td>
+</tr>
+<tr class="odd">
+<td><strong>S5</strong></td>
+<td>Food detection + FOOD_FOUND + RETURN_FOOD states</td>
+<td>Completes the explorer lifecycle</td>
+</tr>
+<tr class="even">
+<td><strong>S6</strong></td>
+<td>Worker behavior: IDLE + TO_FOOD + CARRYING cycle</td>
+<td>Workers follow trails that now exist</td>
+</tr>
+<tr class="odd">
+<td><strong>S7</strong></td>
+<td>Data collection: CSV export of positions, states, food deliveries</td>
+<td>Enables quantitative analysis</td>
+</tr>
+<tr class="even">
+<td><strong>S8</strong></td>
+<td>Visualization polish: heatmap, ant colors, HUD</td>
+<td>Makes the simulation legible</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-design-decisions" class="level3">
+<h3 class="anchored" data-anchor-id="key-design-decisions">5. KEY DESIGN DECISIONS</h3>
+<p>These are the choices made based on the specification. All are parametrized and changeable:</p>
+<ol type="1">
+<li><strong>Pheromone grid</strong> (discrete cells) rather than particle-based — simpler, fast decay, easy gradient computation</li>
+<li><strong>Exponential decay</strong> for both emission capacity and ground persistence — physically natural, one parameter each</li>
+<li><strong>Two pheromone types</strong> (A=exploration, B=food-trail) stored on the same grid with separate layers</li>
+<li><strong>Colony and food as sensor zones</strong> (Box2D sensors: detect overlap but don’t block movement)</li>
+<li><strong>Obstacles as solid Box2D bodies</strong> — ants must physically navigate around them, creating emergent “slits”</li>
+<li><strong>Workers start idle at colony</strong> — only activated by Type B pheromone detection or returning explorer contact</li>
+<li><strong>Food markers</strong> — some explorers stay at food to maintain a strong Type B beacon</li>
+<li><strong>Arena ~4× larger than v0</strong> (80×50 vs 40×24) — foraging needs distance</li>
+</ol>
+<hr>
+<p><em>End of Report 3</em></p>
+<hr>
+</section>
+</section>
+<section id="report-4-v1-implementation-complete-2026-03-02" class="level2">
+<h2 class="anchored" data-anchor-id="report-4-v1-implementation-complete-2026-03-02">Report 4: v1 Implementation Complete — 2026-03-02</h2>
+<section id="file-created" class="level3">
+<h3 class="anchored" data-anchor-id="file-created">File Created</h3>
+<p><code>box2d_v1.qmd</code> — 926 lines, 7 Quarto sections, fully documented.</p>
+</section>
+<section id="architecture" class="level3">
+<h3 class="anchored" data-anchor-id="architecture">Architecture</h3>
+<pre><code>box2d_v1.qmd (926 lines)
+│
+├── Section 1: Configuration (all 50+ parameters)
+│   └── Imports, seeds, arena, colony, food, obstacles, ants, pheromones, forces, colors
+│
+├── Section 2: PheromoneGrid class
+│   ├── __init__: numpy arrays (grid_a, grid_b), precomputed decay factors
+│   ├── deposit(wx, wy, ptype, amount)
+│   ├── decay(): bulk numpy multiply per frame
+│   ├── read_intensity(wx, wy, radius, ptype): sum in circular region
+│   ├── read_gradient(wx, wy, radius, ptype): weighted direction toward higher concentration
+│   └── render(surface, to_screen_fn): colored dot overlay
+│
+├── Section 3: World building
+│   ├── b2World(gravity=(0,0))
+│   ├── 4 outer walls
+│   └── 5 obstacles (create natural passages)
+│
+├── Section 4: Colony + Food zones (Box2D sensors)
+│
+├── Section 5: Ant class (7 states)
+│   ├── Explorer states: OUTBOUND → RETURN_REFUEL or FOOD_FOUND → FOOD_MARKER
+│   ├── Worker states: IDLE → TO_FOOD → CARRYING → IDLE
+│   ├── sense_decide_act(): unified per-frame method
+│   ├── _random_wander_force(): smooth random walk (drifting angle)
+│   ├── _clamp_speed(): velocity limiter
+│   └── get_color(): state-dependent RGB
+│
+├── Section 6: Spawn ants at colony
+│   ├── 10 explorers (3 designated as food markers)
+│   └── 15 workers (start idle)
+│
+└── Section 7: Simulation loop
+    ├── to_screen(), draw_static_world(), draw_zones(), draw_ants(), draw_hud()
+    └── Main loop: events → decay → sense/decide/act → physics → render</code></pre>
+</section>
+<section id="what-v1-implements-vs-design-report-3" class="level3">
+<h3 class="anchored" data-anchor-id="what-v1-implements-vs-design-report-3">What v1 Implements vs Design (Report 3)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Design Element</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Two ant castes (explorer/worker)</td>
+<td>Done</td>
+<td>10+15 default</td>
+</tr>
+<tr class="even">
+<td>7-state state machine</td>
+<td>Done</td>
+<td>All transitions implemented</td>
+</tr>
+<tr class="odd">
+<td>Pheromone Type A (exploration)</td>
+<td>Done</td>
+<td>Exponential emission decay + ground persistence</td>
+</tr>
+<tr class="even">
+<td>Pheromone Type B (food trail)</td>
+<td>Done</td>
+<td>Emitted on return, stronger, longer-lasting</td>
+</tr>
+<tr class="odd">
+<td>Pheromone grid (numpy)</td>
+<td>Done</td>
+<td>80×50 cells, two layers, bulk decay</td>
+</tr>
+<tr class="even">
+<td>Gradient sensing</td>
+<td>Done</td>
+<td>Weighted direction toward higher concentration</td>
+</tr>
+<tr class="odd">
+<td>Trail maintenance</td>
+<td>Done</td>
+<td>Explorers re-deposit when local Type A is fading</td>
+</tr>
+<tr class="even">
+<td>Emission capacity decay</td>
+<td>Done</td>
+<td>exp(-dt/τ), refuels at colony</td>
+</tr>
+<tr class="odd">
+<td>Food markers</td>
+<td>Done</td>
+<td>30% of explorers stay at food as Type B beacons</td>
+</tr>
+<tr class="even">
+<td>Obstacles as natural slits</td>
+<td>Done</td>
+<td>5 static bodies create narrow passages</td>
+</tr>
+<tr class="odd">
+<td>Colony/food as sensors</td>
+<td>Done</td>
+<td>Box2D isSensor=True, distance-based detection</td>
+</tr>
+<tr class="even">
+<td>Smooth random walk</td>
+<td>Done</td>
+<td>Drifting wander_angle, not erratic</td>
+</tr>
+<tr class="odd">
+<td>Speed clamping</td>
+<td>Done</td>
+<td>ANT_MAX_SPEED enforced per frame</td>
+</tr>
+<tr class="even">
+<td>HUD with stats</td>
+<td>Done</td>
+<td>Time, food count, state distribution</td>
+</tr>
+<tr class="odd">
+<td>Data collection (CSV)</td>
+<td>Not yet</td>
+<td>Deferred to v1.1</td>
+</tr>
+<tr class="even">
+<td>Parametric sweeps</td>
+<td>Not yet</td>
+<td>Deferred to v1.1</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="files-after-this-step-1" class="level3">
+<h3 class="anchored" data-anchor-id="files-after-this-step-1">Files After This Step</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>box2d_original.qmd</code></td>
+<td>1,492</td>
+<td>Original exploration journal</td>
+</tr>
+<tr class="even">
+<td><code>box2d.qmd</code></td>
+<td>514</td>
+<td>Perfected v0 (cooperative transport)</td>
+</tr>
+<tr class="odd">
+<td><code>box2d_v1.qmd</code></td>
+<td>926</td>
+<td>v1 (pheromone-based foraging colony)</td>
+</tr>
+<tr class="even">
+<td><code>AUDIT_REPORT.md</code></td>
+<td>—</td>
+<td>This incremental report</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><em>End of Report 4</em></p>
+<hr>
+</section>
+</section>
+<section id="report-5-v1.1-behavioral-fixes-interactive-ui-2026-03-02" class="level2">
+<h2 class="anchored" data-anchor-id="report-5-v1.1-behavioral-fixes-interactive-ui-2026-03-02">Report 5: v1.1 — Behavioral Fixes &amp; Interactive UI — 2026-03-02</h2>
+<section id="context" class="level3">
+<h3 class="anchored" data-anchor-id="context">Context</h3>
+<p>After running v1, the following problems were observed (screenshot + user feedback):</p>
+<ol type="1">
+<li><strong>Explorer stuck on obstacle</strong>: A returning explorer hit an obstacle and “died there” — no avoidance mechanism existed.</li>
+<li><strong>Ants going left</strong>: Many explorers wandered leftward from the colony and never found food. The <code>away-from-colony</code> bias was radial, not directional.</li>
+<li><strong>HUD unreadable</strong>: Small text rendered directly over the simulation area, overlapping with ants and pheromones.</li>
+<li><strong>No controls</strong>: No way to pause, resume, or stop the simulation cleanly.</li>
+<li><strong>No per-ant inspection</strong>: No way to see individual ant data (distance, state, trips).</li>
+<li><strong>Individual departure</strong>: Ants left one by one instead of in realistic groups.</li>
+</ol>
+</section>
+<section id="all-changes-applied-v1-v1.1" class="level3">
+<h3 class="anchored" data-anchor-id="all-changes-applied-v1-v1.1">All Changes Applied (v1 → v1.1)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Ants stuck on obstacles</td>
+<td><code>compute_wall_avoidance()</code>: AABB proximity check for each obstacle + arena wall distance checks. Returns repulsive force. Applied to ALL ant states.</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Leftward exploration</td>
+<td>Replaced <code>away-from-colony</code> radial bias with rightward cone: <code>wander_angle</code> initialized in <code>±EXPLORE_BIAS_ANGLE_SPREAD</code> (±45°) around <code>EXPLORE_BIAS_ANGLE_CENTER</code> (0 = right). Plus constant <code>fx += 2.5</code> rightward force.</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>HUD unreadable</td>
+<td>Dedicated 260px right-side panel (<code>PANEL_WIDTH</code>). Simulation area = 800px, total window = 1060px. All text in panel only.</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>No controls</td>
+<td>SPACE = pause/resume, S = screenshot (PNG), ESC = quit. Displayed in panel under “CONTROLS” section.</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>No ant inspection</td>
+<td><code>get_info_lines()</code> method returns 12 data fields per ant. Shown in panel when ant is clicked during pause.</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Individual departure</td>
+<td>Cluster spawning: <code>CLUSTER_SIZE=4</code>, ants spawn in adjacent positions with shared <code>cluster_id</code>. Wander angles within each cluster start in same rightward cone.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-functions-methods" class="level3">
+<h3 class="anchored" data-anchor-id="new-functions-methods">New Functions &amp; Methods</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>compute_wall_avoidance(body)</code></td>
+<td>347–386</td>
+<td>Arena walls (4 proximity checks) + obstacle AABBs (closest-point distance). Returns (fx, fy) repulsive force.</td>
+</tr>
+<tr class="even">
+<td><code>screen_to_world(sx, sy)</code></td>
+<td>671–673</td>
+<td>Inverse coordinate transform for mouse click → world position.</td>
+</tr>
+<tr class="odd">
+<td><code>find_ant_at_screen(mx, my)</code></td>
+<td>708–720</td>
+<td>Finds closest ant to click point within 2m threshold.</td>
+</tr>
+<tr class="even">
+<td><code>draw_panel(...)</code></td>
+<td>723–785</td>
+<td>Right-side info panel: header, stats, state counts, controls, ant info card.</td>
+</tr>
+<tr class="odd">
+<td><code>Ant.get_info_lines(frame)</code></td>
+<td>579–596</td>
+<td>Returns 12 (label, value) pairs: ID, caste, cluster, state, position, speed, distance, pheromone spent, emission cap, departure time, food trips, carrying status.</td>
+</tr>
+<tr class="even">
+<td><code>Ant._update_tracking()</code></td>
+<td>439–445</td>
+<td>Cumulative distance via frame-to-frame position delta.</td>
+</tr>
+<tr class="odd">
+<td><code>Ant._deposit(grid, ptype, amt)</code></td>
+<td>447–451</td>
+<td>Deposit + track <code>pheromone_spent</code>.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-tracking-fields-per-ant" class="level3">
+<h3 class="anchored" data-anchor-id="new-tracking-fields-per-ant">New Tracking Fields per Ant</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cluster_id</code></td>
+<td>int</td>
+<td>Which departure cluster this ant belongs to</td>
+</tr>
+<tr class="even">
+<td><code>departure_frame</code></td>
+<td>int</td>
+<td>Frame number when ant last left colony</td>
+</tr>
+<tr class="odd">
+<td><code>total_distance</code></td>
+<td>float</td>
+<td>Cumulative meters traveled over lifetime</td>
+</tr>
+<tr class="even">
+<td><code>pheromone_spent</code></td>
+<td>float</td>
+<td>Total pheromone units deposited</td>
+</tr>
+<tr class="odd">
+<td><code>food_trips</code></td>
+<td>int</td>
+<td>Completed food delivery cycles</td>
+</tr>
+<tr class="even">
+<td><code>prev_pos</code></td>
+<td>tuple</td>
+<td>Previous frame position for distance calculation</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-parameters-v1.1" class="level3">
+<h3 class="anchored" data-anchor-id="new-parameters-v1.1">New Parameters (v1.1)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>PANEL_WIDTH</code></td>
+<td>260</td>
+<td>Right info panel width (pixels)</td>
+</tr>
+<tr class="even">
+<td><code>SIM_WIDTH</code></td>
+<td>800</td>
+<td>Simulation area width (pixels)</td>
+</tr>
+<tr class="odd">
+<td><code>CLUSTER_SIZE</code></td>
+<td>4</td>
+<td>Ants per departure group</td>
+</tr>
+<tr class="even">
+<td><code>CLUSTER_SPREAD</code></td>
+<td>1.0</td>
+<td>Meters between cluster members at spawn</td>
+</tr>
+<tr class="odd">
+<td><code>EXPLORE_BIAS_ANGLE_CENTER</code></td>
+<td>0.0</td>
+<td>Rightward (radians)</td>
+</tr>
+<tr class="even">
+<td><code>EXPLORE_BIAS_ANGLE_SPREAD</code></td>
+<td>0.8</td>
+<td>±45° cone half-width (radians)</td>
+</tr>
+<tr class="odd">
+<td><code>WALL_AVOID_RADIUS</code></td>
+<td>2.5</td>
+<td>Distance at which avoidance activates (meters)</td>
+</tr>
+<tr class="even">
+<td><code>WALL_AVOID_FORCE</code></td>
+<td>12.0</td>
+<td>Strength of repulsive obstacle force</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="architecture-after-v1.1" class="level3">
+<h3 class="anchored" data-anchor-id="architecture-after-v1.1">Architecture After v1.1</h3>
+<pre><code>box2d_v1.qmd (853 lines, v1.1)
+│
+├── Section 1: Configuration (166 lines)
+│   └── 60+ parameters: display, physics, arena, colony, food, obstacles,
+│       ants, clusters, pheromones, forces, wall avoidance, colors
+│
+├── Section 2: PheromoneGrid class (unchanged from v1)
+│   └── deposit, decay, read_intensity, read_gradient, render
+│
+├── Section 3: World building (unchanged from v1)
+│   └── b2World + 4 walls + 5 obstacles + colony sensor + food sensor
+│
+├── Section 4: Ant class (v1.1)
+│   ├── compute_wall_avoidance() — NEW
+│   ├── Ant.__init__: cluster_id, tracking fields, biased wander_angle
+│   ├── sense_decide_act(): wall avoidance in ALL states
+│   ├── get_info_lines(): 12-field data card — NEW
+│   └── _update_tracking(), _deposit(): stat accumulation — NEW
+│
+├── Section 5: Spawn ants in clusters (v1.1)
+│   └── CLUSTER_SIZE groups, shared proximity, sequential cluster_ids
+│
+├── Section 6: Simulation loop (v1.1)
+│   ├── to_screen(), screen_to_world() — NEW
+│   ├── draw_static_world(), draw_zones()
+│   ├── draw_ants_sim(highlighted) — NEW highlight ring
+│   ├── find_ant_at_screen() — NEW
+│   ├── draw_panel() — NEW (replaces draw_hud)
+│   └── Main loop: events → decay → behavior → physics → render + panel
+│
+└── Section 7: Notes on v1.1 changes</code></pre>
+</section>
+<section id="files-after-this-step-2" class="level3">
+<h3 class="anchored" data-anchor-id="files-after-this-step-2">Files After This Step</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>box2d_original.qmd</code></td>
+<td>1,492</td>
+<td>Original exploration journal</td>
+</tr>
+<tr class="even">
+<td><code>box2d.qmd</code></td>
+<td>514</td>
+<td>Perfected v0 (cooperative transport)</td>
+</tr>
+<tr class="odd">
+<td><code>box2d_v1.qmd</code></td>
+<td>853</td>
+<td>v1.1 (pheromone foraging + interactive UI)</td>
+</tr>
+<tr class="even">
+<td><code>AUDIT_REPORT.md</code></td>
+<td>—</td>
+<td>This incremental report</td>
+</tr>
+<tr class="odd">
+<td><code>.ants/</code></td>
+<td>—</td>
+<td>Python 3.10 venv (pygame, Box2D, numpy, matplotlib)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="status-awaiting-test" class="level3">
+<h3 class="anchored" data-anchor-id="status-awaiting-test">Status: Awaiting Test</h3>
+<p>v1.1 has been written but not yet tested. Expected improvements:</p>
+<ul>
+<li>Explorers should move rightward toward food instead of scattering in all directions</li>
+<li>Ants should navigate around obstacles instead of getting stuck</li>
+<li>The info panel should be legible and separate from the simulation</li>
+<li>Pause + click should show per-ant data for debugging</li>
+</ul>
+<hr>
+<p><em>End of Report 5</em></p>
+<hr>
+</section>
+</section>
+<section id="report-6-v1.2-tangential-wall-avoidance-distinct-ant-colors-2026-03-02" class="level2">
+<h2 class="anchored" data-anchor-id="report-6-v1.2-tangential-wall-avoidance-distinct-ant-colors-2026-03-02">Report 6: v1.2 — Tangential Wall Avoidance + Distinct Ant Colors — 2026-03-02</h2>
+<section id="problem-observed-v1.1-screenshot-frame-3260" class="level3">
+<h3 class="anchored" data-anchor-id="problem-observed-v1.1-screenshot-frame-3260">Problem Observed (v1.1 screenshot, frame 3260)</h3>
+<p>The explorer that found food (state <code>FOOD_FOUND</code>) got stuck against an obstacle while returning to colony. The same class of bug as v1: <strong>force deadlock</strong>.</p>
+<p><strong>Root cause</strong>: <code>HOMING_FORCE * 1.2 = 12.0</code> toward colony and <code>WALL_AVOID_FORCE = 12.0</code> away from obstacle were equal and opposite. The ant sat at the equilibrium point indefinitely. The repulsion-only wall avoidance had no way to <em>route around</em> the obstacle — it only pushed straight back.</p>
+<p><strong>Secondary issue</strong>: Ants were the same color and size as pheromone dots (both blue/small), making them nearly indistinguishable in the simulation view.</p>
+</section>
+<section id="solution-tangential-sliding" class="level3">
+<h3 class="anchored" data-anchor-id="solution-tangential-sliding">Solution: Tangential Sliding</h3>
+<p>Instead of only pushing away from obstacles, <code>compute_wall_avoidance()</code> now adds a <strong>tangential force perpendicular to the obstacle surface</strong>:</p>
+<pre><code>         obstacle
+     ┌───────────────┐
+     │               │
+ ant ●─ repulsion ──→│   (old v1.1: ant stops here, deadlocked)
+     │               │
+     └───────────────┘
+
+         obstacle
+     ┌───────────────┐
+     │               │  tangent (toward target)
+ ant ●─ repulsion ──→│  ↑↑↑↑↑↑↑↑↑↑
+     │               │  (new v1.2: ant slides along surface)
+     └───────────────┘</code></pre>
+<p>The tangent direction is chosen by projecting the desired-to-target vector onto both possible perpendiculars and picking the one that aligns better. This means the ant always slides in the direction that moves it closer to its goal.</p>
+</section>
+<section id="all-changes-v1.1-v1.2" class="level3">
+<h3 class="anchored" data-anchor-id="all-changes-v1.1-v1.2">All Changes (v1.1 → v1.2)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Change</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Tangential wall avoidance</td>
+<td><code>compute_wall_avoidance(body, target_x, target_y)</code> — adds sliding force perpendicular to obstacle normal, oriented toward target</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Per-state target passing</td>
+<td>Each of 7 states calls wall avoidance with its actual target (colony or food)</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Stronger avoidance params</td>
+<td><code>WALL_AVOID_RADIUS</code> 2.5→3.0, <code>WALL_AVOID_FORCE</code> 12→15, new <code>WALL_TANGENT_GAIN=0.8</code></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Distinct ant colors</td>
+<td>Explorers=red, refueling=orange, food-found=yellow, markers=magenta, workers idle=white, going=purple, carrying=green</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Black ant outlines</td>
+<td>1px <code>COLOR_ANT_OUTLINE=(0,0,0)</code> ring around every ant</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Larger ant rendering</td>
+<td>150% of physics radius for visibility</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="technology-decision" class="level3">
+<h3 class="anchored" data-anchor-id="technology-decision">Technology Decision</h3>
+<p>After this version, the project will migrate from Pygame to a <strong>Python backend + Web frontend</strong> architecture:</p>
+<ul>
+<li><code>engine.py</code>: Box2D physics, Ant class, PheromoneGrid — pure Python, no rendering</li>
+<li><code>server.py</code>: FastAPI + WebSocket — sends state JSON at 30fps</li>
+<li><code>web/index.html + simulation.js + style.css</code>: HTML5 Canvas + rich HTML panels</li>
+</ul>
+<p>This enables: parameter sliders, real-time charts, clickable ant cards, zoom/pan, headless batch runs, and a browser-based TFG demo.</p>
+<hr>
+<p><em>End of Report 6</em></p>
+<hr>
+</section>
+</section>
+<section id="report-7-v1.3-stuck-escape-true-cluster-cohesion-2026-03-02" class="level2">
+<h2 class="anchored" data-anchor-id="report-7-v1.3-stuck-escape-true-cluster-cohesion-2026-03-02">Report 7: v1.3 — Stuck Escape + True Cluster Cohesion — 2026-03-02</h2>
+<section id="problems-observed-v1.2-screenshots-f2505-f2910" class="level3">
+<h3 class="anchored" data-anchor-id="problems-observed-v1.2-screenshots-f2505-f2910">Problems Observed (v1.2 screenshots f2505 + f2910)</h3>
+<p>Two screenshots taken 7 seconds apart (41.8s → 48.5s) show <strong>3 yellow “Found food” ants in identical positions</strong> — stuck against obstacles. The tangential sliding from v1.2 was insufficient because:</p>
+<ol type="1">
+<li><p><strong>Oscillation trap</strong>: Tangent force only applies within <code>WALL_AVOID_RADIUS</code> (3m) of the obstacle surface. The ant gets pushed away → homing pulls it back → pushed away again. It oscillates at the boundary without clearing the obstacle edge. A 16m-tall obstacle requires 8+ meters of lateral travel, but the tangent zone is only 3m deep.</p></li>
+<li><p><strong>Cluster behavior wrong</strong>: User’s concept was ants traveling <em>together as a pack</em>, sharing discoveries, protecting resources. The v1.2 “clusters” only spawned ants nearby — they diverged immediately and explored independently.</p></li>
+</ol>
+</section>
+<section id="fix-1-stuck-detection-escape-kick" class="level3">
+<h3 class="anchored" data-anchor-id="fix-1-stuck-detection-escape-kick">Fix 1: Stuck Detection + Escape Kick</h3>
+<pre><code>STUCK BEHAVIOR:
+
+Frame 0-89:  Ant heading toward colony, blocked by obstacle
+             stuck_counter increments each frame without distance progress
+             Tangential force slides but oscillation prevents clearing
+
+Frame 90:    stuck_counter &gt;= STUCK_THRESHOLD
+             → Strong lateral kick (20N) perpendicular to target direction
+             → Random left or right
+             → stuck_counter resets
+             → Ant launched sideways, clears obstacle edge
+
+Frame 91+:   Homing resumes, obstacle no longer blocking
+             Ant proceeds to colony</code></pre>
+</section>
+<section id="fix-2-true-cluster-cohesion" class="level3">
+<h3 class="anchored" data-anchor-id="fix-2-true-cluster-cohesion">Fix 2: True Cluster Cohesion</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>_compute_cluster_cohesion()</code></td>
+<td>Each ant feels a force toward its cluster centroid. Ants in the same cluster travel together.</td>
+</tr>
+<tr class="even">
+<td><code>cluster_lookup</code> dict</td>
+<td>Maps <code>cluster_id → [ant list]</code>. O(1) lookup per ant per frame.</td>
+</tr>
+<tr class="odd">
+<td>Shared discovery</td>
+<td>When one explorer finds food, all cluster mates within 6m also transition to <code>FOOD_FOUND</code>. The group turns around together.</td>
+</tr>
+<tr class="even">
+<td>Cohesion in all moving states</td>
+<td>Cluster cohesion force added to EXPLORE_OUT, REFUEL, FOOD_FOUND, WORKER_GOING, WORKER_CARRY.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-parameters-v1.3" class="level3">
+<h3 class="anchored" data-anchor-id="new-parameters-v1.3">New Parameters (v1.3)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>STUCK_THRESHOLD</code></td>
+<td>90</td>
+<td>Frames without progress before escape (~1.5s)</td>
+</tr>
+<tr class="even">
+<td><code>STUCK_KICK_FORCE</code></td>
+<td>20.0</td>
+<td>Lateral escape force (Newtons)</td>
+</tr>
+<tr class="odd">
+<td><code>STUCK_MIN_PROGRESS</code></td>
+<td>0.05</td>
+<td>Minimum distance gain per frame to count as progress (m)</td>
+</tr>
+<tr class="even">
+<td><code>CLUSTER_COHESION_FORCE</code></td>
+<td>4.0</td>
+<td>Pull toward cluster centroid</td>
+</tr>
+<tr class="odd">
+<td><code>CLUSTER_COHESION_RADIUS</code></td>
+<td>12.0</td>
+<td>Max distance for cohesion to apply (m)</td>
+</tr>
+<tr class="even">
+<td><code>CLUSTER_DISCOVERY_RADIUS</code></td>
+<td>6.0</td>
+<td>Shared discovery range (m)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-ant-fields" class="level3">
+<h3 class="anchored" data-anchor-id="new-ant-fields">New Ant Fields</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>stuck_counter</code></td>
+<td>Frames without target distance progress</td>
+</tr>
+<tr class="even">
+<td><code>prev_target_dist</code></td>
+<td>Last measured distance to current target</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="expected-behavior" class="level3">
+<h3 class="anchored" data-anchor-id="expected-behavior">Expected Behavior</h3>
+<ul>
+<li>Ants stuck against obstacles for &gt;1.5s get kicked sideways and find a way around</li>
+<li>Explorer clusters travel together toward food as a pack</li>
+<li>When one ant in a cluster finds food, nearby cluster mates all “feel” it and return together</li>
+<li>Workers with clusters also cohere while going to food and returning</li>
+</ul>
+<hr>
+<p><em>End of Report 7</em></p>
+<hr>
+</section>
+</section>
+<section id="report-8-v1.4-sustained-escape-mode-flock-model-clusters" class="level2">
+<h2 class="anchored" data-anchor-id="report-8-v1.4-sustained-escape-mode-flock-model-clusters">Report 8: v1.4 — Sustained Escape Mode + Flock-Model Clusters</h2>
+<p><strong>Date</strong>: 2026-03-02 <strong>File modified</strong>: <code>box2d_v1.qmd</code> (v1.3 → v1.4)</p>
+<section id="root-cause-analysis-why-v1.1v1.3-stuck-fixes-failed" class="level3">
+<h3 class="anchored" data-anchor-id="root-cause-analysis-why-v1.1v1.3-stuck-fixes-failed">Root Cause Analysis — Why v1.1–v1.3 Stuck Fixes Failed</h3>
+<p>All three prior approaches shared the same fundamental flaw: <strong>transient forces overpowered by sustained homing</strong>. The homing force toward the target is applied every frame at 10–12N. Prior “fixes” were:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 32%">
+<col style="width: 35%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>Approach</th>
+<th>Problem</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>v1.1</td>
+<td>Repulsive force only</td>
+<td>Equal to homing → deadlock</td>
+</tr>
+<tr class="even">
+<td>v1.2</td>
+<td>+ Tangential sliding</td>
+<td>Only applies within 3m of obstacle → oscillation at boundary</td>
+</tr>
+<tr class="odd">
+<td>v1.3</td>
+<td>+ One-time kick (20N)</td>
+<td>Moves ant ~0.11m, then homing pulls back; 90-frame reset → oscillation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight</strong>: The obstacle at (48, 20, 2w, 8h) spans y=12–28. An ant at y=25 heading left toward colony at (8,25) needs to clear 3m vertically. A one-time kick at 20N moves the ant 0.11m before homing reasserts. The ant needs <strong>sustained lateral movement</strong> with homing completely suppressed.</p>
+</section>
+<section id="fix-1-sustained-escape-mode" class="level3">
+<h3 class="anchored" data-anchor-id="fix-1-sustained-escape-mode">Fix 1: Sustained Escape Mode</h3>
+<p><strong>Design</strong>: When <code>stuck_counter &gt;= STUCK_THRESHOLD</code> (60 frames, ~1s of no progress):</p>
+<ol type="1">
+<li>Compute perpendicular escape direction (to the line from ant to target)</li>
+<li><strong>Obstacle clearance heuristic</strong>: Check 3m ahead on both perpendicular sides, pick the side with more open space (further from obstacles and arena walls)</li>
+<li>Set <code>escape_remaining = ESCAPE_DURATION</code> (120 frames = 2s)</li>
+<li>While escaping: apply <code>ESCAPE_FORCE</code> (15N) in committed direction + wall avoidance</li>
+<li><strong>Homing is completely suppressed</strong> — the escape check short-circuits at the top of <code>sense_decide_act</code> before any state logic runs</li>
+</ol>
+<p><strong>Parameters changed/added:</strong> - <code>STUCK_THRESHOLD</code>: 90 → 60 (detect faster) - <code>STUCK_KICK_FORCE</code>: removed entirely - <code>ESCAPE_DURATION</code>: 120 frames (new) - <code>ESCAPE_FORCE</code>: 15N (new)</p>
+<p><strong>New Ant fields</strong>: <code>escape_fx</code>, <code>escape_fy</code>, <code>escape_remaining</code></p>
+<p><strong>Math</strong>: At 15N force on a 0.5-density ant with damping 3.0, terminal velocity ≈ 5 m/s. Over 2 seconds: ~10m lateral travel. The largest obstacle needs only ~3m vertical clearance. The ant will easily clear it, then resume homing on the other side.</p>
+</section>
+<section id="fix-2-flock-model-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="fix-2-flock-model-clusters">Fix 2: Flock-Model Clusters</h3>
+<p><strong>User’s vision</strong> (verbatim): “they should move more or less in a kind of invisible circle, moving together, some random star-like spread, but the ‘mass center’ of the group moves as a whole…they as a group can save pheromones, as the pheromone track is so to say on the movement of the mass center, in that way, so to say they can in turn leave the pheromone”</p>
+<p><strong>Implementation — <code>_compute_flock_forces()</code> returns <code>(fx, fy, shared_angle)</code>:</strong></p>
+<ol type="1">
+<li><p><strong>Cohesion</strong> (force=10.0, radius=15m): Strong pull toward cluster centroid. Increased from 4.0 to 10.0. This is the “invisible circle” — ants stay tightly grouped.</p></li>
+<li><p><strong>Separation</strong> (force=3.0, dist=1.5m): Push apart ants closer than 1.5m. This creates the “star-like spread” around the centroid — ants don’t pile up on top of each other but maintain individual spacing.</p></li>
+<li><p><strong>Shared heading</strong> (weight=0.7): Average velocity direction of all cluster members. Explorer wander angles are blended: <code>wander_angle = shared_heading + gauss(0, 0.15)</code>. This makes the “mass center move as a whole” — all ants in the cluster go roughly the same direction, with small individual perturbations.</p></li>
+<li><p><strong>Pheromone round-robin</strong> — <code>_should_deposit()</code>: Each ant has a <code>cluster_index</code> (0, 1, 2, …). Deposit only when <code>frame % cluster_size == cluster_index</code>. The trail follows the cluster’s average path. One deposit every N frames instead of N overlapping deposits every frame. Group resource efficiency as the user described.</p></li>
+</ol>
+<p><strong>Parameters changed/added:</strong> - <code>CLUSTER_COHESION_FORCE</code>: 4.0 → 10.0 - <code>CLUSTER_COHESION_RADIUS</code>: 12.0 → 15.0 - <code>CLUSTER_SEPARATION_FORCE</code>: 3.0 (new) - <code>CLUSTER_SEPARATION_DIST</code>: 1.5 (new) - <code>FLOCK_HEADING_WEIGHT</code>: 0.7 (new) - <code>CLUSTER_DISCOVERY_RADIUS</code>: 6.0 → 8.0</p>
+</section>
+<section id="code-changes-summary" class="level3">
+<h3 class="anchored" data-anchor-id="code-changes-summary">Code Changes Summary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 57%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Config</td>
+<td>+4 new params, 3 updated, 1 removed (STUCK_KICK_FORCE)</td>
+</tr>
+<tr class="even">
+<td><code>_check_stuck()</code></td>
+<td>Replaced by <code>_check_enter_escape()</code> — sets sustained escape</td>
+</tr>
+<tr class="odd">
+<td><code>_compute_cluster_cohesion()</code></td>
+<td>Replaced by <code>_compute_flock_forces()</code> — 3-component flock</td>
+</tr>
+<tr class="even">
+<td><code>_should_deposit()</code></td>
+<td>New — pheromone round-robin gating</td>
+</tr>
+<tr class="odd">
+<td><code>sense_decide_act()</code></td>
+<td>Escape short-circuit at top; flock forces replace cohesion; deposits gated</td>
+</tr>
+<tr class="even">
+<td><code>Ant.__init__</code></td>
+<td>+4 new fields (escape_fx/fy/remaining, cluster_index)</td>
+</tr>
+<tr class="odd">
+<td>Spawn section</td>
+<td>Sets <code>cluster_index</code> during cluster_lookup construction</td>
+</tr>
+<tr class="even">
+<td>Info card</td>
+<td>Shows escape mode status (“120f left” / “No”)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="expected-behavior-1" class="level3">
+<h3 class="anchored" data-anchor-id="expected-behavior-1">Expected Behavior</h3>
+<ul>
+<li>Ants stuck against obstacles enter sustained escape after ~1s, clear the obstacle in 2s</li>
+<li>No more oscillation: homing is <strong>completely suppressed</strong> during escape</li>
+<li>Escape direction is intelligent: heuristic picks the open side</li>
+<li>Clusters move as cohesive flocks with star-like spread around centroid</li>
+<li>Mass center has shared heading — cluster moves as a unit</li>
+<li>Pheromone trail follows mass center path via round-robin deposits</li>
+<li>When one ant finds food, cluster mates within 8m also transition (and escape is cancelled)</li>
+</ul>
+<hr>
+<p><em>End of Report 8</em></p>
+<hr>
+</section>
+</section>
+<section id="report-9-next-entry-will-be-appended-here" class="level2">
+<h2 class="anchored" data-anchor-id="report-9-next-entry-will-be-appended-here">Report 9: [Next entry will be appended here]</h2>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

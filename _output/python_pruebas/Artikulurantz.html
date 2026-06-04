@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Artikulua kopiatzeko zatia</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Artikulurantz_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Artikulurantz_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Artikulurantz_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Artikulurantz_files/libs/quarto-html/popper.min.js"></script>
+<script src="Artikulurantz_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Artikulurantz_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Artikulurantz_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Artikulurantz_files/libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Artikulurantz_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Artikulurantz_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Artikulurantz_files/libs/bootstrap/bootstrap-813c323200a87c37e262811031999de4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#azkeneko-kodea" id="toc-azkeneko-kodea" class="nav-link active" data-scroll-target="#azkeneko-kodea">Azkeneko kodea</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Artikulua kopiatzeko zatia</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="azkeneko-kodea" class="level2">
+<h2 class="anchored" data-anchor-id="azkeneko-kodea">Azkeneko kodea</h2>
+<p>Hemen aurreko fitxategiko azken kodea sartuko dut. Ezaugarriak:</p>
+<ul>
+<li>Bideoa pausatu daiteke</li>
+<li>Inurri bat aukeratu daiteke ezaugarriak ikusi ahal izateko</li>
+<li>Dinamika:
+<ul>
+<li>Irteera ezagutzen duten inurriek (hortik pasatu direlako nahigabe) kargara doaz feromonak uzten.</li>
+<li>Irteera ezagutzen ez dutenak: feromonak jarraitzen dituzte (akatsa: irteerarantz edo kargarantz ez dute desberdintzen)</li>
+<li>Kargara itsatsita daudenak: Feromonak jarraitzen dituzte irteera ez badute ezagutzen, edo ezagutzen badute irteerarantz tiratzen dute, indar gehiagorekin eta feromonak uzten.</li>
+</ul></li>
+<li>Parametroak:
+<ul>
+<li>LinearDamping: 6</li>
+</ul></li>
+</ul>
+<p>Bastante desastre, kostatzen zaio ateratzea eta ez dituzte feromonak jarraitzen.</p>
+<div id="f1e6a920" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> Box2D</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Box2D <span class="im">import</span> b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- CONFIGURACIÓN DE PANTALLA ---</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>PPM <span class="op">=</span> <span class="fl">20.0</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>SIM_WIDTH <span class="op">=</span> <span class="dv">800</span>       <span class="co"># Zona de la simulación física (Box2D)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>PANEL_WIDTH <span class="op">=</span> <span class="dv">300</span>     <span class="co"># Zona del panel de datos (Estilo Director)</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>SCREEN_WIDTH <span class="op">=</span> SIM_WIDTH <span class="op">+</span> PANEL_WIDTH  <span class="co"># Ancho total: 1100 px</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>SCREEN_HEIGHT <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>TARGET_FPS <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Feromonas (Rejilla - limitada solo a la zona de simulación)</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>GRIDSZ <span class="op">=</span> <span class="dv">15</span> </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>COLS, ROWS <span class="op">=</span> SIM_WIDTH <span class="op">//</span> GRIDSZ, SCREEN_HEIGHT <span class="op">//</span> GRIDSZ</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>mapa_feromonas <span class="op">=</span> [[<span class="fl">0.0</span> <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(ROWS)] <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(COLS)]</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>DECAY <span class="op">=</span> <span class="fl">0.995</span> </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>pygame.init()</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>pygame.font.init()  <span class="co"># Inicializar el sistema de fuentes</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>fuente_titulo <span class="op">=</span> pygame.font.SysFont(<span class="st">"Arial"</span>, <span class="dv">18</span>, bold<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>fuente_texto <span class="op">=</span> pygame.font.SysFont(<span class="st">"Courier New"</span>, <span class="dv">14</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>pantalla <span class="op">=</span> pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>reloj <span class="op">=</span> pygame.time.Clock()</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> to_pygame(pt):</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mantiene la física dentro de los 800px de la zona de simulación</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="bu">int</span>(pt[<span class="dv">0</span>] <span class="op">*</span> PPM), <span class="bu">int</span>(SCREEN_HEIGHT <span class="op">-</span> pt[<span class="dv">1</span>] <span class="op">*</span> PPM))</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>mundo <span class="op">=</span> b2World(gravity<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Paredes y Salida (Ajustadas al límite de los 800px, x = 40 metros)</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>paredes <span class="op">=</span> mundo.CreateStaticBody(position<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="dv">40</span>, <span class="dv">1</span>, (<span class="dv">20</span>, <span class="dv">1</span>), <span class="dv">0</span>))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="dv">40</span>, <span class="dv">1</span>, (<span class="dv">20</span>, <span class="dv">29</span>), <span class="dv">0</span>))</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co"># El hueco de salida (en x=32 metros, unos 640px)</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">8</span>, (<span class="dv">32</span>, <span class="dv">25</span>), <span class="dv">0</span>)) </span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">8</span>, (<span class="dv">32</span>, <span class="dv">5</span>), <span class="dv">0</span>))</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>objetivo_salida <span class="op">=</span> Box2D.b2Vec2(<span class="dv">34</span>, <span class="dv">15</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Carga en forma de T</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>carga <span class="op">=</span> mundo.CreateDynamicBody(position<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">15</span>))</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>carga.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">2.0</span>), density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>carga.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">2.0</span>, <span class="fl">0.5</span>, (<span class="dv">0</span>, <span class="fl">2.0</span>), <span class="dv">0</span>), density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Hormigas</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>hormigas <span class="op">=</span> []</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>uniones <span class="op">=</span> {} </span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">35</span>):</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> mundo.CreateDynamicBody(position<span class="op">=</span>(random.uniform(<span class="dv">2</span>, <span class="dv">40</span>), random.uniform(<span class="dv">10</span>, <span class="dv">40</span>)), linearDamping<span class="op">=</span><span class="fl">6.0</span>)  </span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    h.CreateCircleFixture(radius<span class="op">=</span><span class="fl">0.2</span>, density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    h.userData <span class="op">=</span> {<span class="st">'timer_random'</span>: <span class="dv">0</span>, <span class="st">'dir_random'</span>: Box2D.b2Vec2(<span class="dv">0</span>,<span class="dv">0</span>), <span class="st">'sabe_camino'</span>: <span class="va">False</span>, <span class="st">'timer_memoria'</span>: <span class="dv">0</span>}</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    hormigas.append(h)</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_grid_coords(pos):</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    gx <span class="op">=</span> <span class="bu">int</span>((pos.x <span class="op">*</span> PPM) <span class="op">//</span> GRIDSZ)</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    gy <span class="op">=</span> <span class="bu">int</span>((SCREEN_HEIGHT <span class="op">-</span> (pos.y <span class="op">*</span> PPM)) <span class="op">//</span> GRIDSZ)</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">min</span>(COLS<span class="op">-</span><span class="dv">1</span>, gx)), <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">min</span>(ROWS<span class="op">-</span><span class="dv">1</span>, gy))</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="co"># --- VARIABLES DE CONTROL INTERACTIVO ---</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>pausado <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>hormiga_seleccionada <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="co"># --- BUCLE PRINCIPAL ---</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>ejecutando <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> ejecutando:</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> evento <span class="kw">in</span> pygame.event.get():</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.QUIT: </span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>            ejecutando <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 1. Pausa (Barra Espaciadora)</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.KEYDOWN:</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> evento.key <span class="op">==</span> pygame.K_SPACE:</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>                pausado <span class="op">=</span> <span class="kw">not</span> pausado</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 2. Selección con click izquierdo</span></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.MOUSEBUTTONDOWN:</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> evento.button <span class="op">==</span> <span class="dv">1</span>: </span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>                pos_raton_px <span class="op">=</span> pygame.mouse.get_pos()</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Solo procesar clicks si ocurren DENTRO de la simulación (primeros 800px)</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> pos_raton_px[<span class="dv">0</span>] <span class="op">&lt;</span> SIM_WIDTH:</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>                    raton_x <span class="op">=</span> pos_raton_px[<span class="dv">0</span>] <span class="op">/</span> PPM</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>                    raton_y <span class="op">=</span> (SCREEN_HEIGHT <span class="op">-</span> pos_raton_px[<span class="dv">1</span>]) <span class="op">/</span> PPM</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>                    pos_raton_mundo <span class="op">=</span> Box2D.b2Vec2(raton_x, raton_y)</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>                    hubo_seleccion <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> h <span class="kw">in</span> hormigas:</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>                        distancia <span class="op">=</span> (h.position <span class="op">-</span> pos_raton_mundo).length</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> distancia <span class="op">&lt;</span> <span class="fl">0.6</span>: </span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>                            hormiga_seleccionada <span class="op">=</span> h</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>                            hubo_seleccion <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">break</span></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> <span class="kw">not</span> hubo_seleccion:</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>                        hormiga_seleccionada <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fondo general (Oscuro)</span></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>    pantalla.fill((<span class="dv">30</span>, <span class="dv">30</span>, <span class="dv">30</span>))</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. FEROMONAS (Dibujo y evaporación)</span></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(COLS):</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> y <span class="kw">in</span> <span class="bu">range</span>(ROWS):</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> mapa_feromonas[x][y] <span class="op">&gt;</span> <span class="fl">0.01</span>:</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>                intensity <span class="op">=</span> <span class="bu">min</span>(<span class="dv">255</span>, <span class="bu">int</span>(mapa_feromonas[x][y] <span class="op">*</span> <span class="dv">20</span>))</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>                pygame.draw.rect(pantalla, (<span class="dv">0</span>, intensity, intensity), (x<span class="op">*</span>GRIDSZ, y<span class="op">*</span>GRIDSZ, GRIDSZ, GRIDSZ))</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>                mapa_feromonas[x][y] <span class="op">*=</span> DECAY</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. LÓGICA DE COMPORTAMIENTO</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> h <span class="kw">in</span> hormigas:</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>        gx, gy <span class="op">=</span> get_grid_coords(h.position)</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'timer_memoria'</span>]<span class="op">==</span><span class="dv">0</span>:</span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'sabe_camino'</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'timer_memoria'</span>] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'timer_memoria'</span>] <span class="op">-=</span> <span class="dv">1</span></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (h.position <span class="op">-</span> objetivo_salida).length <span class="op">&lt;</span> <span class="fl">2.0</span>:</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'sabe_camino'</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'timer_memoria'</span>] <span class="op">=</span> <span class="dv">480</span></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>                mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">3.0</span></span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> h <span class="kw">in</span> uniones:</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>        <span class="co">#Está mordiendo</span></span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>                dir_final <span class="op">=</span> objetivo_salida <span class="op">-</span> h.position</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>                mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">0.0</span></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>: <span class="co">#Esto es lo que hay que cambiar, que siga la direccion de la t, no las feromonas</span></span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>                velocidad_carga <span class="op">=</span> carga.linearVelocity</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> velocidad_carga.length <span class="op">&gt;</span> <span class="fl">0.1</span>:</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>                    dir_final<span class="op">=</span>Box2D.b2Vec2(velocidad_carga)</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># Si la carga se queda atascada (velocidad cero), la hormiga "olfatea" el suelo</span></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>                    max_olor, mejor_dir <span class="op">=</span> <span class="dv">0</span>, <span class="va">None</span></span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> ix <span class="kw">in</span> <span class="bu">range</span>(gx<span class="op">-</span><span class="dv">1</span>, gx<span class="op">+</span><span class="dv">2</span>):</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">for</span> iy <span class="kw">in</span> <span class="bu">range</span>(gy<span class="op">-</span><span class="dv">1</span>, gy<span class="op">+</span><span class="dv">2</span>):</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">if</span> <span class="dv">0</span> <span class="op">&lt;=</span> ix <span class="op">&lt;</span> COLS <span class="kw">and</span> <span class="dv">0</span> <span class="op">&lt;=</span> iy <span class="op">&lt;</span> ROWS:</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>                                <span class="cf">if</span> mapa_feromonas[ix][iy] <span class="op">&gt;</span> max_olor:</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>                                    max_olor <span class="op">=</span> mapa_feromonas[ix][iy]</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>                                    mejor_dir <span class="op">=</span> Box2D.b2Vec2(ix<span class="op">*</span>GRIDSZ<span class="op">/</span>PPM, (SCREEN_HEIGHT<span class="op">-</span>iy<span class="op">*</span>GRIDSZ)<span class="op">/</span>PPM) <span class="op">-</span> h.position</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>                    dir_final <span class="op">=</span> mejor_dir <span class="cf">if</span> mejor_dir <span class="cf">else</span> (carga.position <span class="op">-</span> h.position)</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>                dir_final.Normalize()</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>                h.ApplyForceToCenter(dir_final <span class="op">*</span> <span class="fl">28.0</span>, wake<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>        <span class="co">#No está mordiendo</span></span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> (h.position <span class="op">-</span> carga.position).length <span class="op">&lt;</span> <span class="fl">2.5</span>:</span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> contacto <span class="kw">in</span> h.contacts:</span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> contacto.contact.touching <span class="kw">and</span> contacto.other <span class="op">==</span> carga:</span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>                            u_def <span class="op">=</span> b2DistanceJointDef(bodyA<span class="op">=</span>h, bodyB<span class="op">=</span>carga, anchorA<span class="op">=</span>h.worldCenter, anchorB<span class="op">=</span>h.worldCenter, frequencyHz<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>                            uniones[h] <span class="op">=</span> Joint <span class="op">=</span> mundo.CreateJoint(u_def)</span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">break</span></span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>                    <span class="co">#Esto se puede cambiar. Voy a poner que vaya a la carga aunque no es real.</span></span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>                    dir_explora <span class="op">=</span> carga.position <span class="op">-</span> h.position</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a>                    dir_explora <span class="op">=</span> h.userData[<span class="st">'dir_random'</span>]</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> h.userData[<span class="st">'timer_random'</span>] <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>                        ang <span class="op">=</span> random.uniform(<span class="dv">0</span>, <span class="fl">6.28</span>)</span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>                        h.userData[<span class="st">'dir_random'</span>] <span class="op">=</span> Box2D.b2Vec2(math.cos(ang), math.sin(ang))</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>                        h.userData[<span class="st">'timer_random'</span>] <span class="op">=</span> <span class="dv">40</span></span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>                    h.userData[<span class="st">'timer_random'</span>] <span class="op">-=</span> <span class="dv">1</span></span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>                dir_explora.Normalize()</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>                h.ApplyForceToCenter(dir_explora <span class="op">*</span> <span class="fl">8.0</span>, wake<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. AVANZAR FÍSICA</span></span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>        mundo.Step(<span class="fl">1.0</span><span class="op">/</span>TARGET_FPS, <span class="dv">6</span>, <span class="dv">2</span>)</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. DIBUJO DE LA ARENA FÍSICA</span></span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> body <span class="kw">in</span> mundo.bodies:</span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> fixture <span class="kw">in</span> body.fixtures:</span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a>            shape <span class="op">=</span> fixture.shape</span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">isinstance</span>(shape, b2PolygonShape):</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>                verts <span class="op">=</span> [to_pygame(body.transform <span class="op">*</span> v) <span class="cf">for</span> v <span class="kw">in</span> shape.vertices]</span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a>                pygame.draw.polygon(pantalla, (<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">250</span>), verts)</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> <span class="bu">isinstance</span>(shape, b2CircleShape):</span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> body <span class="op">==</span> hormiga_seleccionada:</span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a>                    color <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> body <span class="kw">in</span> uniones: color <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">255</span>)</span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">elif</span> body.userData.get(<span class="st">'sabe_camino'</span>): color <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">255</span>, <span class="dv">100</span>)</span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">else</span>: color <span class="op">=</span> (<span class="dv">200</span>, <span class="dv">200</span>, <span class="dv">200</span>)</span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a>                pygame.draw.circle(pantalla, color, to_pygame(body.position), <span class="bu">int</span>(<span class="fl">0.2</span> <span class="op">*</span> PPM))</span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> body <span class="op">==</span> hormiga_seleccionada:</span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a>                    pygame.draw.circle(pantalla, (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">0</span>), to_pygame(body.position), <span class="bu">int</span>(<span class="fl">0.5</span> <span class="op">*</span> PPM), <span class="dv">1</span>)</span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a>    pygame.draw.circle(pantalla, (<span class="dv">255</span>, <span class="dv">215</span>, <span class="dv">0</span>), to_pygame(objetivo_salida), <span class="dv">10</span>, <span class="dv">2</span>)</span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a>    <span class="co"># =========================================================================</span></span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 5. DIBUJO DEL PANEL LATERAL GRÁFICO </span></span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a>    <span class="co"># =========================================================================</span></span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pintamos una caja negra sólida a la derecha para el panel de datos</span></span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a>    pygame.draw.rect(pantalla, (<span class="dv">15</span>, <span class="dv">15</span>, <span class="dv">15</span>), (SIM_WIDTH, <span class="dv">0</span>, PANEL_WIDTH, SCREEN_HEIGHT))</span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Línea divisoria blanca vertical</span></span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a>    pygame.draw.line(pantalla, (<span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>), (SIM_WIDTH, <span class="dv">0</span>), (SIM_WIDTH, SCREEN_HEIGHT), <span class="dv">2</span>)</span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Textos del Estado del Sistema</span></span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a>    txt_titulo <span class="op">=</span> fuente_titulo.render(<span class="st">"MONITOR EN TIEMPO REAL"</span>, <span class="va">True</span>, (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>))</span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_titulo, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">20</span>))</span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a>    estado_str <span class="op">=</span> <span class="st">"ESTADO: [PAUSADA]"</span> <span class="cf">if</span> pausado <span class="cf">else</span> <span class="st">"ESTADO: [CORRIENDO]"</span></span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a>    color_estado <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">100</span>, <span class="dv">100</span>) <span class="cf">if</span> pausado <span class="cf">else</span> (<span class="dv">100</span>, <span class="dv">255</span>, <span class="dv">100</span>)</span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a>    txt_estado <span class="op">=</span> fuente_texto.render(estado_str, <span class="va">True</span>, color_estado)</span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_estado, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">50</span>))</span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a>    txt_hint <span class="op">=</span> fuente_texto.render(<span class="st">"[Espacio]: Pausar/Reanudar"</span>, <span class="va">True</span>, (<span class="dv">150</span>, <span class="dv">150</span>, <span class="dv">150</span>))</span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_hint, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">75</span>))</span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a>    txt_hint2 <span class="op">=</span> fuente_texto.render(<span class="st">"[Click Izq]: Seguir hormiga"</span>, <span class="va">True</span>, (<span class="dv">150</span>, <span class="dv">150</span>, <span class="dv">150</span>))</span>
+<span id="cb1-227"><a href="#cb1-227" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_hint2, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">95</span>))</span>
+<span id="cb1-228"><a href="#cb1-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-229"><a href="#cb1-229" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Línea separadora interna</span></span>
+<span id="cb1-230"><a href="#cb1-230" aria-hidden="true" tabindex="-1"></a>    pygame.draw.line(pantalla, (<span class="dv">50</span>, <span class="dv">50</span>, <span class="dv">50</span>), (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">130</span>), (SCREEN_WIDTH <span class="op">-</span> <span class="dv">20</span>, <span class="dv">130</span>), <span class="dv">1</span>)</span>
+<span id="cb1-231"><a href="#cb1-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-232"><a href="#cb1-232" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sección de Información de la Hormiga Seleccionada</span></span>
+<span id="cb1-233"><a href="#cb1-233" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> hormiga_seleccionada <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb1-234"><a href="#cb1-234" aria-hidden="true" tabindex="-1"></a>        txt_sub <span class="op">=</span> fuente_titulo.render(<span class="st">"HORMIGA SELECCIONADA"</span>, <span class="va">True</span>, (<span class="dv">255</span>, <span class="dv">215</span>, <span class="dv">0</span>))</span>
+<span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_sub, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">150</span>))</span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-237"><a href="#cb1-237" aria-hidden="true" tabindex="-1"></a>        dist_salida <span class="op">=</span> (hormiga_seleccionada.position <span class="op">-</span> objetivo_salida).length</span>
+<span id="cb1-238"><a href="#cb1-238" aria-hidden="true" tabindex="-1"></a>        sabe_camino_str <span class="op">=</span> <span class="st">"SI"</span> <span class="cf">if</span> hormiga_seleccionada.userData[<span class="st">'sabe_camino'</span>] <span class="cf">else</span> <span class="st">"NO "</span></span>
+<span id="cb1-239"><a href="#cb1-239" aria-hidden="true" tabindex="-1"></a>        acoplada_str <span class="op">=</span> <span class="st">"SI"</span> <span class="cf">if</span> hormiga_seleccionada <span class="kw">in</span> uniones <span class="cf">else</span> <span class="st">"NO"</span></span>
+<span id="cb1-240"><a href="#cb1-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-241"><a href="#cb1-241" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Renderizar cada línea de datos dinámicos</span></span>
+<span id="cb1-242"><a href="#cb1-242" aria-hidden="true" tabindex="-1"></a>        lineas <span class="op">=</span> [</span>
+<span id="cb1-243"><a href="#cb1-243" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Posicion X: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>position<span class="sc">.</span>x<span class="sc">:.2f}</span><span class="ss"> m"</span>,</span>
+<span id="cb1-244"><a href="#cb1-244" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Posicion Y: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>position<span class="sc">.</span>y<span class="sc">:.2f}</span><span class="ss"> m"</span>,</span>
+<span id="cb1-245"><a href="#cb1-245" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Sabe camino: </span><span class="sc">{</span>sabe_camino_str<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb1-246"><a href="#cb1-246" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Acoplada a T: </span><span class="sc">{</span>acoplada_str<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb1-247"><a href="#cb1-247" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Dist. Salida: </span><span class="sc">{</span>dist_salida<span class="sc">:.2f}</span><span class="ss"> m"</span></span>
+<span id="cb1-248"><a href="#cb1-248" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb1-249"><a href="#cb1-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-250"><a href="#cb1-250" aria-hidden="true" tabindex="-1"></a>        y_offset <span class="op">=</span> <span class="dv">190</span></span>
+<span id="cb1-251"><a href="#cb1-251" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> linea <span class="kw">in</span> lineas:</span>
+<span id="cb1-252"><a href="#cb1-252" aria-hidden="true" tabindex="-1"></a>            txt_linea <span class="op">=</span> fuente_texto.render(linea, <span class="va">True</span>, (<span class="dv">220</span>, <span class="dv">220</span>, <span class="dv">220</span>))</span>
+<span id="cb1-253"><a href="#cb1-253" aria-hidden="true" tabindex="-1"></a>            pantalla.blit(txt_linea, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, y_offset))</span>
+<span id="cb1-254"><a href="#cb1-254" aria-hidden="true" tabindex="-1"></a>            y_offset <span class="op">+=</span> <span class="dv">25</span></span>
+<span id="cb1-255"><a href="#cb1-255" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-256"><a href="#cb1-256" aria-hidden="true" tabindex="-1"></a>        txt_no_select <span class="op">=</span> fuente_texto.render(<span class="st">"Ninguna hormiga seleccionada."</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb1-257"><a href="#cb1-257" aria-hidden="true" tabindex="-1"></a>        txt_no_select2 <span class="op">=</span> fuente_texto.render(<span class="st">"Haz click sobre una para"</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb1-258"><a href="#cb1-258" aria-hidden="true" tabindex="-1"></a>        txt_no_select3 <span class="op">=</span> fuente_texto.render(<span class="st">"monitorizar sus variables."</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb1-259"><a href="#cb1-259" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">160</span>))</span>
+<span id="cb1-260"><a href="#cb1-260" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select2, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">185</span>))</span>
+<span id="cb1-261"><a href="#cb1-261" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select3, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">210</span>))</span>
+<span id="cb1-262"><a href="#cb1-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-263"><a href="#cb1-263" aria-hidden="true" tabindex="-1"></a>    pygame.display.flip()</span>
+<span id="cb1-264"><a href="#cb1-264" aria-hidden="true" tabindex="-1"></a>    reloj.tick(TARGET_FPS)</span>
+<span id="cb1-265"><a href="#cb1-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-266"><a href="#cb1-266" aria-hidden="true" tabindex="-1"></a>pygame.quit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\USER\anaconda3\envs\tfg-transport\Lib\site-packages\pygame\pkgdata.py:25: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools&lt;81.
+  from pkg_resources import resource_stream, resource_exists</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>pygame 2.6.1 (SDL 2.28.4, Python 3.11.14)
+Hello from the pygame community. https://www.pygame.org/contribute.html</code></pre>
+</div>
+</div>
+<p>Aldaketak: guztiak indar berdina egiten dute eta ez dutenek irteera ezagutzen karga mugitzen ari den norabidean tiratuko dute.</p>
+<div id="f6143705" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> Box2D</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Box2D <span class="im">import</span> b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- CONFIGURACIÓN DE PANTALLA ---</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>PPM <span class="op">=</span> <span class="fl">20.0</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>SIM_WIDTH <span class="op">=</span> <span class="dv">800</span>       <span class="co"># Zona de la simulación física (Box2D)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>PANEL_WIDTH <span class="op">=</span> <span class="dv">300</span>     <span class="co"># Zona del panel de datos (Estilo Director)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>SCREEN_WIDTH <span class="op">=</span> SIM_WIDTH <span class="op">+</span> PANEL_WIDTH  <span class="co"># Ancho total: 1100 px</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>SCREEN_HEIGHT <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>TARGET_FPS <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Feromonas (Rejilla - limitada solo a la zona de simulación)</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>GRIDSZ <span class="op">=</span> <span class="dv">15</span> </span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>COLS, ROWS <span class="op">=</span> SIM_WIDTH <span class="op">//</span> GRIDSZ, SCREEN_HEIGHT <span class="op">//</span> GRIDSZ</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>mapa_feromonas <span class="op">=</span> [[<span class="fl">0.0</span> <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(ROWS)] <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(COLS)]</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>DECAY <span class="op">=</span> <span class="fl">0.995</span> </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>pygame.init()</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>pygame.font.init()  <span class="co"># Inicializar el sistema de fuentes</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>fuente_titulo <span class="op">=</span> pygame.font.SysFont(<span class="st">"Arial"</span>, <span class="dv">18</span>, bold<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>fuente_texto <span class="op">=</span> pygame.font.SysFont(<span class="st">"Courier New"</span>, <span class="dv">14</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>pantalla <span class="op">=</span> pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>reloj <span class="op">=</span> pygame.time.Clock()</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> to_pygame(pt):</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mantiene la física dentro de los 800px de la zona de simulación</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="bu">int</span>(pt[<span class="dv">0</span>] <span class="op">*</span> PPM), <span class="bu">int</span>(SCREEN_HEIGHT <span class="op">-</span> pt[<span class="dv">1</span>] <span class="op">*</span> PPM))</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>mundo <span class="op">=</span> b2World(gravity<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Paredes y Salida (Ajustadas al límite de los 800px, x = 40 metros)</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>paredes <span class="op">=</span> mundo.CreateStaticBody(position<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="dv">40</span>, <span class="dv">1</span>, (<span class="dv">20</span>, <span class="dv">1</span>), <span class="dv">0</span>))</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="dv">40</span>, <span class="dv">1</span>, (<span class="dv">20</span>, <span class="dv">29</span>), <span class="dv">0</span>))</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># El hueco de salida (en x=32 metros, unos 640px)</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">8</span>, (<span class="dv">32</span>, <span class="dv">25</span>), <span class="dv">0</span>)) </span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">8</span>, (<span class="dv">32</span>, <span class="dv">5</span>), <span class="dv">0</span>))</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>objetivo_salida <span class="op">=</span> Box2D.b2Vec2(<span class="dv">34</span>, <span class="dv">15</span>)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Carga en forma de T</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>carga <span class="op">=</span> mundo.CreateDynamicBody(position<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">15</span>))</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>carga.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">2.0</span>), density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>carga.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">2.0</span>, <span class="fl">0.5</span>, (<span class="dv">0</span>, <span class="fl">2.0</span>), <span class="dv">0</span>), density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Hormigas</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>hormigas <span class="op">=</span> []</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>uniones <span class="op">=</span> {} </span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">35</span>):</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># CORREGIDO: linearDamping con una sola 'n' y rango de aparición dentro del techo (y entre 3 y 27)</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> mundo.CreateDynamicBody(position<span class="op">=</span>(random.uniform(<span class="dv">2</span>, <span class="dv">8</span>), random.uniform(<span class="dv">3</span>, <span class="dv">27</span>)), linearDamping<span class="op">=</span><span class="fl">6.0</span>)  </span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    h.CreateCircleFixture(radius<span class="op">=</span><span class="fl">0.2</span>, density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    h.userData <span class="op">=</span> {<span class="st">'timer_random'</span>: <span class="dv">0</span>, <span class="st">'dir_random'</span>: Box2D.b2Vec2(<span class="dv">0</span>,<span class="dv">0</span>), <span class="st">'sabe_camino'</span>: <span class="va">False</span>, <span class="st">'timer_memoria'</span>: <span class="dv">0</span>}</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>    hormigas.append(h)</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_grid_coords(pos):</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>    gx <span class="op">=</span> <span class="bu">int</span>((pos.x <span class="op">*</span> PPM) <span class="op">//</span> GRIDSZ)</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    gy <span class="op">=</span> <span class="bu">int</span>((SCREEN_HEIGHT <span class="op">-</span> (pos.y <span class="op">*</span> PPM)) <span class="op">//</span> GRIDSZ)</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">min</span>(COLS<span class="op">-</span><span class="dv">1</span>, gx)), <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">min</span>(ROWS<span class="op">-</span><span class="dv">1</span>, gy))</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="co"># --- VARIABLES DE CONTROL INTERACTIVO ---</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>pausado <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>hormiga_seleccionada <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="co"># --- BUCLE PRINCIPAL ---</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>ejecutando <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> ejecutando:</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> evento <span class="kw">in</span> pygame.event.get():</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.QUIT: </span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>            ejecutando <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 1. Pausa (Barra Espaciadora)</span></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.KEYDOWN:</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> evento.key <span class="op">==</span> pygame.K_SPACE:</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>                pausado <span class="op">=</span> <span class="kw">not</span> pausado</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 2. Selección con click izquierdo</span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.MOUSEBUTTONDOWN:</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> evento.button <span class="op">==</span> <span class="dv">1</span>: </span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>                pos_raton_px <span class="op">=</span> pygame.mouse.get_pos()</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Solo procesar clicks si ocurren DENTRO de la simulación (primeros 800px)</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> pos_raton_px[<span class="dv">0</span>] <span class="op">&lt;</span> SIM_WIDTH:</span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>                    raton_x <span class="op">=</span> pos_raton_px[<span class="dv">0</span>] <span class="op">/</span> PPM</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>                    raton_y <span class="op">=</span> (SCREEN_HEIGHT <span class="op">-</span> pos_raton_px[<span class="dv">1</span>]) <span class="op">/</span> PPM</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>                    pos_raton_mundo <span class="op">=</span> Box2D.b2Vec2(raton_x, raton_y)</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>                    hubo_seleccion <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> h <span class="kw">in</span> hormigas:</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>                        distancia <span class="op">=</span> (h.position <span class="op">-</span> pos_raton_mundo).length</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> distancia <span class="op">&lt;</span> <span class="fl">0.6</span>: </span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>                            hormiga_seleccionada <span class="op">=</span> h</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>                            hubo_seleccion <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">break</span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> <span class="kw">not</span> hubo_seleccion:</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>                        hormiga_seleccionada <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fondo general (Oscuro)</span></span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>    pantalla.fill((<span class="dv">30</span>, <span class="dv">30</span>, <span class="dv">30</span>))</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. FEROMONAS (Dibujo y evaporación)</span></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(COLS):</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> y <span class="kw">in</span> <span class="bu">range</span>(ROWS):</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> mapa_feromonas[x][y] <span class="op">&gt;</span> <span class="fl">0.01</span>:</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>                intensity <span class="op">=</span> <span class="bu">min</span>(<span class="dv">255</span>, <span class="bu">int</span>(mapa_feromonas[x][y] <span class="op">*</span> <span class="dv">20</span>))</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>                pygame.draw.rect(pantalla, (<span class="dv">0</span>, intensity, intensity), (x<span class="op">*</span>GRIDSZ, y<span class="op">*</span>GRIDSZ, GRIDSZ, GRIDSZ))</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>                mapa_feromonas[x][y] <span class="op">*=</span> DECAY</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. LÓGICA DE COMPORTAMIENTO</span></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> h <span class="kw">in</span> hormigas:</span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>        gx, gy <span class="op">=</span> get_grid_coords(h.position)</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'timer_memoria'</span>] <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'sabe_camino'</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'timer_memoria'</span>] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'timer_memoria'</span>] <span class="op">-=</span> <span class="dv">1</span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (h.position <span class="op">-</span> objetivo_salida).length <span class="op">&lt;</span> <span class="fl">2.0</span>:</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'sabe_camino'</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'timer_memoria'</span>] <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> h <span class="kw">in</span> uniones:</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>                    mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">0.0</span></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>                    mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">3.0</span></span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> h <span class="kw">in</span> uniones:</span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Está mordiendo</span></span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>                dir_final <span class="op">=</span> objetivo_salida <span class="op">-</span> h.position</span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>                mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">0.0</span></span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>                max_olor, mejor_dir <span class="op">=</span> <span class="dv">0</span>, <span class="va">None</span></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> ix <span class="kw">in</span> <span class="bu">range</span>(gx<span class="op">-</span><span class="dv">1</span>, gx<span class="op">+</span><span class="dv">2</span>):</span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> iy <span class="kw">in</span> <span class="bu">range</span>(gy<span class="op">-</span><span class="dv">1</span>, gy<span class="op">+</span><span class="dv">2</span>):</span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> <span class="dv">0</span> <span class="op">&lt;=</span> ix <span class="op">&lt;</span> COLS <span class="kw">and</span> <span class="dv">0</span> <span class="op">&lt;=</span> iy <span class="op">&lt;</span> ROWS:</span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">if</span> mapa_feromonas[ix][iy] <span class="op">&gt;</span> max_olor:</span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>                                max_olor <span class="op">=</span> mapa_feromonas[ix][iy]</span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>                                mejor_dir <span class="op">=</span> Box2D.b2Vec2(ix<span class="op">*</span>GRIDSZ<span class="op">/</span>PPM, (SCREEN_HEIGHT<span class="op">-</span>iy<span class="op">*</span>GRIDSZ)<span class="op">/</span>PPM) <span class="op">-</span> h.position</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>                dir_final <span class="op">=</span> mejor_dir <span class="cf">if</span> mejor_dir <span class="cf">else</span> (carga.position <span class="op">-</span> h.position)</span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>                dir_final.Normalize()</span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>                h.ApplyForceToCenter(dir_final <span class="op">*</span> <span class="fl">25.0</span>, wake<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>            <span class="co"># No está mordiendo</span></span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> (h.position <span class="op">-</span> carga.position).length <span class="op">&lt;</span> <span class="fl">2.5</span>:</span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> contacto <span class="kw">in</span> h.contacts:</span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> contacto.contact.touching <span class="kw">and</span> contacto.other <span class="op">==</span> carga:</span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># NUEVA MEJORA: Anclaje rígido directo al centro de la hormiga en contacto</span></span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a>                            punto_anclaje <span class="op">=</span> h.worldCenter </span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a>                            u_def <span class="op">=</span> b2DistanceJointDef(</span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>                                bodyA<span class="op">=</span>h, </span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>                                bodyB<span class="op">=</span>carga, </span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>                                anchorA<span class="op">=</span>punto_anclaje,  </span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>                                anchorB<span class="op">=</span>punto_anclaje,  </span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>                                frequencyHz<span class="op">=</span><span class="dv">0</span>,          <span class="co"># Máxima rigidez física</span></span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>                                dampingRatio<span class="op">=</span><span class="fl">1.0</span></span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>                            )</span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># Forzamos la longitud exacta para evitar empujes geométricos</span></span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>                            u_def.length <span class="op">=</span> (h.position <span class="op">-</span> punto_anclaje).length <span class="cf">if</span> (h.position <span class="op">-</span> punto_anclaje).length <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="fl">0.1</span></span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>                            uniones[h] <span class="op">=</span> mundo.CreateJoint(u_def)</span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">break</span></span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>                    dir_explora <span class="op">=</span> carga.position <span class="op">-</span> h.position</span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>                    dir_explora <span class="op">=</span> h.userData[<span class="st">'dir_random'</span>]</span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> h.userData[<span class="st">'timer_random'</span>] <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>                        ang <span class="op">=</span> random.uniform(<span class="dv">0</span>, <span class="fl">6.28</span>)</span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a>                        h.userData[<span class="st">'dir_random'</span>] <span class="op">=</span> Box2D.b2Vec2(math.cos(ang), math.sin(ang))</span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>                        h.userData[<span class="st">'timer_random'</span>] <span class="op">=</span> <span class="dv">40</span></span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a>                    h.userData[<span class="st">'timer_random'</span>] <span class="op">-=</span> <span class="dv">1</span></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>                dir_explora.Normalize()</span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>                h.ApplyForceToCenter(dir_explora <span class="op">*</span> <span class="fl">8.0</span>, wake<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. AVANZAR FÍSICA</span></span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a>        mundo.Step(<span class="fl">1.0</span><span class="op">/</span>TARGET_FPS, <span class="dv">6</span>, <span class="dv">2</span>)</span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. DIBUJO DE LA ARENA FÍSICA</span></span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> body <span class="kw">in</span> mundo.bodies:</span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> fixture <span class="kw">in</span> body.fixtures:</span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a>            shape <span class="op">=</span> fixture.shape</span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">isinstance</span>(shape, b2PolygonShape):</span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a>                verts <span class="op">=</span> [to_pygame(body.transform <span class="op">*</span> v) <span class="cf">for</span> v <span class="kw">in</span> shape.vertices]</span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>                pygame.draw.polygon(pantalla, (<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">250</span>), verts)</span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> <span class="bu">isinstance</span>(shape, b2CircleShape):</span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a>                <span class="co"># NUEVA MEJORA: Color rojo si está seleccionada</span></span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> body <span class="op">==</span> hormiga_seleccionada:</span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a>                    color <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> body <span class="kw">in</span> uniones: color <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">255</span>)</span>
+<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">elif</span> body.userData.get(<span class="st">'sabe_camino'</span>): color <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">255</span>, <span class="dv">100</span>)</span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">else</span>: color <span class="op">=</span> (<span class="dv">200</span>, <span class="dv">200</span>, <span class="dv">200</span>)</span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a>                pygame.draw.circle(pantalla, color, to_pygame(body.position), <span class="bu">int</span>(<span class="fl">0.2</span> <span class="op">*</span> PPM))</span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a>                <span class="co"># NUEVA MEJORA: Aro amarillo de seguimiento VIP</span></span>
+<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> body <span class="op">==</span> hormiga_seleccionada:</span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a>                    pygame.draw.circle(pantalla, (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">0</span>), to_pygame(body.position), <span class="bu">int</span>(<span class="fl">0.5</span> <span class="op">*</span> PPM), <span class="dv">1</span>)</span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a>    pygame.draw.circle(pantalla, (<span class="dv">255</span>, <span class="dv">215</span>, <span class="dv">0</span>), to_pygame(objetivo_salida), <span class="dv">10</span>, <span class="dv">2</span>)</span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>    <span class="co"># =========================================================================</span></span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 5. DIBUJO DEL PANEL LATERAL GRÁFICO (MONITORIZACIÓN GRÁFICA EN TIEMPO REAL)</span></span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a>    <span class="co"># =========================================================================</span></span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a>    pygame.draw.rect(pantalla, (<span class="dv">15</span>, <span class="dv">15</span>, <span class="dv">15</span>), (SIM_WIDTH, <span class="dv">0</span>, PANEL_WIDTH, SCREEN_HEIGHT))</span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a>    pygame.draw.line(pantalla, (<span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>), (SIM_WIDTH, <span class="dv">0</span>), (SIM_WIDTH, SCREEN_HEIGHT), <span class="dv">2</span>)</span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a>    txt_titulo <span class="op">=</span> fuente_titulo.render(<span class="st">"MONITOR EN TIEMPO REAL"</span>, <span class="va">True</span>, (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>))</span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_titulo, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">20</span>))</span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a>    estado_str <span class="op">=</span> <span class="st">"ESTADO: [PAUSADA]"</span> <span class="cf">if</span> pausado <span class="cf">else</span> <span class="st">"ESTADO: [CORRIENDO]"</span></span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a>    color_estado <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">100</span>, <span class="dv">100</span>) <span class="cf">if</span> pausado <span class="cf">else</span> (<span class="dv">100</span>, <span class="dv">255</span>, <span class="dv">100</span>)</span>
+<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a>    txt_estado <span class="op">=</span> fuente_texto.render(estado_str, <span class="va">True</span>, color_estado)</span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_estado, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">50</span>))</span>
+<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a>    txt_hint <span class="op">=</span> fuente_texto.render(<span class="st">"[Espacio]: Pausar/Reanudar"</span>, <span class="va">True</span>, (<span class="dv">150</span>, <span class="dv">150</span>, <span class="dv">150</span>))</span>
+<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_hint, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">75</span>))</span>
+<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a>    txt_hint2 <span class="op">=</span> fuente_texto.render(<span class="st">"[Click Izq]: Seguir hormiga"</span>, <span class="va">True</span>, (<span class="dv">150</span>, <span class="dv">150</span>, <span class="dv">150</span>))</span>
+<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_hint2, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">95</span>))</span>
+<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a>    pygame.draw.line(pantalla, (<span class="dv">50</span>, <span class="dv">50</span>, <span class="dv">50</span>), (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">130</span>), (SCREEN_WIDTH <span class="op">-</span> <span class="dv">20</span>, <span class="dv">130</span>), <span class="dv">1</span>)</span>
+<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> hormiga_seleccionada <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a>        txt_sub <span class="op">=</span> fuente_titulo.render(<span class="st">"HORMIGA SELECCIONADA"</span>, <span class="va">True</span>, (<span class="dv">255</span>, <span class="dv">215</span>, <span class="dv">0</span>))</span>
+<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_sub, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">150</span>))</span>
+<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a>        dist_salida <span class="op">=</span> (hormiga_seleccionada.position <span class="op">-</span> objetivo_salida).length</span>
+<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a>        sabe_camino_str <span class="op">=</span> <span class="st">"SI"</span> <span class="cf">if</span> hormiga_seleccionada.userData[<span class="st">'sabe_camino'</span>] <span class="cf">else</span> <span class="st">"NO"</span></span>
+<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a>        acoplada_str <span class="op">=</span> <span class="st">"SI"</span> <span class="cf">if</span> hormiga_seleccionada <span class="kw">in</span> uniones <span class="cf">else</span> <span class="st">"NO"</span></span>
+<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a>        lineas <span class="op">=</span> [</span>
+<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Posicion X: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>position<span class="sc">.</span>x<span class="sc">:.2f}</span><span class="ss"> m"</span>,</span>
+<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Posicion Y: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>position<span class="sc">.</span>y<span class="sc">:.2f}</span><span class="ss"> m"</span>,</span>
+<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Sabe camino: </span><span class="sc">{</span>sabe_camino_str<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Acoplada a T: </span><span class="sc">{</span>acoplada_str<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Dist. Salida: </span><span class="sc">{</span>dist_salida<span class="sc">:.2f}</span><span class="ss"> m"</span>, </span>
+<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Timer memoria: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>userData[<span class="st">'timer_memoria'</span>]<span class="sc">}</span><span class="ss"> frames"</span></span>
+<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a>        y_offset <span class="op">=</span> <span class="dv">190</span></span>
+<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> linea <span class="kw">in</span> lineas:</span>
+<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a>            txt_linea <span class="op">=</span> fuente_texto.render(linea, <span class="va">True</span>, (<span class="dv">220</span>, <span class="dv">220</span>, <span class="dv">220</span>))</span>
+<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a>            pantalla.blit(txt_linea, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, y_offset))</span>
+<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a>            y_offset <span class="op">+=</span> <span class="dv">25</span></span>
+<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a>        txt_no_select <span class="op">=</span> fuente_texto.render(<span class="st">"Ninguna hormiga seleccionada."</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a>        txt_no_select2 <span class="op">=</span> fuente_texto.render(<span class="st">"Haz click sobre una para"</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a>        txt_no_select3 <span class="op">=</span> fuente_texto.render(<span class="st">"monitorizar sus variables."</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">160</span>))</span>
+<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select2, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">185</span>))</span>
+<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select3, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">210</span>))</span>
+<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a>    pygame.display.flip()</span>
+<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a>    reloj.tick(TARGET_FPS)</span>
+<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a>pygame.quit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="fd3e32ec" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pygame</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> Box2D</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Box2D <span class="im">import</span> b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- CONFIGURACIÓN DE PANTALLA ---</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>PPM <span class="op">=</span> <span class="fl">20.0</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>SIM_WIDTH <span class="op">=</span> <span class="dv">800</span>       <span class="co"># Zona de la simulación física (Box2D)</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>PANEL_WIDTH <span class="op">=</span> <span class="dv">300</span>     <span class="co"># Zona del panel de datos (Estilo Director)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>SCREEN_WIDTH <span class="op">=</span> SIM_WIDTH <span class="op">+</span> PANEL_WIDTH  <span class="co"># Ancho total: 1100 px</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>SCREEN_HEIGHT <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>TARGET_FPS <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Feromonas (Rejilla - limitada solo a la zona de simulación)</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>GRIDSZ <span class="op">=</span> <span class="dv">15</span> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>COLS, ROWS <span class="op">=</span> SIM_WIDTH <span class="op">//</span> GRIDSZ, SCREEN_HEIGHT <span class="op">//</span> GRIDSZ</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>mapa_feromonas <span class="op">=</span> [[<span class="fl">0.0</span> <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(ROWS)] <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(COLS)]</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>DECAY <span class="op">=</span> <span class="fl">0.995</span> </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>pygame.init()</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>pygame.font.init()  <span class="co"># Inicializar el sistema de fuentes</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>fuente_titulo <span class="op">=</span> pygame.font.SysFont(<span class="st">"Arial"</span>, <span class="dv">18</span>, bold<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>fuente_texto <span class="op">=</span> pygame.font.SysFont(<span class="st">"Courier New"</span>, <span class="dv">14</span>)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>pantalla <span class="op">=</span> pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>reloj <span class="op">=</span> pygame.time.Clock()</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> to_pygame(pt):</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mantiene la física dentro de los 800px de la zona de simulación</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="bu">int</span>(pt[<span class="dv">0</span>] <span class="op">*</span> PPM), <span class="bu">int</span>(SCREEN_HEIGHT <span class="op">-</span> pt[<span class="dv">1</span>] <span class="op">*</span> PPM))</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>mundo <span class="op">=</span> b2World(gravity<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Paredes y Salida (Ajustadas al límite de los 800px, x = 40 metros)</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>paredes <span class="op">=</span> mundo.CreateStaticBody(position<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="dv">40</span>, <span class="dv">1</span>, (<span class="dv">20</span>, <span class="dv">1</span>), <span class="dv">0</span>))</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="dv">40</span>, <span class="dv">1</span>, (<span class="dv">20</span>, <span class="dv">29</span>), <span class="dv">0</span>))</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co"># El hueco de salida (en x=32 metros, unos 640px)</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">8</span>, (<span class="dv">32</span>, <span class="dv">25</span>), <span class="dv">0</span>)) </span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>paredes.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="dv">8</span>, (<span class="dv">32</span>, <span class="dv">5</span>), <span class="dv">0</span>))</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>objetivo_salida <span class="op">=</span> Box2D.b2Vec2(<span class="dv">34</span>, <span class="dv">15</span>)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Carga en forma de T</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>carga <span class="op">=</span> mundo.CreateDynamicBody(position<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">15</span>))</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>carga.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">2.0</span>), density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>carga.CreatePolygonFixture(box<span class="op">=</span>(<span class="fl">2.0</span>, <span class="fl">0.5</span>, (<span class="dv">0</span>, <span class="fl">2.0</span>), <span class="dv">0</span>), density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Hormigas</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>hormigas <span class="op">=</span> []</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>uniones <span class="op">=</span> {} </span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">35</span>):</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> mundo.CreateDynamicBody(position<span class="op">=</span>(random.uniform(<span class="dv">2</span>, <span class="dv">40</span>), random.uniform(<span class="dv">10</span>, <span class="dv">40</span>)), linearDamping<span class="op">=</span><span class="fl">6.0</span>)  </span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>    h.CreateCircleFixture(radius<span class="op">=</span><span class="fl">0.2</span>, density<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>    h.userData <span class="op">=</span> {<span class="st">'timer_random'</span>: <span class="dv">0</span>, <span class="st">'dir_random'</span>: Box2D.b2Vec2(<span class="dv">0</span>,<span class="dv">0</span>), <span class="st">'sabe_camino'</span>: <span class="va">False</span>, <span class="st">'timer_memoria'</span>: <span class="dv">0</span>}</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>    hormigas.append(h)</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_grid_coords(pos):</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    gx <span class="op">=</span> <span class="bu">int</span>((pos.x <span class="op">*</span> PPM) <span class="op">//</span> GRIDSZ)</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>    gy <span class="op">=</span> <span class="bu">int</span>((SCREEN_HEIGHT <span class="op">-</span> (pos.y <span class="op">*</span> PPM)) <span class="op">//</span> GRIDSZ)</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">min</span>(COLS<span class="op">-</span><span class="dv">1</span>, gx)), <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">min</span>(ROWS<span class="op">-</span><span class="dv">1</span>, gy))</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="co"># --- VARIABLES DE CONTROL INTERACTIVO ---</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>pausado <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>hormiga_seleccionada <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="co"># --- BUCLE PRINCIPAL ---</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>ejecutando <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> ejecutando:</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> evento <span class="kw">in</span> pygame.event.get():</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.QUIT: </span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>            ejecutando <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 1. Pausa (Barra Espaciadora)</span></span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.KEYDOWN:</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> evento.key <span class="op">==</span> pygame.K_SPACE:</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>                pausado <span class="op">=</span> <span class="kw">not</span> pausado</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 2. Selección con click izquierdo</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> evento.<span class="bu">type</span> <span class="op">==</span> pygame.MOUSEBUTTONDOWN:</span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> evento.button <span class="op">==</span> <span class="dv">1</span>: </span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>                pos_raton_px <span class="op">=</span> pygame.mouse.get_pos()</span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Solo procesar clicks si ocurren DENTRO de la simulación (primeros 800px)</span></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> pos_raton_px[<span class="dv">0</span>] <span class="op">&lt;</span> SIM_WIDTH:</span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>                    raton_x <span class="op">=</span> pos_raton_px[<span class="dv">0</span>] <span class="op">/</span> PPM</span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>                    raton_y <span class="op">=</span> (SCREEN_HEIGHT <span class="op">-</span> pos_raton_px[<span class="dv">1</span>]) <span class="op">/</span> PPM</span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>                    pos_raton_mundo <span class="op">=</span> Box2D.b2Vec2(raton_x, raton_y)</span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>                    hubo_seleccion <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> h <span class="kw">in</span> hormigas:</span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>                        distancia <span class="op">=</span> (h.position <span class="op">-</span> pos_raton_mundo).length</span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> distancia <span class="op">&lt;</span> <span class="fl">0.6</span>: </span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a>                            hormiga_seleccionada <span class="op">=</span> h</span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>                            hubo_seleccion <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">break</span></span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> <span class="kw">not</span> hubo_seleccion:</span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a>                        hormiga_seleccionada <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fondo general (Oscuro)</span></span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a>    pantalla.fill((<span class="dv">30</span>, <span class="dv">30</span>, <span class="dv">30</span>))</span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. FEROMONAS (Dibujo y evaporación)</span></span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(COLS):</span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> y <span class="kw">in</span> <span class="bu">range</span>(ROWS):</span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> mapa_feromonas[x][y] <span class="op">&gt;</span> <span class="fl">0.01</span>:</span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a>                intensity <span class="op">=</span> <span class="bu">min</span>(<span class="dv">255</span>, <span class="bu">int</span>(mapa_feromonas[x][y] <span class="op">*</span> <span class="dv">20</span>))</span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a>                pygame.draw.rect(pantalla, (<span class="dv">0</span>, intensity, intensity), (x<span class="op">*</span>GRIDSZ, y<span class="op">*</span>GRIDSZ, GRIDSZ, GRIDSZ))</span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>                mapa_feromonas[x][y] <span class="op">*=</span> DECAY</span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. LÓGICA DE COMPORTAMIENTO</span></span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> h <span class="kw">in</span> hormigas:</span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a>        gx, gy <span class="op">=</span> get_grid_coords(h.position)</span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'timer_memoria'</span>]<span class="op">==</span><span class="dv">0</span>:</span>
+<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'sabe_camino'</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'timer_memoria'</span>] <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'timer_memoria'</span>] <span class="op">-=</span> <span class="dv">1</span></span>
+<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (h.position <span class="op">-</span> objetivo_salida).length <span class="op">&lt;</span> <span class="fl">2.0</span>:</span>
+<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'sabe_camino'</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a>                h.userData[<span class="st">'timer_memoria'</span>] <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> h <span class="kw">in</span> uniones:</span>
+<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a>                    mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">0.0</span></span>
+<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a>                    mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">3.0</span></span>
+<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> h <span class="kw">in</span> uniones:</span>
+<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a>        <span class="co">#Está mordiendo</span></span>
+<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a>                dir_final <span class="op">=</span> objetivo_salida <span class="op">-</span> h.position</span>
+<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a>                mapa_feromonas[gx][gy] <span class="op">+=</span> <span class="fl">0.0</span></span>
+<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a>                max_olor, mejor_dir <span class="op">=</span> <span class="dv">0</span>, <span class="va">None</span></span>
+<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> ix <span class="kw">in</span> <span class="bu">range</span>(gx<span class="op">-</span><span class="dv">1</span>, gx<span class="op">+</span><span class="dv">2</span>):</span>
+<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> iy <span class="kw">in</span> <span class="bu">range</span>(gy<span class="op">-</span><span class="dv">1</span>, gy<span class="op">+</span><span class="dv">2</span>):</span>
+<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> <span class="dv">0</span> <span class="op">&lt;=</span> ix <span class="op">&lt;</span> COLS <span class="kw">and</span> <span class="dv">0</span> <span class="op">&lt;=</span> iy <span class="op">&lt;</span> ROWS:</span>
+<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">if</span> mapa_feromonas[ix][iy] <span class="op">&gt;</span> max_olor:</span>
+<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a>                                max_olor <span class="op">=</span> mapa_feromonas[ix][iy]</span>
+<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a>                                mejor_dir <span class="op">=</span> Box2D.b2Vec2(ix<span class="op">*</span>GRIDSZ<span class="op">/</span>PPM, (SCREEN_HEIGHT<span class="op">-</span>iy<span class="op">*</span>GRIDSZ)<span class="op">/</span>PPM) <span class="op">-</span> h.position</span>
+<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a>                dir_final <span class="op">=</span> mejor_dir <span class="cf">if</span> mejor_dir <span class="cf">else</span> (carga.position <span class="op">-</span> h.position)</span>
+<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a>                dir_final.Normalize()</span>
+<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a>                h.ApplyForceToCenter(dir_final <span class="op">*</span> <span class="fl">25.0</span>, wake<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a>        <span class="co">#No está mordiendo</span></span>
+<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> (h.position <span class="op">-</span> carga.position).length <span class="op">&lt;</span> <span class="fl">2.5</span>:</span>
+<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> contacto <span class="kw">in</span> h.contacts:</span>
+<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> contacto.contact.touching <span class="kw">and</span> contacto.other <span class="op">==</span> carga:</span>
+<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># 1. Extraemos el punto exacto del espacio donde se están tocando</span></span>
+<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a>                            manifold <span class="op">=</span> contacto.contact.worldManifold</span>
+<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a>                            punto_choque <span class="op">=</span> manifold.points[<span class="dv">0</span>] <span class="co"># El punto exacto del "mordisco"</span></span>
+<span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># 2. Creamos el Joint fijando la unión EXACTAMENTE en ese punto físico</span></span>
+<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a>                            u_def <span class="op">=</span> b2DistanceJointDef(</span>
+<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>                                bodyA<span class="op">=</span>h, </span>
+<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a>                                bodyB<span class="op">=</span>carga, </span>
+<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a>                                anchorA<span class="op">=</span>punto_choque,  <span class="co"># Anclaje en el punto de impacto</span></span>
+<span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a>                                anchorB<span class="op">=</span>punto_choque,  <span class="co"># Anclaje en el punto de impacto</span></span>
+<span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a>                                frequencyHz<span class="op">=</span><span class="dv">0</span>          <span class="co"># Hace que sea un acoplamiento rígido, sin muelle</span></span>
+<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a>                            )</span>
+<span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># 3. Registramos la unión en el mundo y en nuestro diccionario</span></span>
+<span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a>                            uniones[h] <span class="op">=</span> mundo.CreateJoint(u_def)</span>
+<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">break</span></span>
+<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> h.userData[<span class="st">'sabe_camino'</span>]:</span>
+<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a>                    <span class="co">#Esto se puede cambiar. Voy a poner que vaya a la carga aunque no es real.</span></span>
+<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a>                    dir_explora <span class="op">=</span> carga.position <span class="op">-</span> h.position</span>
+<span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a>                    dir_explora <span class="op">=</span> h.userData[<span class="st">'dir_random'</span>]</span>
+<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> h.userData[<span class="st">'timer_random'</span>] <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb5-186"><a href="#cb5-186" aria-hidden="true" tabindex="-1"></a>                        ang <span class="op">=</span> random.uniform(<span class="dv">0</span>, <span class="fl">6.28</span>)</span>
+<span id="cb5-187"><a href="#cb5-187" aria-hidden="true" tabindex="-1"></a>                        h.userData[<span class="st">'dir_random'</span>] <span class="op">=</span> Box2D.b2Vec2(math.cos(ang), math.sin(ang))</span>
+<span id="cb5-188"><a href="#cb5-188" aria-hidden="true" tabindex="-1"></a>                        h.userData[<span class="st">'timer_random'</span>] <span class="op">=</span> <span class="dv">40</span></span>
+<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a>                    h.userData[<span class="st">'timer_random'</span>] <span class="op">-=</span> <span class="dv">1</span></span>
+<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-191"><a href="#cb5-191" aria-hidden="true" tabindex="-1"></a>                dir_explora.Normalize()</span>
+<span id="cb5-192"><a href="#cb5-192" aria-hidden="true" tabindex="-1"></a>                h.ApplyForceToCenter(dir_explora <span class="op">*</span> <span class="fl">8.0</span>, wake<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-193"><a href="#cb5-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-194"><a href="#cb5-194" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. AVANZAR FÍSICA</span></span>
+<span id="cb5-195"><a href="#cb5-195" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> pausado:</span>
+<span id="cb5-196"><a href="#cb5-196" aria-hidden="true" tabindex="-1"></a>        mundo.Step(<span class="fl">1.0</span><span class="op">/</span>TARGET_FPS, <span class="dv">6</span>, <span class="dv">2</span>)</span>
+<span id="cb5-197"><a href="#cb5-197" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-198"><a href="#cb5-198" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. DIBUJO DE LA ARENA FÍSICA</span></span>
+<span id="cb5-199"><a href="#cb5-199" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> body <span class="kw">in</span> mundo.bodies:</span>
+<span id="cb5-200"><a href="#cb5-200" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> fixture <span class="kw">in</span> body.fixtures:</span>
+<span id="cb5-201"><a href="#cb5-201" aria-hidden="true" tabindex="-1"></a>            shape <span class="op">=</span> fixture.shape</span>
+<span id="cb5-202"><a href="#cb5-202" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">isinstance</span>(shape, b2PolygonShape):</span>
+<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a>                verts <span class="op">=</span> [to_pygame(body.transform <span class="op">*</span> v) <span class="cf">for</span> v <span class="kw">in</span> shape.vertices]</span>
+<span id="cb5-204"><a href="#cb5-204" aria-hidden="true" tabindex="-1"></a>                pygame.draw.polygon(pantalla, (<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">250</span>), verts)</span>
+<span id="cb5-205"><a href="#cb5-205" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> <span class="bu">isinstance</span>(shape, b2CircleShape):</span>
+<span id="cb5-206"><a href="#cb5-206" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> body <span class="op">==</span> hormiga_seleccionada:</span>
+<span id="cb5-207"><a href="#cb5-207" aria-hidden="true" tabindex="-1"></a>                    color <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb5-208"><a href="#cb5-208" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb5-209"><a href="#cb5-209" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> body <span class="kw">in</span> uniones: color <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">255</span>)</span>
+<span id="cb5-210"><a href="#cb5-210" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">elif</span> body.userData.get(<span class="st">'sabe_camino'</span>): color <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">255</span>, <span class="dv">100</span>)</span>
+<span id="cb5-211"><a href="#cb5-211" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">else</span>: color <span class="op">=</span> (<span class="dv">200</span>, <span class="dv">200</span>, <span class="dv">200</span>)</span>
+<span id="cb5-212"><a href="#cb5-212" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb5-213"><a href="#cb5-213" aria-hidden="true" tabindex="-1"></a>                pygame.draw.circle(pantalla, color, to_pygame(body.position), <span class="bu">int</span>(<span class="fl">0.2</span> <span class="op">*</span> PPM))</span>
+<span id="cb5-214"><a href="#cb5-214" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb5-215"><a href="#cb5-215" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> body <span class="op">==</span> hormiga_seleccionada:</span>
+<span id="cb5-216"><a href="#cb5-216" aria-hidden="true" tabindex="-1"></a>                    pygame.draw.circle(pantalla, (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">0</span>), to_pygame(body.position), <span class="bu">int</span>(<span class="fl">0.5</span> <span class="op">*</span> PPM), <span class="dv">1</span>)</span>
+<span id="cb5-217"><a href="#cb5-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-218"><a href="#cb5-218" aria-hidden="true" tabindex="-1"></a>    pygame.draw.circle(pantalla, (<span class="dv">255</span>, <span class="dv">215</span>, <span class="dv">0</span>), to_pygame(objetivo_salida), <span class="dv">10</span>, <span class="dv">2</span>)</span>
+<span id="cb5-219"><a href="#cb5-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-220"><a href="#cb5-220" aria-hidden="true" tabindex="-1"></a>    <span class="co"># =========================================================================</span></span>
+<span id="cb5-221"><a href="#cb5-221" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 5. DIBUJO DEL PANEL LATERAL GRÁFICO </span></span>
+<span id="cb5-222"><a href="#cb5-222" aria-hidden="true" tabindex="-1"></a>    <span class="co"># =========================================================================</span></span>
+<span id="cb5-223"><a href="#cb5-223" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pintamos una caja negra sólida a la derecha para el panel de datos</span></span>
+<span id="cb5-224"><a href="#cb5-224" aria-hidden="true" tabindex="-1"></a>    pygame.draw.rect(pantalla, (<span class="dv">15</span>, <span class="dv">15</span>, <span class="dv">15</span>), (SIM_WIDTH, <span class="dv">0</span>, PANEL_WIDTH, SCREEN_HEIGHT))</span>
+<span id="cb5-225"><a href="#cb5-225" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Línea divisoria blanca vertical</span></span>
+<span id="cb5-226"><a href="#cb5-226" aria-hidden="true" tabindex="-1"></a>    pygame.draw.line(pantalla, (<span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>), (SIM_WIDTH, <span class="dv">0</span>), (SIM_WIDTH, SCREEN_HEIGHT), <span class="dv">2</span>)</span>
+<span id="cb5-227"><a href="#cb5-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-228"><a href="#cb5-228" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Textos del Estado del Sistema</span></span>
+<span id="cb5-229"><a href="#cb5-229" aria-hidden="true" tabindex="-1"></a>    txt_titulo <span class="op">=</span> fuente_titulo.render(<span class="st">"MONITOR EN TIEMPO REAL"</span>, <span class="va">True</span>, (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>))</span>
+<span id="cb5-230"><a href="#cb5-230" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_titulo, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">20</span>))</span>
+<span id="cb5-231"><a href="#cb5-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-232"><a href="#cb5-232" aria-hidden="true" tabindex="-1"></a>    estado_str <span class="op">=</span> <span class="st">"ESTADO: [PAUSADA]"</span> <span class="cf">if</span> pausado <span class="cf">else</span> <span class="st">"ESTADO: [CORRIENDO]"</span></span>
+<span id="cb5-233"><a href="#cb5-233" aria-hidden="true" tabindex="-1"></a>    color_estado <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">100</span>, <span class="dv">100</span>) <span class="cf">if</span> pausado <span class="cf">else</span> (<span class="dv">100</span>, <span class="dv">255</span>, <span class="dv">100</span>)</span>
+<span id="cb5-234"><a href="#cb5-234" aria-hidden="true" tabindex="-1"></a>    txt_estado <span class="op">=</span> fuente_texto.render(estado_str, <span class="va">True</span>, color_estado)</span>
+<span id="cb5-235"><a href="#cb5-235" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_estado, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">50</span>))</span>
+<span id="cb5-236"><a href="#cb5-236" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-237"><a href="#cb5-237" aria-hidden="true" tabindex="-1"></a>    txt_hint <span class="op">=</span> fuente_texto.render(<span class="st">"[Espacio]: Pausar/Reanudar"</span>, <span class="va">True</span>, (<span class="dv">150</span>, <span class="dv">150</span>, <span class="dv">150</span>))</span>
+<span id="cb5-238"><a href="#cb5-238" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_hint, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">75</span>))</span>
+<span id="cb5-239"><a href="#cb5-239" aria-hidden="true" tabindex="-1"></a>    txt_hint2 <span class="op">=</span> fuente_texto.render(<span class="st">"[Click Izq]: Seguir hormiga"</span>, <span class="va">True</span>, (<span class="dv">150</span>, <span class="dv">150</span>, <span class="dv">150</span>))</span>
+<span id="cb5-240"><a href="#cb5-240" aria-hidden="true" tabindex="-1"></a>    pantalla.blit(txt_hint2, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">95</span>))</span>
+<span id="cb5-241"><a href="#cb5-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-242"><a href="#cb5-242" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Línea separadora interna</span></span>
+<span id="cb5-243"><a href="#cb5-243" aria-hidden="true" tabindex="-1"></a>    pygame.draw.line(pantalla, (<span class="dv">50</span>, <span class="dv">50</span>, <span class="dv">50</span>), (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">130</span>), (SCREEN_WIDTH <span class="op">-</span> <span class="dv">20</span>, <span class="dv">130</span>), <span class="dv">1</span>)</span>
+<span id="cb5-244"><a href="#cb5-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-245"><a href="#cb5-245" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sección de Información de la Hormiga Seleccionada</span></span>
+<span id="cb5-246"><a href="#cb5-246" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> hormiga_seleccionada <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb5-247"><a href="#cb5-247" aria-hidden="true" tabindex="-1"></a>        txt_sub <span class="op">=</span> fuente_titulo.render(<span class="st">"HORMIGA SELECCIONADA"</span>, <span class="va">True</span>, (<span class="dv">255</span>, <span class="dv">215</span>, <span class="dv">0</span>))</span>
+<span id="cb5-248"><a href="#cb5-248" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_sub, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">150</span>))</span>
+<span id="cb5-249"><a href="#cb5-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-250"><a href="#cb5-250" aria-hidden="true" tabindex="-1"></a>        dist_salida <span class="op">=</span> (hormiga_seleccionada.position <span class="op">-</span> objetivo_salida).length</span>
+<span id="cb5-251"><a href="#cb5-251" aria-hidden="true" tabindex="-1"></a>        sabe_camino_str <span class="op">=</span> <span class="st">"SI"</span> <span class="cf">if</span> hormiga_seleccionada.userData[<span class="st">'sabe_camino'</span>] <span class="cf">else</span> <span class="st">"NO "</span></span>
+<span id="cb5-252"><a href="#cb5-252" aria-hidden="true" tabindex="-1"></a>        acoplada_str <span class="op">=</span> <span class="st">"SI"</span> <span class="cf">if</span> hormiga_seleccionada <span class="kw">in</span> uniones <span class="cf">else</span> <span class="st">"NO"</span></span>
+<span id="cb5-253"><a href="#cb5-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Renderizar cada línea de datos dinámicos</span></span>
+<span id="cb5-255"><a href="#cb5-255" aria-hidden="true" tabindex="-1"></a>        lineas <span class="op">=</span> [</span>
+<span id="cb5-256"><a href="#cb5-256" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Posicion X: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>position<span class="sc">.</span>x<span class="sc">:.2f}</span><span class="ss"> m"</span>,</span>
+<span id="cb5-257"><a href="#cb5-257" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Posicion Y: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>position<span class="sc">.</span>y<span class="sc">:.2f}</span><span class="ss"> m"</span>,</span>
+<span id="cb5-258"><a href="#cb5-258" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Sabe camino: </span><span class="sc">{</span>sabe_camino_str<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb5-259"><a href="#cb5-259" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Acoplada a T: </span><span class="sc">{</span>acoplada_str<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb5-260"><a href="#cb5-260" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Dist. Salida: </span><span class="sc">{</span>dist_salida<span class="sc">:.2f}</span><span class="ss"> m"</span>, </span>
+<span id="cb5-261"><a href="#cb5-261" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Timer memoria: </span><span class="sc">{</span>hormiga_seleccionada<span class="sc">.</span>userData[<span class="st">'timer_memoria'</span>]<span class="sc">}</span><span class="ss"> frames"</span></span>
+<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb5-263"><a href="#cb5-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-264"><a href="#cb5-264" aria-hidden="true" tabindex="-1"></a>        y_offset <span class="op">=</span> <span class="dv">190</span></span>
+<span id="cb5-265"><a href="#cb5-265" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> linea <span class="kw">in</span> lineas:</span>
+<span id="cb5-266"><a href="#cb5-266" aria-hidden="true" tabindex="-1"></a>            txt_linea <span class="op">=</span> fuente_texto.render(linea, <span class="va">True</span>, (<span class="dv">220</span>, <span class="dv">220</span>, <span class="dv">220</span>))</span>
+<span id="cb5-267"><a href="#cb5-267" aria-hidden="true" tabindex="-1"></a>            pantalla.blit(txt_linea, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, y_offset))</span>
+<span id="cb5-268"><a href="#cb5-268" aria-hidden="true" tabindex="-1"></a>            y_offset <span class="op">+=</span> <span class="dv">25</span></span>
+<span id="cb5-269"><a href="#cb5-269" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-270"><a href="#cb5-270" aria-hidden="true" tabindex="-1"></a>        txt_no_select <span class="op">=</span> fuente_texto.render(<span class="st">"Ninguna hormiga seleccionada."</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb5-271"><a href="#cb5-271" aria-hidden="true" tabindex="-1"></a>        txt_no_select2 <span class="op">=</span> fuente_texto.render(<span class="st">"Haz click sobre una para"</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb5-272"><a href="#cb5-272" aria-hidden="true" tabindex="-1"></a>        txt_no_select3 <span class="op">=</span> fuente_texto.render(<span class="st">"monitorizar sus variables."</span>, <span class="va">True</span>, (<span class="dv">120</span>, <span class="dv">120</span>, <span class="dv">120</span>))</span>
+<span id="cb5-273"><a href="#cb5-273" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">160</span>))</span>
+<span id="cb5-274"><a href="#cb5-274" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select2, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">185</span>))</span>
+<span id="cb5-275"><a href="#cb5-275" aria-hidden="true" tabindex="-1"></a>        pantalla.blit(txt_no_select3, (SIM_WIDTH <span class="op">+</span> <span class="dv">20</span>, <span class="dv">210</span>))</span>
+<span id="cb5-276"><a href="#cb5-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-277"><a href="#cb5-277" aria-hidden="true" tabindex="-1"></a>    pygame.display.flip()</span>
+<span id="cb5-278"><a href="#cb5-278" aria-hidden="true" tabindex="-1"></a>    reloj.tick(TARGET_FPS)</span>
+<span id="cb5-279"><a href="#cb5-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-280"><a href="#cb5-280" aria-hidden="true" tabindex="-1"></a>pygame.quit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Hemen inurriek ahazten dute karga dagoela, ‘memoria’ parametroaren arabera segunduak moldatu daitezeke.</p>
+<p>Jarri dut inurriak kargara eustean feromonak botatzeari uztea, baina ez dabil oso ondo, ez dakit zer egin. Atzean feromonak pilatzen dira eta ez dira irteerantz joaten baizik eta hor atzean gelditzen dira.</p>
+<p>Gainera T-ren goiko zatia ukitzen dutenak ez dira itxasten, masa zentrotik urrun daudelako.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
