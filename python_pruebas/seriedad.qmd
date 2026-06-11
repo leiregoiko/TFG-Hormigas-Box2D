@@ -1,0 +1,209 @@
+---
+title: "Paso a paso las cosas bien hechas por mí"
+jupyter: python3
+format: 
+  html:
+    code-fold: true
+    toc: true
+    theme: cosmo
+---
+
+## El suelo y la carga
+
+Zati honetan saiatuko naiz nire kabuz pixelen kontua ulertzen, maparen
+dimentsioak errespetatuz, lurra marrazten.
+
+
+```{python}
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 600, 400 #Pantalla 40x30 metros
+TARGET_FPS = 60
+
+# 1. MUNDO SIN GRAVEDAD (Vista desde arriba)
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(30, 1, (15, 19), 0)) # Techo
+paredes.CreatePolygonFixture(box=(30, 1, (15, 1), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+paredes.CreatePolygonFixture(box=(0.302, 4.0395, (13.451, 4.0395), 0))
+paredes.CreatePolygonFixture(box=(0.302, 4.0395, (13.451, 15.9605), 0))
+# SEGUNDA RENDIJA (Slit)
+paredes.CreatePolygonFixture(box=(0.302, 4.0395, (19.948, 4.0395), 0))
+paredes.CreatePolygonFixture(box=(0.302, 4.0395, (19.948, 15.9605), 0))
+
+#PAREDES LATERALES
+paredes.CreatePolygonFixture(box=(1, 20, (1, 10), 0))  # Pared izquierda
+paredes.CreatePolygonFixture(box=(1, 20, (29, 10), 0))  # Pared derecha
+
+#ahora a dibujarlo con pygame
+pygame.init()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock = pygame.time.Clock()
+Ejecutando = True
+while Ejecutando:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            Ejecutando = False
+
+    screen.fill((240, 154, 255))  # Fondo blanco
+
+    # Dibujar las paredes
+    for fixture in paredes.fixtures:
+        shape = fixture.shape
+        vertices = [(paredes.transform * v) * PPM for v in shape.vertices]
+        vertices = [(v[0], SCREEN_HEIGHT - v[1]) for v in vertices]  # Invertir Y para Pygame
+        pygame.draw.polygon(screen, (40, 40, 40), vertices)
+
+    pygame.display.flip()
+    clock.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+Perfecto. Ahora la carga. 
+
+```{python}
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 600, 400 #Pantalla 40x30 metros
+TARGET_FPS = 60
+
+
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(30, 0.151, (15, 19.849), 0)) # Techo
+paredes.CreatePolygonFixture(box=(30, 0.151, (15, 0.151), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (13.451, 4.0395), 0))
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (13.451, 15.9605), 0))
+# SEGUNDA RENDIJA (Slit)
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (19.948, 4.0395), 0))
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (19.948, 15.9605), 0))
+
+#PAREDES LATERALES
+paredes.CreatePolygonFixture(box=(0.151, 20, (0.151, 10), 0))  # Pared izquierda
+paredes.CreatePolygonFixture(box=(0.151, 20, (29.849, 10), 0))  # Pared derecha
+
+# 3. LA CARGA (Cuerpo dinámico)
+carga = mundo.CreateDynamicBody(position=(6.725, 10), angle=1.5708)  # Posición inicial y rotación (90 grados)
+carga.CreatePolygonFixture(box=(0.307, 4.992))
+carga.CreatePolygonFixture(box=(2.3895, 0.307, (0, 4.685), 0))
+carga.CreatePolygonFixture(box=(1.14, 0.307, (0, -4.685), 0))
+
+#ahora a dibujarlo con pygame
+pygame.init()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))     
+clock = pygame.time.Clock()
+Ejecutando = True
+while Ejecutando:
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            Ejecutando = False
+
+    screen.fill((240, 154, 255))  # Fondo blanco
+
+    # Dibujar las paredes
+    for fixture in paredes.fixtures:
+        shape = fixture.shape
+        vertices = [(paredes.transform * v) * PPM for v in shape.vertices]
+        vertices = [(v[0], SCREEN_HEIGHT - v[1]) for v in vertices]  # Invertir Y para Pygame
+        pygame.draw.polygon(screen, (40, 40, 40), vertices)
+
+    # Dibujar la carga
+    for fixture in carga.fixtures:
+        shape = fixture.shape
+        vertices = [(carga.transform * v) * PPM for v in shape.vertices]
+        vertices = [(v[0], SCREEN_HEIGHT - v[1]) for v in vertices]  # Invertir Y para Pygame
+        pygame.draw.polygon(screen, (200, 50, 50), vertices)
+
+    pygame.display.flip()
+    clock.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+Esto respeta las dimensiones del artículo. Usable.
+
+## Añadir hormigas
+Vamos a empezar añadiendo 50 hormigas, y definiendo parametros en su personalidad. 
+
+```{python}
+import random
+import pygame
+import Box2D
+from Box2D import b2World, b2PolygonShape, b2CircleShape
+
+# --- CONFIGURACIÓN ---
+PPM = 20.0  # Píxeles por metro
+SCREEN_WIDTH, SCREEN_HEIGHT = 600, 400 #Pantalla 40x30 metros
+TARGET_FPS = 60
+
+#aleatorio pero reproducible
+SEED = 42 
+random.seed(SEED)
+np.random.seed(SEED)
+
+
+mundo = b2World(gravity=(0, 0))
+
+# 2. LA ARENA (Paredes estáticas)
+# Creamos un solo cuerpo para todas las paredes
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Pared Superior e Inferior
+paredes.CreatePolygonFixture(box=(30, 0.151, (15, 19.849), 0)) # Techo
+paredes.CreatePolygonFixture(box=(30, 0.151, (15, 0.151), 0))  # Suelo
+
+# LA RENDIJA (Slit): Dos muros verticales con un hueco en medio
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (13.451, 4.0395), 0))
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (13.451, 15.9605), 0))
+# SEGUNDA RENDIJA (Slit)
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (19.948, 4.0395), 0))
+paredes.CreatePolygonFixture(box=(0.151, 4.0395, (19.948, 15.9605), 0))
+
+#PAREDES LATERALES
+paredes.CreatePolygonFixture(box=(0.151, 20, (0.151, 10), 0))  # Pared izquierda
+paredes.CreatePolygonFixture(box=(0.151, 20, (29.849, 10), 0))  # Pared derecha
+
+# 3. LA CARGA (Cuerpo dinámico)
+carga = mundo.CreateDynamicBody(position=(6.725, 10), angle=1.5708)  # Posición inicial y rotación (90 grados)
+carga.CreatePolygonFixture(box=(0.307, 4.992))
+carga.CreatePolygonFixture(box=(2.3895, 0.307, (0, 4.685), 0))
+carga.CreatePolygonFixture(box=(1.14, 0.307, (0, -4.685), 0))
+
+#Crear lista para meter hormmigas
+
+hormigas = []
+for i in range(50):
+    x_random= random.uniform(0.5,13)
+    y_random= random.uniform(0.5,19)
+    hormiga = mundo.CreateDynamicBody(position=(x_random, y_random), angle=0)
+    hormiga.UserData('estado'='libre', 'memoria'=0, 'rol'='exploradora')
+    circulo=b2CircleShape(radius=0.05)
+    hormiga.CreatePolygonFixture(shape=circulo, density=1.0, friction=0.3)
+    hormigas.append(hormiga)
+
+```
+

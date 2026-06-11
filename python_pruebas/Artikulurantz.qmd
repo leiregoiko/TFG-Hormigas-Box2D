@@ -294,7 +294,11 @@ pygame.quit()
 ```
 
 
-Aldaketak: guztiak indar berdina egiten dute eta ez dutenek irteera ezagutzen karga mugitzen ari den norabidean tiratuko dute. 
+
+## Aldaketak 
+
+Aldaketak: Ez dutenek irteera ezagutzen karga mugitzen ari den norabidean tiratuko dute. 
+
 
 ```{python}
 import pygame
@@ -326,22 +330,23 @@ pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 reloj = pygame.time.Clock()
 
 def to_pygame(pt):
-    # Mantiene la física dentro de los 800px de la zona de simulación
     return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
 
 mundo = b2World(gravity=(0, 0))
 
-# Paredes y Salida (Ajustadas al límite de los 800px, x = 40 metros)
+# --- MAPA DE PAREDES (Con tu nueva pared izquierda corregida) ---
 paredes = mundo.CreateStaticBody(position=(0, 0))
-paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))
-paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0))
-# El hueco de salida (en x=32 metros, unos 640px)
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))       # Suelo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0))      # Techo
+paredes.CreatePolygonFixture(box=(1, 14, (1, 15), 0))        # CORREGIDO: Pared Izquierda perfectamente encajada
+
+# El hueco de salida a la derecha
 paredes.CreatePolygonFixture(box=(0.5, 8, (32, 25), 0)) 
 paredes.CreatePolygonFixture(box=(0.5, 8, (32, 5), 0))
-objetivo_salida = Box2D.b2Vec2(34, 15)
+objetivo_salida = Box2D.b2Vec2(38, 15)
 
 # Carga en forma de T
-carga = mundo.CreateDynamicBody(position=(10, 15))
+carga = mundo.CreateDynamicBody(position=(10, 15), linearDamping=6.0, angularDamping=10.0)
 carga.CreatePolygonFixture(box=(0.5, 2.0), density=1.0)
 carga.CreatePolygonFixture(box=(2.0, 0.5, (0, 2.0), 0), density=1.0)
 
@@ -350,8 +355,8 @@ hormigas = []
 uniones = {} 
 
 for i in range(35):
-    # CORREGIDO: linearDamping con una sola 'n' y rango de aparición dentro del techo (y entre 3 y 27)
-    h = mundo.CreateDynamicBody(position=(random.uniform(2, 40), random.uniform(3, 27)), linearDamping=6.0)  
+    # Rango inicial seguro de aparición (dentro del recinto amurallado)
+    h = mundo.CreateDynamicBody(position=(random.uniform(3, 20), random.uniform(3, 27)), linearDamping=6.0)  
     h.CreateCircleFixture(radius=0.2, density=1.0)
     h.userData = {'timer_random': 0, 'dir_random': Box2D.b2Vec2(0,0), 'sabe_camino': False, 'timer_memoria': 0}
     hormigas.append(h)
@@ -372,16 +377,15 @@ while ejecutando:
         if evento.type == pygame.QUIT: 
             ejecutando = False
         
-        # 1. Pausa (Barra Espaciadora)
+        # Pausa (Barra Espaciadora)
         elif evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_SPACE:
                 pausado = not pausado
 
-        # 2. Selección con click izquierdo
+        # Selección con click izquierdo
         elif evento.type == pygame.MOUSEBUTTONDOWN:
             if evento.button == 1: 
                 pos_raton_px = pygame.mouse.get_pos()
-                # Solo procesar clicks si ocurren DENTRO de la simulación (primeros 800px)
                 if pos_raton_px[0] < SIM_WIDTH:
                     raton_x = pos_raton_px[0] / PPM
                     raton_y = (SCREEN_HEIGHT - pos_raton_px[1]) / PPM
@@ -414,75 +418,95 @@ while ejecutando:
         gx, gy = get_grid_coords(h.position)
         
         if not pausado:
+            # Desgaste e inactivación de la memoria a corto plazo
             if h.userData['timer_memoria'] == 0:
                 h.userData['sabe_camino'] = False
             if h.userData['timer_memoria'] > 0:
                 h.userData['timer_memoria'] -= 1
 
+            # Si tocan la zona de salida, se informan y cargan el reloj de memoria
             if (h.position - objetivo_salida).length < 2.0:
                 h.userData['sabe_camino'] = True
                 h.userData['timer_memoria'] = 300
 
-            if h.userData['sabe_camino']:
-                if h in uniones:
-                    mapa_feromonas[gx][gy] += 0.0
-                else:
-                    mapa_feromonas[gx][gy] += 3.0
+            # Solo dejan rastro químico las informadas que están libres volviendo a por la carga
+            if h.userData['sabe_camino'] and (h not in uniones):
+                mapa_feromonas[gx][gy] += 3.0
 
         if h in uniones:
-            # Está mordiendo
+            # =================================================================
+            # CASO A: HORMIGAS UNIDAS A LA CARGA (TRANSPORTE RECONOCIDO EN EL PAPER)
+            # =================================================================
             if h.userData['sabe_camino']:
+                # HORMIGA INFORMADA: Tira directo a la salida con fuerza f0
                 dir_final = objetivo_salida - h.position
             else:
-                max_olor, mejor_dir = 0, None
-                for ix in range(gx-1, gx+2):
-                    for iy in range(gy-1, gy+2):
-                        if 0 <= ix < COLS and 0 <= iy < ROWS:
-                            if mapa_feromonas[ix][iy] > max_olor:
-                                max_olor = mapa_feromonas[ix][iy]
-                                mejor_dir = Box2D.b2Vec2(ix*GRIDSZ/PPM, (SCREEN_HEIGHT-iy*GRIDSZ)/PPM) - h.position
-                                h.userData['sabe_camino']=True
+                # HORMIGA NO INFORMADA (Seguidora): Regla de alineamiento con el movimiento
+                v_carga = carga.linearVelocity
                 
-                dir_final = mejor_dir if mejor_dir else (carga.position - h.position)
+                if v_carga.length > 0.1:
+                    # Si el objeto se mueve, se acopla a la dirección de la velocidad (Genera torque mecánico)
+                    dir_final = Box2D.b2Vec2(v_carga)
+                else:
+                    # Si el objeto se frena en seco, busca feromonas en las 8 casillas vecinas
+                    max_olor, mejor_dir = 0, None
+                    for ix in range(gx-1, gx+2):
+                        for iy in range(gy-1, gy+2):
+                            if 0 <= ix < COLS and 0 <= iy < ROWS:
+                                if mapa_feromonas[ix][iy] > max_olor:
+                                    max_olor = mapa_feromonas[ix][iy]
+                                    mejor_dir = Box2D.b2Vec2(ix*GRIDSZ/PPM, (SCREEN_HEIGHT-iy*GRIDSZ)/PPM) - h.position
+                    
+                    # Plan B (Línea Ternaria explicada): Si hay olor lo sigue, si no, tira al centro de la carga (Cohesión)
+                    dir_final = mejor_dir if mejor_dir else (carga.position - h.position)
             
             if not pausado:
                 dir_final.Normalize()
                 h.ApplyForceToCenter(dir_final * 25.0, wake=True)
             
         else:
-            # No está mordiendo
+            # =================================================================
+            # CASO B: HORMIGAS SUELTAS (EXPLORADORAS)
+            # =================================================================
             if not pausado:
+                # 1. Si tocan la carga físicamente, se amarran rígidamente en el punto de contacto
                 if (h.position - carga.position).length < 2.5:
                     for contacto in h.contacts:
                         if contacto.contact.touching and contacto.other == carga:
-            
-                            # NUEVA MEJORA: Anclaje rígido directo al centro de la hormiga en contacto
                             punto_anclaje = h.worldCenter 
-            
                             u_def = b2DistanceJointDef(
-                                bodyA=h, 
-                                bodyB=carga, 
-                                anchorA=punto_anclaje,  
-                                anchorB=punto_anclaje,  
-                                frequencyHz=0,          # Máxima rigidez física
-                                dampingRatio=1.0
+                                bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                                frequencyHz=0, dampingRatio=1.0
                             )
-            
-                            # Forzamos la longitud exacta para evitar empujes geométricos
                             u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
-            
                             uniones[h] = mundo.CreateJoint(u_def)
                             break
     
+                # 2. Navegación en el suelo
                 if h.userData['sabe_camino']:
+                    # Si está informada pero suelta, su prioridad es volver directa a la carga a empujar
                     dir_explora = carga.position - h.position
                 else:
-                    dir_explora = h.userData['dir_random']
-                    if h.userData['timer_random'] <= 0:
-                        ang = random.uniform(0, 6.28)
-                        h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
-                        h.userData['timer_random'] = 40
-                    h.userData['timer_random'] -= 1
+                    # ¡TU OBJETIVO CORRECTO!: Olfatear el suelo buscando feromonas para seguirlas
+                    max_olor_suela, mejor_dir_suela = 0, None
+                    for ix in range(gx-1, gx+2):
+                        for iy in range(gy-1, gy+2):
+                            if 0 <= ix < COLS and 0 <= iy < ROWS:
+                                if mapa_feromonas[ix][iy] > max_olor_suela:
+                                    max_olor_suela = mapa_feromonas[ix][iy]
+                                    mejor_dir_suela = Box2D.b2Vec2(ix*GRIDSZ/PPM, (SCREEN_HEIGHT-iy*GRIDSZ)/PPM) - h.position
+                    
+                    if mejor_dir_suela is not None:
+                        # Si ve rastro químico en sus 8 casillas vecinas, ¡lo sigue de inmediato!
+                        dir_explora = mejor_dir_suela
+                    else:
+                        # Si el suelo está limpio, activa el Paseo Aleatorio ordinario (Random Walk)
+                        dir_explora = h.userData['dir_random']
+                        if h.userData['timer_random'] <= 0:
+                            ang = random.uniform(0, 6.28)
+                            h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                            h.userData['timer_random'] = 40
+                        h.userData['timer_random'] -= 1
 
                 dir_explora.Normalize()
                 h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
@@ -499,7 +523,6 @@ while ejecutando:
                 verts = [to_pygame(body.transform * v) for v in shape.vertices]
                 pygame.draw.polygon(pantalla, (100, 150, 250), verts)
             elif isinstance(shape, b2CircleShape):
-                # NUEVA MEJORA: Color rojo si está seleccionada
                 if body == hormiga_seleccionada:
                     color = (255, 0, 0)
                 else:
@@ -508,16 +531,12 @@ while ejecutando:
                     else: color = (200, 200, 200)
                 
                 pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
-                
-                # NUEVA MEJORA: Aro amarillo de seguimiento VIP
                 if body == hormiga_seleccionada:
                     pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
 
     pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
 
-    # =========================================================================
-    # 5. DIBUJO DEL PANEL LATERAL GRÁFICO (MONITORIZACIÓN GRÁFICA EN TIEMPO REAL)
-    # =========================================================================
+    # --- 5. DIBUJO DEL PANEL LATERAL ---
     pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
     pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
 
@@ -859,4 +878,1756 @@ Hemen inurriek ahazten dute karga dagoela, 'memoria' parametroaren arabera segun
 
 Jarri dut inurriak kargara eustean feromonak botatzeari uztea, baina ez dabil oso ondo, ez dakit zer egin. Atzean feromonak pilatzen dira eta ez dira irteerantz joaten baizik eta hor atzean gelditzen dira. 
 
-Gainera T-ren goiko zatia ukitzen dutenak ez dira itxasten, masa zentrotik urrun daudelako. 
+Gainera T-ren goiko zatia ukitzen dutenak ez dira itxasten, masa zentrotik urrun daudelako y gemini no me lo resuelve. 
+
+
+
+a ver que es esto 
+
+
+```{python}
+import pygame
+import Box2D
+import random
+import math
+from Box2D import b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef
+
+# --- CONFIGURACIÓN DE PANTALLA ---
+PPM = 20.0
+SIM_WIDTH = 800       
+PANEL_WIDTH = 300     
+SCREEN_WIDTH = SIM_WIDTH + PANEL_WIDTH  
+SCREEN_HEIGHT = 600
+TARGET_FPS = 60
+DT = 1.0 / TARGET_FPS
+
+# --- CONSTANTES FÍSICAS DEL ARTÍCULO (Tabla S5) ---
+F0 = 25.0              # Fuerza tractora base de una hormiga
+F_IND = 10.0 * F0      # Parámetro de "individualidad" (Ruido/Temperatura)
+K_ON = 0.015           # Tasa de acoplamiento
+K_FORGET = 0.09        # Tasa de pérdida de memoria
+K_C = 1.0              # Tasa base de cambio de rol (Tirador <-> Levantador)
+K_OFF = 0.015          # Tasa de desenganche
+GAMMA_LIN_PER_ANT = 1.48 # Amortiguación lineal por hormiga acoplada
+GAMMA_ROT_PER_ANT = 1.44 # Amortiguación angular por hormiga acoplada
+
+pygame.init()
+pygame.font.init()  
+fuente_titulo = pygame.font.SysFont("Arial", 18, bold=True)
+fuente_texto = pygame.font.SysFont("Courier New", 14)
+
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+# --- MAPA DE PAREDES ---
+paredes = mundo.CreateStaticBody(position=(0, 0))
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))       
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0))      
+paredes.CreatePolygonFixture(box=(1, 14, (1, 15), 0))        
+paredes.CreatePolygonFixture(box=(0.5, 8, (32, 25), 0)) 
+paredes.CreatePolygonFixture(box=(0.5, 8, (32, 5), 0))
+objetivo_salida = Box2D.b2Vec2(34, 15)
+
+# --- LA CARGA (PIANO) ---
+carga = mundo.CreateDynamicBody(position=(10, 15))
+carga.CreatePolygonFixture(box=(0.5, 2.0), density=1.0)
+carga.CreatePolygonFixture(box=(2.0, 0.5, (0, 2.0), 0), density=1.0)
+
+# --- LAS HORMIGAS ---
+hormigas = []
+uniones = {} 
+
+for i in range(40):
+    h = mundo.CreateDynamicBody(position=(random.uniform(3, 20), random.uniform(3, 27)), linearDamping=6.0)  
+    h.CreateCircleFixture(radius=0.2, density=1.0)
+    # ESTADOS FÍSICOS: 'libre', 'informada', 'tiradora', 'levantadora'
+    h.userData = {
+        'estado': 'libre', 
+        'timer_random': 0, 
+        'dir_random': Box2D.b2Vec2(0,0)
+    }
+    hormigas.append(h)
+
+pausado = False
+hormiga_seleccionada = None
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+        elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+            pausado = not pausado
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1: 
+            pos_raton = pygame.mouse.get_pos()
+            if pos_raton[0] < SIM_WIDTH:
+                raton_mundo = Box2D.b2Vec2(pos_raton[0] / PPM, (SCREEN_HEIGHT - pos_raton[1]) / PPM)
+                hormiga_seleccionada = next((h for h in hormigas if (h.position - raton_mundo).length < 0.6), None)
+
+    pantalla.fill((30, 30, 30))
+
+    if not pausado:
+        # 1. ACTUALIZAR AMORTIGUACIÓN DE LA CARGA (Eq. 3 del artículo)
+        n_att = len(uniones)
+        if n_att > 0:
+            carga.linearDamping = GAMMA_LIN_PER_ANT * n_att
+            carga.angularDamping = GAMMA_ROT_PER_ANT * n_att
+        else:
+            carga.linearDamping = 5.0
+            carga.angularDamping = 8.0
+
+        # 2. LÓGICA ESTOCÁSTICA DE GILLESPIE POR HORMIGA
+        for h in hormigas:
+            if h in uniones:
+                # --- DINÁMICA DE HORMIGAS ACOPLADAS ---
+                
+                # A. Olvido Estocástico (Informada -> Tiradora)
+                if h.userData['estado'] == 'informada':
+                    if random.random() < (K_FORGET * DT):
+                        h.userData['estado'] = 'tiradora'
+                
+                # B. Transiciones de Seguidores (Desenganche y Cambio de Rol)
+                elif h.userData['estado'] in ['tiradora', 'levantadora']:
+                    # Desenganche estocástico
+                    if random.random() < (K_OFF * DT):
+                        mundo.DestroyJoint(uniones[h])
+                        del uniones[h]
+                        h.userData['estado'] = 'libre'
+                        continue
+                    
+                    # CÁLCULO DEL MODELO DE ISING (Boltzmann)
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    p_i = h.position - carga.position # Vector de postura de la hormiga
+                    p_i.Normalize()
+                    
+                    # Proyección de la fuerza local (Eq. 1 y 2)
+                    f_loc_proj = p_i.dot(v_loc) * GAMMA_LIN_PER_ANT 
+                    
+                    # Tasa de Levantadora -> Tiradora
+                    if h.userData['estado'] == 'levantadora':
+                        rate_l_p = K_C * math.exp(f_loc_proj / F_IND)
+                        if random.random() < (rate_l_p * DT):
+                            h.userData['estado'] = 'tiradora'
+                    # Tasa de Tiradora -> Levantadora
+                    else:
+                        rate_p_l = K_C * math.exp(-f_loc_proj / F_IND)
+                        if random.random() < (rate_p_l * DT):
+                            h.userData['estado'] = 'levantadora'
+
+                # C. APLICACIÓN DE FUERZAS MECÁNICAS
+                if h.userData['estado'] == 'informada':
+                    dir_final = objetivo_salida - h.position
+                    dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+                elif h.userData['estado'] == 'tiradora':
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    if v_loc.length > 0.1:
+                        dir_final = Box2D.b2Vec2(v_loc)
+                    else:
+                        dir_final = carga.position - h.position # Fuerza de cohesión base
+                    dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+                # Si es 'levantadora', no aplica fuerza tractora.
+
+            else:
+                # --- DINÁMICA DE HORMIGAS LIBRES (Búsqueda) ---
+                
+                # 1. Acoplamiento físico (DETERMINISTA para evitar el rebote de Box2D)
+                if (h.position - carga.position).length < 2.5:
+                    for contacto in h.contacts:
+                        if contacto.contact.touching and contacto.other == carga:
+                            punto_anclaje = h.worldCenter 
+                            u_def = b2DistanceJointDef(
+                                bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                                frequencyHz=0, dampingRatio=1.0
+                            )
+                            u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
+                            uniones[h] = mundo.CreateJoint(u_def)
+                            
+                            # Según el artículo, al acoplarse se vuelven "Líderes" temporalmente
+                            h.userData['estado'] = 'informada'
+                            break
+                
+                # 2. Paseo Aleatorio Balístico (Búsqueda de la carga)
+                dir_explora = h.userData['dir_random']
+                if h.userData['timer_random'] <= 0:
+                    ang = random.uniform(0, 6.28)
+                    h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                    h.userData['timer_random'] = 40
+                h.userData['timer_random'] -= 1
+                
+                h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
+                # --- DINÁMICA DE HORMIGAS LIBRES (Búsqueda) ---
+                
+
+        mundo.Step(DT, 6, 2)
+    
+    # --- DIBUJO DE LA ARENA FÍSICA ---
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                verts = [to_pygame(body.transform * v) for v in shape.vertices]
+                pygame.draw.polygon(pantalla, (100, 150, 250), verts)
+            elif isinstance(shape, b2CircleShape):
+                if body == hormiga_seleccionada:
+                    color = (255, 0, 0)
+                else:
+                    estado = body.userData.get('estado')
+                    if estado == 'informada': color = (0, 255, 100)       # Verde (Líder)
+                    elif estado == 'tiradora': color = (0, 100, 255)      # Azul (Tira con la masa)
+                    elif estado == 'levantadora': color = (200, 50, 255)  # Morado (Pasiva)
+                    else: color = (150, 150, 150)                         # Gris (Libre)
+                
+                pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
+                if body == hormiga_seleccionada:
+                    pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
+
+    pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
+
+    # --- PANEL LATERAL ---
+    pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
+    pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
+
+    pantalla.blit(fuente_titulo.render("MONITOR FÍSICO DE ISING", True, (255, 255, 255)), (SIM_WIDTH + 20, 20))
+    pantalla.blit(fuente_texto.render(f"Hormigas Acopladas: {len(uniones)}", True, (150, 200, 255)), (SIM_WIDTH + 20, 50))
+    
+    if hormiga_seleccionada is not None:
+        pantalla.blit(fuente_titulo.render("HORMIGA SELECCIONADA", True, (255, 215, 0)), (SIM_WIDTH + 20, 100))
+        lineas = [
+            f"Pos X: {hormiga_seleccionada.position.x:.2f} m",
+            f"Pos Y: {hormiga_seleccionada.position.y:.2f} m",
+            f"Estado: {hormiga_seleccionada.userData['estado'].upper()}",
+            f"Vel. Local: {carga.GetLinearVelocityFromWorldPoint(hormiga_seleccionada.position).length:.2f}" if hormiga_seleccionada in uniones else "Vel. Local: N/A"
+        ]
+        for i, linea in enumerate(lineas):
+            pantalla.blit(fuente_texto.render(linea, True, (220, 220, 220)), (SIM_WIDTH + 20, 130 + i*25))
+
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+otro intento con las cosas del articulo original: 
+
+
+```{python}
+import pygame
+import Box2D
+import random
+import math
+from Box2D import b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef
+
+# --- CONFIGURACIÓN DE PANTALLA ---
+PPM = 20.0
+SIM_WIDTH = 800       
+PANEL_WIDTH = 300     
+SCREEN_WIDTH = SIM_WIDTH + PANEL_WIDTH  
+SCREEN_HEIGHT = 600
+TARGET_FPS = 60
+DT = 1.0 / TARGET_FPS
+
+# --- CONSTANTES FÍSICAS DEL ARTÍCULO (Tabla S5) ---
+F0 = 25.0              
+F_IND = 10.0 * F0      
+K_ON = 0.015           
+K_FORGET = 0.09        
+K_C = 1.0              
+K_OFF = 0.015          
+GAMMA_LIN_PER_ANT = 1.48 
+GAMMA_ROT_PER_ANT = 1.44 
+
+pygame.init()
+pygame.font.init()  
+fuente_titulo = pygame.font.SysFont("Arial", 18, bold=True)
+fuente_texto = pygame.font.SysFont("Courier New", 14)
+
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+# =================================================================
+# MAPA EXPERIMENTAL DEL ARTÍCULO (3 CÁMARAS Y 2 RENDIJAS DESFASADAS)
+# =================================================================
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Contorno exterior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))       # Suelo
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0))      # Techo
+paredes.CreatePolygonFixture(box=(1, 15, (1, 15), 0))       # Pared Izquierda (Cerrada)
+paredes.CreatePolygonFixture(box=(1, 15, (39, 15), 0))      # Pared Derecha (Cerrada, el nido está dentro)
+
+# MURO 1 (x = 16) - Hueco en la parte inferior (y = 10 a 16) -> Gap de 6m
+paredes.CreatePolygonFixture(box=(0.5, 6.0, (16, 22.0), 0)) # Muro superior 1
+paredes.CreatePolygonFixture(box=(0.5, 4.0, (16, 6.0), 0))  # Muro inferior 1
+
+# MURO 2 (x = 28) - Hueco en la parte superior (y = 18 a 24) -> Gap de 6m
+paredes.CreatePolygonFixture(box=(0.5, 2.0, (28, 26.0), 0)) # Muro superior 2
+paredes.CreatePolygonFixture(box=(0.5, 8.0, (28, 10.0), 0)) # Muro inferior 2
+
+# Nido / Salida (Destino final en la Cámara 3)
+objetivo_salida = Box2D.b2Vec2(35, 20)
+
+# =================================================================
+# LA CARGA EN FORMA DE T ("Piano Movers Puzzle")
+# =================================================================
+carga = mundo.CreateDynamicBody(
+    position=(8, 13),      # Empieza en la Cámara 1
+    linearDamping=5.0,
+    angularDamping=8.0
+)
+# Dimensiones exactas para que tenga que rotar o maniobrar por las rendijas
+carga.CreatePolygonFixture(box=(0.5, 2.0), density=1.0)                 # Palo central
+carga.CreatePolygonFixture(box=(2.0, 0.5, (0, 2.0), 0), density=1.0)    # Barra superior
+
+# --- LAS HORMIGAS (Aumentamos a 60 para simular "Large Groups" del paper) ---
+hormigas = []
+uniones = {} 
+
+for i in range(60):
+    # Nacen esparcidas por la Cámara 1
+    h = mundo.CreateDynamicBody(position=(random.uniform(2, 14), random.uniform(3, 27)), linearDamping=6.0)  
+    h.CreateCircleFixture(radius=0.2, density=1.0)
+    h.userData = {
+        'estado': 'libre', 
+        'timer_random': 0, 
+        'dir_random': Box2D.b2Vec2(0,0)
+    }
+    hormigas.append(h)
+
+pausado = False
+hormiga_seleccionada = None
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+        elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+            pausado = not pausado
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1: 
+            pos_raton = pygame.mouse.get_pos()
+            if pos_raton[0] < SIM_WIDTH:
+                raton_mundo = Box2D.b2Vec2(pos_raton[0] / PPM, (SCREEN_HEIGHT - pos_raton[1]) / PPM)
+                hormiga_seleccionada = next((h for h in hormigas if (h.position - raton_mundo).length < 0.6), None)
+
+    pantalla.fill((30, 30, 30))
+
+    if not pausado:
+        # 1. ACTUALIZAR AMORTIGUACIÓN DE LA CARGA (Eq. 3 del artículo)
+        n_att = len(uniones)
+        if n_att > 0:
+            carga.linearDamping = GAMMA_LIN_PER_ANT * n_att
+            carga.angularDamping = GAMMA_ROT_PER_ANT * n_att
+        else:
+            carga.linearDamping = 5.0
+            carga.angularDamping = 8.0
+
+        # 2. LÓGICA ESTOCÁSTICA DE GILLESPIE POR HORMIGA
+        for h in hormigas:
+            if h in uniones:
+                # A. Olvido Estocástico (Informada -> Tiradora)
+                if h.userData['estado'] == 'informada':
+                    if random.random() < (K_FORGET * DT):
+                        h.userData['estado'] = 'tiradora'
+                
+                # B. Transiciones (Desenganche y Cambio de Rol de Ising)
+                elif h.userData['estado'] in ['tiradora', 'levantadora']:
+                    if random.random() < (K_OFF * DT):
+                        mundo.DestroyJoint(uniones[h])
+                        del uniones[h]
+                        h.userData['estado'] = 'libre'
+                        continue
+                    
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    p_i = h.position - carga.position
+                    if p_i.length > 0:
+                        p_i.Normalize()
+                    else:
+                        p_i = Box2D.b2Vec2(1, 0)
+                    
+                    f_loc_proj = p_i.dot(v_loc) * GAMMA_LIN_PER_ANT 
+                    
+                    if h.userData['estado'] == 'levantadora':
+                        rate_l_p = K_C * math.exp(f_loc_proj / F_IND)
+                        if random.random() < (rate_l_p * DT):
+                            h.userData['estado'] = 'tiradora'
+                    else:
+                        rate_p_l = K_C * math.exp(-f_loc_proj / F_IND)
+                        if random.random() < (rate_p_l * DT):
+                            h.userData['estado'] = 'levantadora'
+
+                # C. APLICACIÓN DE FUERZAS
+                if h.userData['estado'] == 'informada':
+                    dir_final = objetivo_salida - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+                elif h.userData['estado'] == 'tiradora':
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    if v_loc.length > 0.1:
+                        dir_final = Box2D.b2Vec2(v_loc)
+                    else:
+                        dir_final = carga.position - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+            else:
+                # --- DINÁMICA DE HORMIGAS LIBRES ---
+                if (h.position - carga.position).length < 2.5:
+                    for contacto in h.contacts:
+                        if contacto.contact.touching and contacto.other == carga:
+                            punto_anclaje = h.worldCenter 
+                            u_def = b2DistanceJointDef(
+                                bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                                frequencyHz=0, dampingRatio=1.0
+                            )
+                            u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
+                            uniones[h] = mundo.CreateJoint(u_def)
+                            h.userData['estado'] = 'informada'
+                            break
+                
+                dir_explora = h.userData['dir_random']
+                if h.userData['timer_random'] <= 0:
+                    ang = random.uniform(0, 6.28)
+                    h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                    h.userData['timer_random'] = 40
+                h.userData['timer_random'] -= 1
+                
+                if dir_explora.length > 0: dir_explora.Normalize()
+                h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
+
+        mundo.Step(DT, 6, 2)
+    
+    # --- DIBUJO DE LA ARENA FÍSICA ---
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                verts = [to_pygame(body.transform * v) for v in shape.vertices]
+                # Las paredes son grises oscuras, la carga es azulada para distinguirla
+                color_poly = (100, 150, 250) if body == carga else (80, 80, 80)
+                pygame.draw.polygon(pantalla, color_poly, verts)
+            elif isinstance(shape, b2CircleShape):
+                if body == hormiga_seleccionada:
+                    color = (255, 0, 0)
+                else:
+                    estado = body.userData.get('estado')
+                    if estado == 'informada': color = (0, 255, 100)       # Verdes
+                    elif estado == 'tiradora': color = (0, 100, 255)      # Azules
+                    elif estado == 'levantadora': color = (200, 50, 255)  # Moradas
+                    else: color = (150, 150, 150)                         # Grises
+                
+                pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
+                if body == hormiga_seleccionada:
+                    pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
+
+    # Dibujar el nido objetivo en la Cámara 3
+    pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
+    pantalla.blit(fuente_texto.render("NIDO", True, (255, 215, 0)), to_pygame(Box2D.b2Vec2(34.2, 16.5)))
+
+    # --- PANEL LATERAL ---
+    pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
+    pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
+
+    pantalla.blit(fuente_titulo.render("MONITOR FÍSICO DE ISING", True, (255, 255, 255)), (SIM_WIDTH + 20, 20))
+    pantalla.blit(fuente_texto.render(f"Hormigas Acopladas: {len(uniones)}", True, (150, 200, 255)), (SIM_WIDTH + 20, 50))
+    
+    if hormiga_seleccionada is not None:
+        pantalla.blit(fuente_titulo.render("HORMIGA SELECCIONADA", True, (255, 215, 0)), (SIM_WIDTH + 20, 100))
+        lineas = [
+            f"Pos X: {hormiga_seleccionada.position.x:.2f} m",
+            f"Pos Y: {hormiga_seleccionada.position.y:.2f} m",
+            f"Estado: {hormiga_seleccionada.userData['estado'].upper()}",
+            f"Vel. Local: {carga.GetLinearVelocityFromWorldPoint(hormiga_seleccionada.position).length:.2f}" if hormiga_seleccionada in uniones else "Vel. Local: N/A"
+        ]
+        for i, linea in enumerate(lineas):
+            pantalla.blit(fuente_texto.render(linea, True, (220, 220, 220)), (SIM_WIDTH + 20, 130 + i*25))
+
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+
+```{python}
+import pygame
+import Box2D
+import random
+import math
+from Box2D import b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef
+
+# --- CONFIGURACIÓN DE PANTALLA ---
+PPM = 20.0
+SIM_WIDTH = 800       
+PANEL_WIDTH = 300     
+SCREEN_WIDTH = SIM_WIDTH + PANEL_WIDTH  
+SCREEN_HEIGHT = 600
+TARGET_FPS = 60
+DT = 1.0 / TARGET_FPS
+
+# --- CONSTANTES FÍSICAS DEL ARTÍCULO (Tabla S5) ---
+F0 = 25.0              
+F_IND = 10.0 * F0      
+K_ON = 0.015           
+K_FORGET = 0.09        
+K_C = 1.0              
+K_OFF = 0.015          
+GAMMA_LIN_PER_ANT = 1.48 
+GAMMA_ROT_PER_ANT = 1.44 
+
+pygame.init()
+pygame.font.init()  
+fuente_titulo = pygame.font.SysFont("Arial", 18, bold=True)
+fuente_texto = pygame.font.SysFont("Courier New", 14)
+
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+# =================================================================
+# MAPA EXPERIMENTAL DEL ARTÍCULO (Piano Movers Puzzle real)
+# =================================================================
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Contorno exterior de la caja
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0))       # Suelo (y = 0 a 2)
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0))      # Techo (y = 28 a 30)
+paredes.CreatePolygonFixture(box=(1, 15, (1, 15), 0))       # Pared Izquierda
+paredes.CreatePolygonFixture(box=(1, 15, (39, 15), 0))      # Pared Derecha
+
+# MURO 1 (x = 16) - Rendija SUPERIOR (Hueco de 4.5m entre y=18.0 y y=22.5)
+paredes.CreatePolygonFixture(box=(0.5, 8.0, (16, 10.0), 0))   # Pared inferior
+paredes.CreatePolygonFixture(box=(0.5, 2.75, (16, 25.25), 0)) # Pared superior
+
+# MURO 2 (x = 28) - Rendija INFERIOR (Hueco de 4.5m entre y=7.5 y y=12.0)
+paredes.CreatePolygonFixture(box=(0.5, 2.75, (28, 4.75), 0))  # Pared inferior
+paredes.CreatePolygonFixture(box=(0.5, 8.0, (28, 20.0), 0))   # Pared superior
+
+# Nido / Salida (Destino final en la Cámara 3)
+objetivo_salida = Box2D.b2Vec2(35, 15)
+
+# =================================================================
+# LA CARGA EN FORMA DE T (Diseñada milimétricamente para atascarse)
+# =================================================================
+carga = mundo.CreateDynamicBody(
+    position=(8, 15), # Nace en la Cámara 1
+    linearDamping=5.0,
+    angularDamping=8.0
+)
+# La T empieza de pie, apuntando hacia el nido.
+# 1. Barra vertical bloqueadora (6 metros de alto x 1 metro de grosor)
+carga.CreatePolygonFixture(box=(0.5, 3.0), density=1.0)
+# 2. Palo horizontal trasero (2 metros de largo x 1 metro de grosor)
+carga.CreatePolygonFixture(box=(1.0, 0.5, (1.5, 0), 0), density=1.0)
+
+# --- LAS HORMIGAS (60 hormigas = "Large Group" del paper) ---
+hormigas = []
+uniones = {} 
+
+for i in range(60):
+    # Nacen esparcidas aleatoriamente por la Cámara 1
+    h = mundo.CreateDynamicBody(position=(random.uniform(2, 14), random.uniform(3, 27)), linearDamping=6.0)  
+    h.CreateCircleFixture(radius=0.2, density=1.0)
+    h.userData = {
+        'estado': 'libre', 
+        'timer_random': 0, 
+        'dir_random': Box2D.b2Vec2(0,0)
+    }
+    hormigas.append(h)
+
+pausado = False
+hormiga_seleccionada = None
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+        elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+            pausado = not pausado
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1: 
+            pos_raton = pygame.mouse.get_pos()
+            if pos_raton[0] < SIM_WIDTH:
+                raton_mundo = Box2D.b2Vec2(pos_raton[0] / PPM, (SCREEN_HEIGHT - pos_raton[1]) / PPM)
+                hormiga_seleccionada = next((h for h in hormigas if (h.position - raton_mundo).length < 0.6), None)
+
+    pantalla.fill((30, 30, 30))
+
+    if not pausado:
+        # 1. ACTUALIZAR AMORTIGUACIÓN DE LA CARGA (Eq. 3 del artículo)
+        n_att = len(uniones)
+        if n_att > 0:
+            carga.linearDamping = GAMMA_LIN_PER_ANT * n_att
+            carga.angularDamping = GAMMA_ROT_PER_ANT * n_att
+        else:
+            carga.linearDamping = 5.0
+            carga.angularDamping = 8.0
+
+        # 2. LÓGICA ESTOCÁSTICA DE GILLESPIE POR HORMIGA
+        for h in hormigas:
+            if h in uniones:
+                # A. Olvido Estocástico (Informada -> Tiradora)
+                if h.userData['estado'] == 'informada':
+                    if random.random() < (K_FORGET * DT):
+                        h.userData['estado'] = 'tiradora'
+                
+                # B. Transiciones de Seguidores (Desenganche y Cambio de Rol de Ising)
+                elif h.userData['estado'] in ['tiradora', 'levantadora']:
+                    if random.random() < (K_OFF * DT):
+                        mundo.DestroyJoint(uniones[h])
+                        del uniones[h]
+                        h.userData['estado'] = 'libre'
+                        continue
+                    
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    p_i = h.position - carga.position
+                    if p_i.length > 0:
+                        p_i.Normalize()
+                    else:
+                        p_i = Box2D.b2Vec2(1, 0)
+                    
+                    f_loc_proj = p_i.dot(v_loc) * GAMMA_LIN_PER_ANT 
+                    
+                    if h.userData['estado'] == 'levantadora':
+                        rate_l_p = K_C * math.exp(f_loc_proj / F_IND)
+                        if random.random() < (rate_l_p * DT):
+                            h.userData['estado'] = 'tiradora'
+                    else:
+                        rate_p_l = K_C * math.exp(-f_loc_proj / F_IND)
+                        if random.random() < (rate_p_l * DT):
+                            h.userData['estado'] = 'levantadora'
+
+                # C. APLICACIÓN DE FUERZAS
+                if h.userData['estado'] == 'informada':
+                    dir_final = objetivo_salida - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+                elif h.userData['estado'] == 'tiradora':
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    if v_loc.length > 0.1:
+                        dir_final = Box2D.b2Vec2(v_loc)
+                    else:
+                        dir_final = carga.position - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+            else:
+                # --- DINÁMICA DE HORMIGAS LIBRES (Búsqueda y Acoplamiento) ---
+                if (h.position - carga.position).length < 2.5:
+                    for contacto in h.contacts:
+                        if contacto.contact.touching and contacto.other == carga:
+                            punto_anclaje = h.worldCenter 
+                            u_def = b2DistanceJointDef(
+                                bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                                frequencyHz=0, dampingRatio=1.0
+                            )
+                            u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
+                            uniones[h] = mundo.CreateJoint(u_def)
+                            h.userData['estado'] = 'informada'
+                            break
+                
+                dir_explora = h.userData['dir_random']
+                if h.userData['timer_random'] <= 0:
+                    ang = random.uniform(0, 6.28)
+                    h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                    h.userData['timer_random'] = 40
+                h.userData['timer_random'] -= 1
+                
+                if dir_explora.length > 0: dir_explora.Normalize()
+                h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
+
+        mundo.Step(DT, 6, 2)
+    
+    # --- DIBUJO DE LA ARENA FÍSICA ---
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                verts = [to_pygame(body.transform * v) for v in shape.vertices]
+                # Pintamos la carga de azul clarito para que resalte contra los muros grises
+                color_poly = (100, 150, 250) if body == carga else (80, 80, 80)
+                pygame.draw.polygon(pantalla, color_poly, verts)
+            elif isinstance(shape, b2CircleShape):
+                if body == hormiga_seleccionada:
+                    color = (255, 0, 0)
+                else:
+                    estado = body.userData.get('estado')
+                    if estado == 'informada': color = (0, 255, 100)       
+                    elif estado == 'tiradora': color = (0, 100, 255)      
+                    elif estado == 'levantadora': color = (200, 50, 255)  
+                    else: color = (150, 150, 150)                         
+                
+                pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
+                if body == hormiga_seleccionada:
+                    pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
+
+    # Dibujamos el nido
+    pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
+    pantalla.blit(fuente_texto.render("NIDO", True, (255, 215, 0)), to_pygame(Box2D.b2Vec2(34.2, 16.5)))
+
+    # --- PANEL LATERAL ---
+    pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
+    pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
+
+    pantalla.blit(fuente_titulo.render("MONITOR FÍSICO DE ISING", True, (255, 255, 255)), (SIM_WIDTH + 20, 20))
+    pantalla.blit(fuente_texto.render(f"Hormigas Acopladas: {len(uniones)}", True, (150, 200, 255)), (SIM_WIDTH + 20, 50))
+    
+    if hormiga_seleccionada is not None:
+        pantalla.blit(fuente_titulo.render("HORMIGA SELECCIONADA", True, (255, 215, 0)), (SIM_WIDTH + 20, 100))
+        lineas = [
+            f"Pos X: {hormiga_seleccionada.position.x:.2f} m",
+            f"Pos Y: {hormiga_seleccionada.position.y:.2f} m",
+            f"Estado: {hormiga_seleccionada.userData['estado'].upper()}",
+            f"Vel. Local: {carga.GetLinearVelocityFromWorldPoint(hormiga_seleccionada.position).length:.2f}" if hormiga_seleccionada in uniones else "Vel. Local: N/A"
+        ]
+        for i, linea in enumerate(lineas):
+            pantalla.blit(fuente_texto.render(linea, True, (220, 220, 220)), (SIM_WIDTH + 20, 130 + i*25))
+
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+
+
+```{python}
+import pygame
+import Box2D
+import random
+import math
+from Box2D import b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef
+
+# --- CONFIGURACIÓN DE PANTALLA ---
+PPM = 20.0
+SIM_WIDTH = 800       
+PANEL_WIDTH = 300     
+SCREEN_WIDTH = SIM_WIDTH + PANEL_WIDTH  
+SCREEN_HEIGHT = 600
+TARGET_FPS = 60
+DT = 1.0 / TARGET_FPS
+
+# --- CONSTANTES FÍSICAS ---
+F0 = 25.0              
+F_IND = 10.0 * F0      
+K_ON = 0.015           
+K_FORGET = 0.09        
+K_C = 1.0              
+K_OFF = 0.05             # AUMENTADO: Ahora verás claramente cómo se desacoplan
+GAMMA_LIN_PER_ANT = 1.48 
+GAMMA_ROT_PER_ANT = 1.44 
+
+pygame.init()
+pygame.font.init()  
+fuente_titulo = pygame.font.SysFont("Arial", 18, bold=True)
+fuente_texto = pygame.font.SysFont("Courier New", 14)
+
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+# =================================================================
+# MAPA: restitution=0.0 para que nada rebote elásticamente
+# =================================================================
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0), restitution=0.0)       
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0), restitution=0.0)      
+paredes.CreatePolygonFixture(box=(1, 15, (1, 15), 0), restitution=0.0)       
+paredes.CreatePolygonFixture(box=(1, 15, (39, 15), 0), restitution=0.0)      
+
+# MURO 1 (Rendija de 4.5m)
+paredes.CreatePolygonFixture(box=(0.5, 8.0, (16, 10.0), 0), restitution=0.0)   
+paredes.CreatePolygonFixture(box=(0.5, 2.75, (16, 25.25), 0), restitution=0.0) 
+
+# MURO 2 (Rendija de 4.5m)
+paredes.CreatePolygonFixture(box=(0.5, 2.75, (28, 4.75), 0), restitution=0.0)  
+paredes.CreatePolygonFixture(box=(0.5, 8.0, (28, 20.0), 0), restitution=0.0)   
+
+objetivo_salida = Box2D.b2Vec2(35, 15)
+
+# =================================================================
+# LA CARGA EN FORMA DE T PERFECTA (|- orientada hacia la derecha)
+# =================================================================
+carga = mundo.CreateDynamicBody(
+    position=(8, 20),
+    linearDamping=5.0,
+    angularDamping=8.0
+)
+# Barra frontal (6m alto, 1m ancho) -> Se atascará seguro en el hueco de 4.5m
+carga.CreatePolygonFixture(box=(0.5, 3.0, (0, 0), 0), density=1.0, restitution=0.0)
+# Palo trasero para empujar (4m largo, 1m alto)
+carga.CreatePolygonFixture(box=(2.0, 0.5, (-2.5, 0), 0), density=1.0, restitution=0.0)
+
+# --- LAS HORMIGAS ---
+hormigas = []
+uniones = {} 
+
+# Nacen 60 en una zona segura para no morir en el frame 1 contra el muro
+for i in range(60):
+    h = mundo.CreateDynamicBody(position=(random.uniform(4, 12), random.uniform(5, 25)), linearDamping=6.0)  
+    h.CreateCircleFixture(radius=0.2, density=1.0, restitution=0.0)
+    h.userData = {'estado': 'libre', 'timer_random': 0, 'dir_random': Box2D.b2Vec2(0,0)}
+    hormigas.append(h)
+
+pausado = False
+hormiga_seleccionada = None
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+        elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+            pausado = not pausado
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1: 
+            pos_raton = pygame.mouse.get_pos()
+            if pos_raton[0] < SIM_WIDTH:
+                raton_mundo = Box2D.b2Vec2(pos_raton[0] / PPM, (SCREEN_HEIGHT - pos_raton[1]) / PPM)
+                hormiga_seleccionada = next((h for h in hormigas if (h.position - raton_mundo).length < 0.6), None)
+
+    pantalla.fill((30, 30, 30))
+
+    if not pausado:
+        # Amortiguación del artículo
+        n_att = len(uniones)
+        if n_att > 0:
+            carga.linearDamping = GAMMA_LIN_PER_ANT * n_att
+            carga.angularDamping = GAMMA_ROT_PER_ANT * n_att
+        else:
+            carga.linearDamping = 5.0
+            carga.angularDamping = 8.0
+
+        hormigas_a_destruir = set() # Lista de la muerte
+
+        for h in hormigas:
+            if h in uniones:
+                if h.userData['estado'] == 'informada':
+                    if random.random() < (K_FORGET * DT):
+                        h.userData['estado'] = 'tiradora'
+                
+                elif h.userData['estado'] in ['tiradora', 'levantadora']:
+                    if random.random() < (K_OFF * DT):
+                        mundo.DestroyJoint(uniones[h])
+                        del uniones[h]
+                        h.userData['estado'] = 'libre'
+                        continue
+                    
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    p_i = h.position - carga.position
+                    if p_i.length > 0: p_i.Normalize()
+                    else: p_i = Box2D.b2Vec2(1, 0)
+                    
+                    f_loc_proj = p_i.dot(v_loc) * GAMMA_LIN_PER_ANT 
+                    
+                    if h.userData['estado'] == 'levantadora':
+                        if random.random() < (K_C * math.exp(f_loc_proj / F_IND) * DT):
+                            h.userData['estado'] = 'tiradora'
+                    else:
+                        if random.random() < (K_C * math.exp(-f_loc_proj / F_IND) * DT):
+                            h.userData['estado'] = 'levantadora'
+
+                if h.userData['estado'] == 'informada':
+                    dir_final = objetivo_salida - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+                elif h.userData['estado'] == 'tiradora':
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    if v_loc.length > 0.1: dir_final = Box2D.b2Vec2(v_loc)
+                    else: dir_final = carga.position - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+            else:
+                # =========================================================
+                # RUTINA DE MUERTE POR CHOQUE DE HORMIGAS LIBRES
+                # =========================================================
+                ha_muerto = False
+                for contacto in h.contacts:
+                    if contacto.contact.touching and contacto.other == paredes:
+                        hormigas_a_destruir.add(h)
+                        ha_muerto = True
+                        break
+                
+                if ha_muerto:
+                    continue # Si se ha muerto, ya no calcula físicas de moverse
+
+                # Acoplamiento normal
+                if (h.position - carga.position).length < 2.5:
+                    for contacto in h.contacts:
+                        if contacto.contact.touching and contacto.other == carga:
+                            punto_anclaje = h.worldCenter 
+                            u_def = b2DistanceJointDef(
+                                bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                                frequencyHz=0, dampingRatio=1.0
+                            )
+                            u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
+                            uniones[h] = mundo.CreateJoint(u_def)
+                            h.userData['estado'] = 'informada'
+                            break
+                
+                # Paseo exploratorio
+                dir_explora = h.userData['dir_random']
+                if h.userData['timer_random'] <= 0:
+                    ang = random.uniform(0, 6.28)
+                    h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                    h.userData['timer_random'] = 40
+                h.userData['timer_random'] -= 1
+                
+                if dir_explora.length > 0: dir_explora.Normalize()
+                h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
+
+        # ELIMINAR CUERPOS MUERTOS
+        for h in hormigas_a_destruir:
+            mundo.DestroyBody(h)
+            hormigas.remove(h)
+            if hormiga_seleccionada == h: hormiga_seleccionada = None
+
+        mundo.Step(DT, 6, 2)
+    
+    # --- DIBUJO DE LA ARENA FÍSICA ---
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                verts = [to_pygame(body.transform * v) for v in shape.vertices]
+                color_poly = (100, 150, 250) if body == carga else (80, 80, 80)
+                pygame.draw.polygon(pantalla, color_poly, verts)
+            elif isinstance(shape, b2CircleShape):
+                if body == hormiga_seleccionada: color = (255, 0, 0)
+                else:
+                    estado = body.userData.get('estado')
+                    if estado == 'informada': color = (0, 255, 100)       
+                    elif estado == 'tiradora': color = (0, 100, 255)      
+                    elif estado == 'levantadora': color = (200, 50, 255)  
+                    else: color = (150, 150, 150)                         
+                
+                pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
+                if body == hormiga_seleccionada:
+                    pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
+
+    pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
+    pantalla.blit(fuente_texto.render("NIDO", True, (255, 215, 0)), to_pygame(Box2D.b2Vec2(34.2, 16.5)))
+
+    # --- PANEL LATERAL ---
+    pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
+    pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
+
+    pantalla.blit(fuente_titulo.render("MONITOR FÍSICO DE ISING", True, (255, 255, 255)), (SIM_WIDTH + 20, 20))
+    pantalla.blit(fuente_texto.render(f"Hormigas Vivas: {len(hormigas)}/60", True, (255, 100, 100)), (SIM_WIDTH + 20, 50))
+    pantalla.blit(fuente_texto.render(f"Hormigas Acopladas: {len(uniones)}", True, (150, 200, 255)), (SIM_WIDTH + 20, 75))
+    
+    if hormiga_seleccionada is not None:
+        pantalla.blit(fuente_titulo.render("HORMIGA SELECCIONADA", True, (255, 215, 0)), (SIM_WIDTH + 20, 120))
+        lineas = [
+            f"Pos X: {hormiga_seleccionada.position.x:.2f} m",
+            f"Pos Y: {hormiga_seleccionada.position.y:.2f} m",
+            f"Estado: {hormiga_seleccionada.userData['estado'].upper()}"
+        ]
+        for i, linea in enumerate(lineas):
+            pantalla.blit(fuente_texto.render(linea, True, (220, 220, 220)), (SIM_WIDTH + 20, 150 + i*25))
+
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+
+
+
+```{python}
+import pygame
+import Box2D
+import random
+import math
+from Box2D import b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef
+
+# --- CONFIGURACIÓN DE PANTALLA ---
+PPM = 20.0
+SIM_WIDTH = 800       
+PANEL_WIDTH = 300     
+SCREEN_WIDTH = SIM_WIDTH + PANEL_WIDTH  
+SCREEN_HEIGHT = 600
+TARGET_FPS = 60
+DT = 1.0 / TARGET_FPS
+
+# --- CONSTANTES FÍSICAS DEL MODELO DE ISING ---
+F0 = 25.0              
+F_IND = 10.0 * F0      
+K_ON = 0.015           
+K_FORGET = 0.09        
+K_C = 1.0              
+K_OFF = 0.05             
+GAMMA_LIN_PER_ANT = 1.48 
+GAMMA_ROT_PER_ANT = 1.44 
+
+pygame.init()
+pygame.font.init()  
+fuente_titulo = pygame.font.SysFont("Arial", 18, bold=True)
+fuente_texto = pygame.font.SysFont("Courier New", 14)
+
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+# =================================================================
+# MAPA BÁSICO: restitution=0.0 Y friction=0.0 (Para evitar bloqueos)
+# =================================================================
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Contorno exterior
+paredes.CreatePolygonFixture(box=(40, 1, (20, 1), 0), restitution=0.0, friction=0.0)       
+paredes.CreatePolygonFixture(box=(40, 1, (20, 29), 0), restitution=0.0, friction=0.0)      
+paredes.CreatePolygonFixture(box=(1, 15, (1, 15), 0), restitution=0.0, friction=0.0)       
+paredes.CreatePolygonFixture(box=(1, 15, (39, 15), 0), restitution=0.0, friction=0.0)      
+
+# Muro 1 (x = 15)
+paredes.CreatePolygonFixture(box=(0.5, 4.0, (15, 5.0), 0), restitution=0.0, friction=0.0)   
+paredes.CreatePolygonFixture(box=(0.5, 4.0, (15, 25.0), 0), restitution=0.0, friction=0.0)  
+
+# Muro 2 (x = 30)
+paredes.CreatePolygonFixture(box=(0.5, 4.0, (30, 5.0), 0), restitution=0.0, friction=0.0)   
+paredes.CreatePolygonFixture(box=(0.5, 4.0, (30, 25.0), 0), restitution=0.0, friction=0.0)  
+
+objetivo_salida = Box2D.b2Vec2(36, 15)
+
+# =================================================================
+# LA CARGA EN FORMA DE T (Sin fricción con los muros para poder pivotar)
+# =================================================================
+carga = mundo.CreateDynamicBody(
+    position=(6, 15),
+    linearDamping=5.0,
+    angularDamping=8.0
+)
+
+# Barra transversal
+carga.CreatePolygonFixture(box=(0.5, 7.0, (0, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+# Palo propulsor
+carga.CreatePolygonFixture(box=(4.0, 0.5, (4.5, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+
+# --- LAS HORMIGAS (Enjambre Constante) ---
+hormigas = []
+uniones = {} 
+
+for i in range(60):
+    h = mundo.CreateDynamicBody(position=(random.uniform(2, 8), random.uniform(5, 25)), linearDamping=6.0)  
+    h.CreateCircleFixture(radius=0.2, density=1.0, restitution=0.0, friction=0.0)
+    h.userData = {'estado': 'libre', 'timer_random': 0, 'dir_random': Box2D.b2Vec2(0,0)}
+    hormigas.append(h)
+
+pausado = False
+hormiga_seleccionada = None
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+        elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+            pausado = not pausado
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1: 
+            pos_raton = pygame.mouse.get_pos()
+            if pos_raton[0] < SIM_WIDTH:
+                raton_mundo = Box2D.b2Vec2(pos_raton[0] / PPM, (SCREEN_HEIGHT - pos_raton[1]) / PPM)
+                hormiga_seleccionada = next((h for h in hormigas if (h.position - raton_mundo).length < 0.6), None)
+
+    pantalla.fill((30, 30, 30))
+
+    if not pausado:
+        # 1. Amortiguación Macroscópica
+        n_att = len(uniones)
+        if n_att > 0:
+            carga.linearDamping = GAMMA_LIN_PER_ANT * n_att
+            # SUAVIZAMOS EL FRENO ROTACIONAL DE BOX2D PARA QUE PUEDAN GIRARLA MEJOR
+            carga.angularDamping = (GAMMA_ROT_PER_ANT * n_att) * 0.5 
+        else:
+            carga.linearDamping = 5.0
+            carga.angularDamping = 8.0
+
+        for h in hormigas:
+            if h in uniones:
+                # 2. Transiciones de Estado (Ising/Boltzmann)
+                if h.userData['estado'] == 'informada':
+                    if random.random() < (K_FORGET * DT):
+                        h.userData['estado'] = 'tiradora'
+                
+                elif h.userData['estado'] in ['tiradora', 'levantadora']:
+                    if random.random() < (K_OFF * DT):
+                        mundo.DestroyJoint(uniones[h])
+                        del uniones[h]
+                        h.userData['estado'] = 'libre'
+                        continue
+                    
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    p_i = h.position - carga.position
+                    if p_i.length > 0: p_i.Normalize()
+                    else: p_i = Box2D.b2Vec2(1, 0)
+                    
+                    f_loc_proj = p_i.dot(v_loc) * GAMMA_LIN_PER_ANT 
+                    
+                    if h.userData['estado'] == 'levantadora':
+                        if random.random() < (K_C * math.exp(f_loc_proj / F_IND) * DT):
+                            h.userData['estado'] = 'tiradora'
+                    else:
+                        if random.random() < (K_C * math.exp(-f_loc_proj / F_IND) * DT):
+                            h.userData['estado'] = 'levantadora'
+
+                # 3. Aplicación de la Fuerza Tractora
+                if h.userData['estado'] == 'informada':
+                    dir_final = objetivo_salida - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+                elif h.userData['estado'] == 'tiradora':
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    
+                    # AQUÍ ESTÁ LA SOLUCIÓN DEL TORQUE
+                    if v_loc.length > 0.1: 
+                        # Si se mueve, se alinean con la inercia
+                        dir_final = Box2D.b2Vec2(v_loc)
+                    else: 
+                        # Si está atascada, tiran en direcciones aleatorias (fluctuaciones) para provocar giros
+                        dir_final = h.userData['dir_random']
+                        if h.userData['timer_random'] <= 0:
+                            ang = random.uniform(0, 6.28)
+                            h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                            h.userData['timer_random'] = 20  # Cambian de ángulo rápido buscando desatascarlo
+                        h.userData['timer_random'] -= 1
+
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+            else:
+                # 4. Dinámica de Búsqueda y Acoplamiento
+                if (h.position - carga.position).length < 2.5:
+                    for contacto in h.contacts:
+                        if contacto.contact.touching and contacto.other == carga:
+                            punto_anclaje = h.worldCenter 
+                            u_def = b2DistanceJointDef(
+                                bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                                frequencyHz=0, dampingRatio=1.0
+                            )
+                            u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
+                            uniones[h] = mundo.CreateJoint(u_def)
+                            h.userData['estado'] = 'informada'
+                            break
+                
+                dir_explora = h.userData['dir_random']
+                if h.userData['timer_random'] <= 0:
+                    ang = random.uniform(0, 6.28)
+                    h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                    h.userData['timer_random'] = 40
+                h.userData['timer_random'] -= 1
+                
+                if dir_explora.length > 0: dir_explora.Normalize()
+                h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
+
+        mundo.Step(DT, 6, 2)
+    
+    # --- DIBUJO DE LA ARENA FÍSICA ---
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                verts = [to_pygame(body.transform * v) for v in shape.vertices]
+                color_poly = (100, 150, 250) if body == carga else (80, 80, 80)
+                pygame.draw.polygon(pantalla, color_poly, verts)
+            elif isinstance(shape, b2CircleShape):
+                if body == hormiga_seleccionada: color = (255, 0, 0)
+                else:
+                    estado = body.userData.get('estado')
+                    if estado == 'informada': color = (0, 255, 100)       
+                    elif estado == 'tiradora': color = (0, 100, 255)      
+                    elif estado == 'levantadora': color = (200, 50, 255)  
+                    else: color = (150, 150, 150)                         
+                
+                pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
+                if body == hormiga_seleccionada:
+                    pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
+
+    pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
+    pantalla.blit(fuente_texto.render("NIDO", True, (255, 215, 0)), to_pygame(Box2D.b2Vec2(35.2, 16.5)))
+
+    # --- PANEL LATERAL ---
+    pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
+    pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
+
+    pantalla.blit(fuente_titulo.render("MONITOR FÍSICO DE ISING", True, (255, 255, 255)), (SIM_WIDTH + 20, 20))
+    pantalla.blit(fuente_texto.render(f"Hormigas Acopladas: {len(uniones)}", True, (150, 200, 255)), (SIM_WIDTH + 20, 50))
+    
+    if hormiga_seleccionada is not None:
+        pantalla.blit(fuente_titulo.render("HORMIGA SELECCIONADA", True, (255, 215, 0)), (SIM_WIDTH + 20, 100))
+        lineas = [
+            f"Pos X: {hormiga_seleccionada.position.x:.2f} m",
+            f"Pos Y: {hormiga_seleccionada.position.y:.2f} m",
+            f"Estado: {hormiga_seleccionada.userData['estado'].upper()}"
+        ]
+        for i, linea in enumerate(lineas):
+            pantalla.blit(fuente_texto.render(linea, True, (220, 220, 220)), (SIM_WIDTH + 20, 130 + i*25))
+
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+
+```{python}
+import pygame
+import Box2D
+import random
+import math
+from Box2D import b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef
+
+# --- CONFIGURACIÓN DE PANTALLA ---
+PPM = 20.0
+SIM_WIDTH = 800       
+PANEL_WIDTH = 300     
+SCREEN_WIDTH = SIM_WIDTH + PANEL_WIDTH  
+SCREEN_HEIGHT = 600
+TARGET_FPS = 60
+DT = 1.0 / TARGET_FPS
+
+# --- CONSTANTES FÍSICAS DEL ARTÍCULO (Tabla S5) ---
+F0 = 25.0              
+F_IND = 10.0 * F0      
+K_ON = 0.015           
+K_FORGET = 0.09        
+K_C = 1.0              
+K_OFF = 0.015          # Retornado al valor real del paper para estadística pura
+GAMMA_LIN_PER_ANT = 1.48 
+GAMMA_ROT_PER_ANT = 1.44 
+
+pygame.init()
+pygame.font.init()  
+fuente_titulo = pygame.font.SysFont("Arial", 18, bold=True)
+fuente_texto = pygame.font.SysFont("Courier New", 14)
+
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+# =================================================================
+# GEOMETRÍA EXACTA ESCALADA (Tabla S2: "large ant group")
+# Factor de escala aplicado: 1 cm del paper = 1.5 metros en Box2D
+# =================================================================
+W_ARENA = 28.8          # arena breadth
+SLIT1_X = 19.38         # slit1 
+SLIT2_X = 28.74         # slit2
+WALL_THICK = 0.435      # wall thickness
+EXIT_SIZE = 5.535       # exit size
+L_LONG = 6.885          # long crossbar
+L_SHORT = 3.285         # short crossbar
+L_WIDTH = 0.885         # load width
+L_STEM = 13.5           # (load length - load width)
+
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+# Contorno exterior (restitution=0.0, friction=0.0)
+paredes.CreatePolygonFixture(box=(40, 0.5, (20, -0.5), 0), restitution=0.0, friction=0.0)             # Suelo
+paredes.CreatePolygonFixture(box=(40, 0.5, (20, W_ARENA + 0.5), 0), restitution=0.0, friction=0.0)    # Techo
+paredes.CreatePolygonFixture(box=(0.5, W_ARENA/2, (-0.5, W_ARENA/2), 0), restitution=0.0, friction=0.0) # Pared Izq
+paredes.CreatePolygonFixture(box=(0.5, W_ARENA/2, (39.5, W_ARENA/2), 0), restitution=0.0, friction=0.0) # Pared Der
+
+# Muros Internos y Rendijas (Alineadas al centro Y = 14.4)
+hw = WALL_THICK / 2
+wall_h = (W_ARENA - EXIT_SIZE) / 2
+hw_y = wall_h / 2
+
+# Muro 1 (slit1)
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT1_X, hw_y), 0), restitution=0.0, friction=0.0)
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT1_X, W_ARENA - hw_y), 0), restitution=0.0, friction=0.0)
+
+# Muro 2 (slit2)
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT2_X, hw_y), 0), restitution=0.0, friction=0.0)
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT2_X, W_ARENA - hw_y), 0), restitution=0.0, friction=0.0)
+
+objetivo_salida = Box2D.b2Vec2(36.0, W_ARENA/2)
+
+# =================================================================
+# LA CARGA ASIMÉTRICA EXACTA (Piano Movers Puzzle)
+# =================================================================
+carga = mundo.CreateDynamicBody(
+    position=(8.0, W_ARENA/2),
+    linearDamping=5.0,
+    angularDamping=8.0
+)
+
+h_stem = L_STEM / 2
+h_wid = L_WIDTH / 2
+# Palo central (Stem)
+carga.CreatePolygonFixture(box=(h_stem, h_wid, (0, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+
+# Travesaño Largo (Long Crossbar - Izquierda)
+pos_x_long = -h_stem - h_wid
+carga.CreatePolygonFixture(box=(h_wid, L_LONG/2, (pos_x_long, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+
+# Travesaño Corto (Short Crossbar - Derecha)
+pos_x_short = h_stem + h_wid
+carga.CreatePolygonFixture(box=(h_wid, L_SHORT/2, (pos_x_short, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+
+# --- LAS HORMIGAS (Enjambre Constante N=60) ---
+hormigas = []
+uniones = {} 
+
+for i in range(60):
+    h = mundo.CreateDynamicBody(position=(random.uniform(2, 10), random.uniform(2, W_ARENA-2)), linearDamping=6.0)  
+    h.CreateCircleFixture(radius=0.2, density=1.0, restitution=0.0, friction=0.0)
+    h.userData = {'estado': 'libre', 'timer_random': 0, 'dir_random': Box2D.b2Vec2(0,0)}
+    hormigas.append(h)
+
+pausado = False
+hormiga_seleccionada = None
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+        elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+            pausado = not pausado
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1: 
+            pos_raton = pygame.mouse.get_pos()
+            if pos_raton[0] < SIM_WIDTH:
+                raton_mundo = Box2D.b2Vec2(pos_raton[0] / PPM, (SCREEN_HEIGHT - pos_raton[1]) / PPM)
+                hormiga_seleccionada = next((h for h in hormigas if (h.position - raton_mundo).length < 0.6), None)
+
+    pantalla.fill((30, 30, 30))
+
+    if not pausado:
+        # 1. Amortiguación Macroscópica
+        n_att = len(uniones)
+        if n_att > 0:
+            carga.linearDamping = GAMMA_LIN_PER_ANT * n_att
+            carga.angularDamping = (GAMMA_ROT_PER_ANT * n_att) * 0.5 
+        else:
+            carga.linearDamping = 5.0
+            carga.angularDamping = 8.0
+
+        for h in hormigas:
+            if h in uniones:
+                # 2. Transiciones de Estado (Ising/Boltzmann)
+                if h.userData['estado'] == 'informada':
+                    if random.random() < (K_FORGET * DT):
+                        h.userData['estado'] = 'tiradora'
+                
+                elif h.userData['estado'] in ['tiradora', 'levantadora']:
+                    if random.random() < (K_OFF * DT):
+                        mundo.DestroyJoint(uniones[h])
+                        del uniones[h]
+                        h.userData['estado'] = 'libre'
+                        continue
+                    
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    p_i = h.position - carga.position
+                    if p_i.length > 0: p_i.Normalize()
+                    else: p_i = Box2D.b2Vec2(1, 0)
+                    
+                    f_loc_proj = p_i.dot(v_loc) * GAMMA_LIN_PER_ANT 
+                    
+                    if h.userData['estado'] == 'levantadora':
+                        if random.random() < (K_C * math.exp(f_loc_proj / F_IND) * DT):
+                            h.userData['estado'] = 'tiradora'
+                    else:
+                        if random.random() < (K_C * math.exp(-f_loc_proj / F_IND) * DT):
+                            h.userData['estado'] = 'levantadora'
+
+                # 3. Aplicación de la Fuerza Tractora
+                if h.userData['estado'] == 'informada':
+                    dir_final = objetivo_salida - h.position
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+                elif h.userData['estado'] == 'tiradora':
+                    v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                    
+                    if v_loc.length > 0.1: 
+                        dir_final = Box2D.b2Vec2(v_loc)
+                    else: 
+                        dir_final = h.userData['dir_random']
+                        if h.userData['timer_random'] <= 0:
+                            ang = random.uniform(0, 6.28)
+                            h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                            h.userData['timer_random'] = 20  
+                        h.userData['timer_random'] -= 1
+
+                    if dir_final.length > 0: dir_final.Normalize()
+                    h.ApplyForceToCenter(dir_final * F0, wake=True)
+                
+            else:
+                # 4. Dinámica de Búsqueda y Acoplamiento
+                # ¡CORREGIDO!: Quitamos la limitación de 2.5 metros. Ahora muerden en cualquier parte de la geometría.
+                for contacto in h.contacts:
+                    if contacto.contact.touching and contacto.other == carga:
+                        punto_anclaje = h.worldCenter 
+                        u_def = b2DistanceJointDef(
+                            bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                            frequencyHz=0, dampingRatio=1.0
+                        )
+                        u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
+                        uniones[h] = mundo.CreateJoint(u_def)
+                        h.userData['estado'] = 'informada'
+                        break
+                
+                dir_explora = h.userData['dir_random']
+                if h.userData['timer_random'] <= 0:
+                    ang = random.uniform(0, 6.28)
+                    h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                    h.userData['timer_random'] = 40
+                h.userData['timer_random'] -= 1
+                
+                if dir_explora.length > 0: dir_explora.Normalize()
+                h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
+
+        mundo.Step(DT, 6, 2)
+    
+    # --- DIBUJO DE LA ARENA FÍSICA ---
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                verts = [to_pygame(body.transform * v) for v in shape.vertices]
+                # Pintamos la carga de color Rojo como en los esquemas del artículo
+                color_poly = (220, 40, 40) if body == carga else (80, 80, 80)
+                pygame.draw.polygon(pantalla, color_poly, verts)
+            elif isinstance(shape, b2CircleShape):
+                if body == hormiga_seleccionada: color = (255, 0, 0)
+                else:
+                    estado = body.userData.get('estado')
+                    if estado == 'informada': color = (0, 255, 100)       
+                    elif estado == 'tiradora': color = (0, 100, 255)      
+                    elif estado == 'levantadora': color = (200, 50, 255)  
+                    else: color = (150, 150, 150)                         
+                
+                pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
+                if body == hormiga_seleccionada:
+                    pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
+
+    pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
+    pantalla.blit(fuente_texto.render("NIDO", True, (255, 215, 0)), to_pygame(Box2D.b2Vec2(35.2, 16.0)))
+
+    # --- PANEL LATERAL ---
+    pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
+    pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
+
+    pantalla.blit(fuente_titulo.render("MONITOR FÍSICO DE ISING", True, (255, 255, 255)), (SIM_WIDTH + 20, 20))
+    pantalla.blit(fuente_texto.render(f"Hormigas Acopladas: {len(uniones)}", True, (150, 200, 255)), (SIM_WIDTH + 20, 50))
+    
+    if hormiga_seleccionada is not None:
+        pantalla.blit(fuente_titulo.render("HORMIGA SELECCIONADA", True, (255, 215, 0)), (SIM_WIDTH + 20, 100))
+        lineas = [
+            f"Pos X: {hormiga_seleccionada.position.x:.2f} m",
+            f"Pos Y: {hormiga_seleccionada.position.y:.2f} m",
+            f"Estado: {hormiga_seleccionada.userData['estado'].upper()}"
+        ]
+        for i, linea in enumerate(lineas):
+            pantalla.blit(fuente_texto.render(linea, True, (220, 220, 220)), (SIM_WIDTH + 20, 130 + i*25))
+
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
+
+
+
+
+```{python}
+import pygame
+import Box2D
+import random
+import math
+from Box2D import b2World, b2PolygonShape, b2CircleShape, b2DistanceJointDef
+
+# --- CONFIGURACIÓN DE PANTALLA ---
+PPM = 20.0
+SIM_WIDTH = 800       
+PANEL_WIDTH = 300     
+SCREEN_WIDTH = SIM_WIDTH + PANEL_WIDTH  
+SCREEN_HEIGHT = 600
+TARGET_FPS = 60
+DT = 1.0 / TARGET_FPS
+
+# --- CONSTANTES FÍSICAS ---
+F0 = 25.0              
+F_IND = 10.0 * F0      
+K_ON = 0.015           
+K_FORGET = 0.09        
+K_C = 1.0              
+K_OFF = 0.05             
+GAMMA_LIN_PER_ANT = 1.48 
+GAMMA_ROT_PER_ANT = 1.44 
+
+pygame.init()
+pygame.font.init()  
+fuente_titulo = pygame.font.SysFont("Arial", 18, bold=True)
+fuente_texto = pygame.font.SysFont("Courier New", 14)
+
+pantalla = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+reloj = pygame.time.Clock()
+
+def to_pygame(pt):
+    return (int(pt[0] * PPM), int(SCREEN_HEIGHT - pt[1] * PPM))
+
+mundo = b2World(gravity=(0, 0))
+
+# =================================================================
+# MAPA (Geometría del usuario)
+# =================================================================
+W_ARENA = 28.8          
+SLIT1_X = 19.38         
+SLIT2_X = 28.74         
+WALL_THICK = 0.435      
+EXIT_SIZE = 5.535       
+L_LONG = 6.885          
+L_SHORT = 3.285         
+L_WIDTH = 0.885         
+L_STEM = 13.5           
+
+paredes = mundo.CreateStaticBody(position=(0, 0))
+
+paredes.CreatePolygonFixture(box=(40, 0.5, (20, -0.5), 0), restitution=0.0, friction=0.0)             
+paredes.CreatePolygonFixture(box=(40, 0.5, (20, W_ARENA + 0.5), 0), restitution=0.0, friction=0.0)    
+paredes.CreatePolygonFixture(box=(0.5, W_ARENA/2, (-0.5, W_ARENA/2), 0), restitution=0.0, friction=0.0) 
+paredes.CreatePolygonFixture(box=(0.5, W_ARENA/2, (39.5, W_ARENA/2), 0), restitution=0.0, friction=0.0) 
+
+hw = WALL_THICK / 2
+wall_h = (W_ARENA - EXIT_SIZE) / 2
+hw_y = wall_h / 2
+
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT1_X, hw_y), 0), restitution=0.0, friction=0.0)
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT1_X, W_ARENA - hw_y), 0), restitution=0.0, friction=0.0)
+
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT2_X, hw_y), 0), restitution=0.0, friction=0.0)
+paredes.CreatePolygonFixture(box=(hw, hw_y, (SLIT2_X, W_ARENA - hw_y), 0), restitution=0.0, friction=0.0)
+
+objetivo_salida = Box2D.b2Vec2(36.0, W_ARENA/2)
+
+# =================================================================
+# LA CARGA
+# =================================================================
+carga = mundo.CreateDynamicBody(position=(8.0, W_ARENA/2), linearDamping=5.0, angularDamping=8.0)
+h_stem = L_STEM / 2
+h_wid = L_WIDTH / 2
+carga.CreatePolygonFixture(box=(h_stem, h_wid, (0, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+pos_x_long = -h_stem - h_wid
+carga.CreatePolygonFixture(box=(h_wid, L_LONG/2, (pos_x_long, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+pos_x_short = h_stem + h_wid
+carga.CreatePolygonFixture(box=(h_wid, L_SHORT/2, (pos_x_short, 0), 0), density=1.0, restitution=0.0, friction=0.0)
+
+# --- LAS HORMIGAS ---
+hormigas = []
+uniones = {} 
+
+for i in range(60):
+    h = mundo.CreateDynamicBody(position=(random.uniform(2, 10), random.uniform(2, W_ARENA-2)), linearDamping=6.0)  
+    h.CreateCircleFixture(radius=0.2, density=1.0, restitution=0.0, friction=0.0)
+    h.userData = {'estado': 'libre', 'timer_random': 0, 'dir_random': Box2D.b2Vec2(0,0)}
+    hormigas.append(h)
+
+# --- CONTROLES DE INTERFAZ ---
+pausado = False
+fast_mode = False  # VARIABLE PARA EL BOTÓN DE VELOCIDAD
+hormiga_seleccionada = None
+
+ejecutando = True
+while ejecutando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT: ejecutando = False
+        elif evento.type == pygame.KEYDOWN:
+            if evento.key == pygame.K_SPACE:
+                pausado = not pausado
+            elif evento.key == pygame.K_f:
+                fast_mode = not fast_mode  # ALTERNAR CÁMARA RÁPIDA
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1: 
+            pos_raton = pygame.mouse.get_pos()
+            if pos_raton[0] < SIM_WIDTH:
+                raton_mundo = Box2D.b2Vec2(pos_raton[0] / PPM, (SCREEN_HEIGHT - pos_raton[1]) / PPM)
+                hormiga_seleccionada = next((h for h in hormigas if (h.position - raton_mundo).length < 0.6), None)
+
+    pantalla.fill((30, 30, 30))
+
+    # =====================================================================
+    # EL MOTOR FÍSICO (Se ejecuta 1 vez o 10 veces por frame según el modo)
+    # =====================================================================
+    ciclos_fisica = 10 if fast_mode else 1
+    
+    if not pausado:
+        for _ in range(ciclos_fisica):
+            
+            # 1. Amortiguación
+            n_att = len(uniones)
+            if n_att > 0:
+                carga.linearDamping = GAMMA_LIN_PER_ANT * n_att
+                carga.angularDamping = (GAMMA_ROT_PER_ANT * n_att) * 0.5 
+            else:
+                carga.linearDamping = 5.0
+                carga.angularDamping = 8.0
+
+            # Medimos si el sistema está atascado para multiplicar la frustración
+            vel_carga = carga.linearVelocity.length
+            esta_atascada = vel_carga < 0.1
+            
+            # NUEVO: Si están atascadas, la pérdida de memoria (K_FORGET) es 15 veces más rápida
+            # Esto elimina a las hormigas verdes que la anclan contra la pared
+            memoria_activa = K_FORGET * 15.0 if esta_atascada else K_FORGET
+
+            for h in hormigas:
+                if h in uniones:
+                    # 2. Gillespie / Transiciones de Ising
+                    if h.userData['estado'] == 'informada':
+                        if random.random() < (memoria_activa * DT):
+                            h.userData['estado'] = 'tiradora'
+                    
+                    elif h.userData['estado'] in ['tiradora', 'levantadora']:
+                        if random.random() < (K_OFF * DT):
+                            mundo.DestroyJoint(uniones[h])
+                            del uniones[h]
+                            h.userData['estado'] = 'libre'
+                            continue
+                        
+                        v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                        p_i = h.position - carga.position
+                        if p_i.length > 0: p_i.Normalize()
+                        else: p_i = Box2D.b2Vec2(1, 0)
+                        
+                        f_loc_proj = p_i.dot(v_loc) * GAMMA_LIN_PER_ANT 
+                        
+                        if h.userData['estado'] == 'levantadora':
+                            if random.random() < (K_C * math.exp(f_loc_proj / F_IND) * DT):
+                                h.userData['estado'] = 'tiradora'
+                        else:
+                            if random.random() < (K_C * math.exp(-f_loc_proj / F_IND) * DT):
+                                h.userData['estado'] = 'levantadora'
+
+                    # 3. Aplicación de Fuerzas
+                    if h.userData['estado'] == 'informada':
+                        dir_final = objetivo_salida - h.position
+                        if dir_final.length > 0: dir_final.Normalize()
+                        h.ApplyForceToCenter(dir_final * F0, wake=True)
+                    
+                    elif h.userData['estado'] == 'tiradora':
+                        v_loc = carga.GetLinearVelocityFromWorldPoint(h.position)
+                        if not esta_atascada: 
+                            dir_final = Box2D.b2Vec2(v_loc)
+                        else: 
+                            # Si está atascada, el ruido es aleatorio y cambia rápido (Fluctuación pura)
+                            dir_final = h.userData['dir_random']
+                            if h.userData['timer_random'] <= 0:
+                                ang = random.uniform(0, 6.28)
+                                h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                                h.userData['timer_random'] = 15  
+                            h.userData['timer_random'] -= 1
+
+                        if dir_final.length > 0: dir_final.Normalize()
+                        h.ApplyForceToCenter(dir_final * F0, wake=True)
+                    
+                else:
+                    # 4. Libres
+                    for contacto in h.contacts:
+                        if contacto.contact.touching and contacto.other == carga:
+                            punto_anclaje = h.worldCenter 
+                            u_def = b2DistanceJointDef(
+                                bodyA=h, bodyB=carga, anchorA=punto_anclaje, anchorB=punto_anclaje,
+                                frequencyHz=0, dampingRatio=1.0
+                            )
+                            u_def.length = (h.position - punto_anclaje).length if (h.position - punto_anclaje).length > 0 else 0.1
+                            uniones[h] = mundo.CreateJoint(u_def)
+                            h.userData['estado'] = 'informada'
+                            break
+                    
+                    dir_explora = h.userData['dir_random']
+                    if h.userData['timer_random'] <= 0:
+                        ang = random.uniform(0, 6.28)
+                        h.userData['dir_random'] = Box2D.b2Vec2(math.cos(ang), math.sin(ang))
+                        h.userData['timer_random'] = 40
+                    h.userData['timer_random'] -= 1
+                    
+                    if dir_explora.length > 0: dir_explora.Normalize()
+                    h.ApplyForceToCenter(dir_explora * 8.0, wake=True)
+
+            mundo.Step(DT, 6, 2)
+    # =====================================================================
+
+    # --- DIBUJO DE LA ARENA FÍSICA ---
+    for body in mundo.bodies:
+        for fixture in body.fixtures:
+            shape = fixture.shape
+            if isinstance(shape, b2PolygonShape):
+                verts = [to_pygame(body.transform * v) for v in shape.vertices]
+                color_poly = (220, 40, 40) if body == carga else (80, 80, 80)
+                pygame.draw.polygon(pantalla, color_poly, verts)
+            elif isinstance(shape, b2CircleShape):
+                if body == hormiga_seleccionada: color = (255, 0, 0)
+                else:
+                    estado = body.userData.get('estado')
+                    if estado == 'informada': color = (0, 255, 100)       
+                    elif estado == 'tiradora': color = (0, 100, 255)      
+                    elif estado == 'levantadora': color = (200, 50, 255)  
+                    else: color = (150, 150, 150)                         
+                
+                pygame.draw.circle(pantalla, color, to_pygame(body.position), int(0.2 * PPM))
+                if body == hormiga_seleccionada:
+                    pygame.draw.circle(pantalla, (255, 255, 0), to_pygame(body.position), int(0.5 * PPM), 1)
+
+    pygame.draw.circle(pantalla, (255, 215, 0), to_pygame(objetivo_salida), 10, 2)
+
+    # --- PANEL LATERAL ---
+    pygame.draw.rect(pantalla, (15, 15, 15), (SIM_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT))
+    pygame.draw.line(pantalla, (100, 100, 100), (SIM_WIDTH, 0), (SIM_WIDTH, SCREEN_HEIGHT), 2)
+
+    pantalla.blit(fuente_titulo.render("MONITOR FÍSICO", True, (255, 255, 255)), (SIM_WIDTH + 20, 20))
+    
+    # Textos de estado
+    str_vel = "VELOCIDAD: x10 [F]" if fast_mode else "VELOCIDAD: x1 [F]"
+    color_vel = (255, 215, 0) if fast_mode else (150, 150, 150)
+    pantalla.blit(fuente_texto.render(str_vel, True, color_vel), (SIM_WIDTH + 20, 50))
+    pantalla.blit(fuente_texto.render(f"Hormigas Acopladas: {len(uniones)}", True, (150, 200, 255)), (SIM_WIDTH + 20, 75))
+    
+    if hormiga_seleccionada is not None:
+        pantalla.blit(fuente_titulo.render("HORMIGA SELECCIONADA", True, (255, 215, 0)), (SIM_WIDTH + 20, 120))
+        lineas = [
+            f"Pos X: {hormiga_seleccionada.position.x:.2f} m",
+            f"Pos Y: {hormiga_seleccionada.position.y:.2f} m",
+            f"Estado: {hormiga_seleccionada.userData['estado'].upper()}"
+        ]
+        for i, linea in enumerate(lineas):
+            pantalla.blit(fuente_texto.render(linea, True, (220, 220, 220)), (SIM_WIDTH + 20, 150 + i*25))
+
+    pygame.display.flip()
+    reloj.tick(TARGET_FPS)
+
+pygame.quit()
+```
