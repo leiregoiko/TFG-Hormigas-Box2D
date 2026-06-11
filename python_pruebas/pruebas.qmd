@@ -969,3 +969,207 @@ plt.show()
 
 
 ```
+
+
+## Haciendo cosas mas serias
+
+Voy a intentar calcular las cosas que salen el en Gillepsie. 
+
+
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+
+
+
+
+kon=0.015
+koff=0.015
+kc=1.0
+kforget=0.09
+korient=0.7
+Find=10
+
+#Hasiera
+Nmax=120
+Natt=0
+Nempty=120
+Ninfo=0
+Nl=0
+Np=0
+Rforget=0.0
+Rc=0.0
+Rdet=0.0
+Rorient=0.0
+
+Ratt=kon*Nmax 
+ #Beste R-ak buklearen barruan.
+
+for i in range(10): #10 aldiz inplementatu delta t
+    r1=random.uniform(0,1)
+
+    Ratt=kon*Nempty
+    Rforget=kforget*Ninfo
+    Rc=random.uniform(0,1) #mucha movida, si es mas de 0,5 una y sino otra
+    Rdet=koff*(Nl+Np)
+    Rorient=korient*(Np+Ninfo)
+
+    Rtot=Ratt + Rforget+ Rc + Rdet + Rorient
+
+    dt=(1/Rtot)*np.log(1/r1)
+
+    ddt=dt 
+    T=0.0
+    r2=random.uniform(0,1)
+
+        #como no tenemos nada de box2d aqui, en durante todo el while no va a pasar nada. Serían mas de 10 pasos pero lo voy a poner 10 pa que no tarde. 
+        
+    if r2 < (Ratt/Rtot):
+        Natt=Natt + 1
+        Nempty=Nempty - 1
+        Ninfo=Ninfo + 1
+    elif r2 < ((Ratt + Rforget)/Rtot) and (Rc<0.5):
+        Ninfo=Ninfo - 1
+        Nl=Nl + 1
+        
+    elif r2 < ((Ratt + Rforget + Rc)/Rtot) and (Rc>=0.5):
+        Ninfo=Ninfo - 1
+        Np=Np + 1
+        
+    elif r2 < ((Ratt + Rforget + Rc)/Rtot) and (Rc<0.5):
+        Nl=Nl + 1
+        Np=Np - 1
+        
+    elif r2 < ((Ratt + Rforget + Rc + Rdet)/Rtot) and (Rc>=0.5):
+        Nl=Nl - 1
+        Np=Np +  1
+    elif r2 < ((Ratt + Rforget + Rc + Rdet)/Rtot):
+        Natt=Natt - 1
+        Nempty=Nempty + 1
+            
+
+
+    print(f"Paso {i+1}: Natt={Natt}, Nempty={Nempty}, Ninfo={Ninfo}, Nl={Nl}, Np={Np}")
+
+
+```
+
+mas o menos, salen cosas negativas. este me lo ha hechko chatty
+
+
+```{python}
+import numpy as np
+import random
+
+kon = 0.015
+koff = 0.015
+kc = 1.0
+kforget = 0.09
+korient = 0.7
+
+# Estado inicial
+Nmax = 120
+Nempty = 120
+
+Ninfo = 0
+Nl = 0
+Np = 0
+
+for paso in range(10):
+
+    # Tasas
+    Ratt = kon * Nempty
+    Rforget = kforget * Ninfo
+    Rc = kc * (Nl + Np)      # tasa de role-switching
+    Rdet = koff * (Nl + Np)
+    Rorient = korient * Np
+
+    Rtot = Ratt + Rforget + Rc + Rdet + Rorient
+
+    if Rtot == 0:
+        break
+
+    # Gillespie
+    r1 = random.uniform(0, 1)
+    dt = (1 / Rtot) * np.log(1 / r1)
+
+    r2 = random.uniform(0, 1)
+
+    p1 = Ratt / Rtot
+    p2 = (Ratt + Rforget) / Rtot
+    p3 = (Ratt + Rforget + Rc) / Rtot
+    p4 = (Ratt + Rforget + Rc + Rdet) / Rtot
+
+    # EVENTO
+
+    if r2 < p1:
+        # attachment
+        Nempty -= 1
+        Ninfo += 1
+
+    elif r2 < p2:
+        # informed -> puller o lifter
+        if Ninfo > 0:
+
+            Ninfo -= 1
+
+            if random.random() < 0.5:
+                Np += 1
+            else:
+                Nl += 1
+
+    elif r2 < p3:
+        # role switching
+
+        if Np > 0 and Nl > 0:
+
+            if random.random() < 0.5:
+                Np -= 1
+                Nl += 1
+            else:
+                Nl -= 1
+                Np += 1
+
+        elif Np > 0:
+            Np -= 1
+            Nl += 1
+
+        elif Nl > 0:
+            Nl -= 1
+            Np += 1
+
+    elif r2 < p4:
+        # detachment
+
+        if Np > 0 and Nl > 0:
+
+            if random.random() < 0.5:
+                Np -= 1
+            else:
+                Nl -= 1
+
+            Nempty += 1
+
+        elif Np > 0:
+            Np -= 1
+            Nempty += 1
+
+        elif Nl > 0:
+            Nl -= 1
+            Nempty += 1
+
+    else:
+        # reorientation
+        # de momento no hacemos nada
+        pass
+
+    Natt = Ninfo + Np + Nl
+
+    print(
+        f"Paso {paso+1}: "
+        f"Natt={Natt}, Nempty={Nempty}, "
+        f"Ninfo={Ninfo}, Nl={Nl}, Np={Np}"
+    )
+```
