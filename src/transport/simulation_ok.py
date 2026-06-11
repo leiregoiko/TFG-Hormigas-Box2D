@@ -17,7 +17,7 @@ K_ORIENT = 0.7
 F0        = 2.8
 F_IND     = 10.0 * F0
 GAMMA_LIN = 1.48
-GAMMA_ROT = 5.0 #era 1.44
+GAMMA_ROT = 1.44 #era 1.44
 PHI_MAX   = math.radians(52)
 N0        = N_MAX // 5   
 
@@ -37,6 +37,7 @@ PPM      = 30.0
 DT       = 1.0 / 60.0
 SCREEN_W = int(30 * PPM)
 SCREEN_H = int(W_ARENA * PPM)
+
 
 # =========================================================================
 # PERÍMETRO Y DIRECCIÓN
