@@ -38,8 +38,8 @@ SCREEN_W = int(30 * PPM)
 SCREEN_H = int(W_ARENA * PPM)
 
 # --- AJUSTA ESTO PARA VER TUS CASOS DEL EXCEL ---
-P_INFORMED_TEST = 0.8
-RANDOM_SEED = 122
+P_INFORMED_TEST = 1.0
+RANDOM_SEED = 144
 
 def _ibeam_exterior_verts():
     hw, hs, ll, ls = L_WIDTH/2, L_STEM/2, L_LONG/2, L_SHORT/2
